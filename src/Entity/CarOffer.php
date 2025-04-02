@@ -21,6 +21,7 @@ class CarOffer
     #[ORM\Column(name: "id", type: "integer")]
     private int $id;
 
+    #[ORM\Column(name: "description", type: "string", length: 75)]
     private string $description;
 
     #[ORM\Column(name: "date", type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
@@ -86,6 +87,18 @@ class CarOffer
     public function setRoute(?CarRoute $route): static
     {
         $this->route = $route;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
