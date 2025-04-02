@@ -1,11 +1,18 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
-
+        types:
+            activity_type: App\Entity\Enum\Type\ActivityTypeType
+            car_reservation_status: App\Entity\Enum\Type\CarReservationStatusType
+            flight_status: App\Entity\Enum\Type\FlightStatusType
+            ticket_class: App\Entity\Enum\Type\TicketClassType
+            ticket_status: App\Entity\Enum\Type\TicketStatusType
+            user_gender: App\Entity\Enum\Type\UserGenderType
+            user_status: App\Entity\Enum\Type\UserStatusType
+        mapping_types:
+            enum: string
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
-        #server_version: '16'
-
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
     orm:
