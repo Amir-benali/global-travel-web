@@ -1,0 +1,295 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl">
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex items-center">
+                    <div class="flex items-center text-2xl font-semibold text-gray-800">
+                        <i class="ri-calendar-event-line text-blue-600 mr-2"></i>
+                        Activity List
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Search by activity name" 
+                            class="pl-4 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
+                        />
+                        <button class="absolute right-0 top-0 h-full px-3 text-white bg-blue-500 rounded-r-full">
+                            <i class="ri-search-line"></i>
+                            Search
+                        </button>
+                    </div>
+                    
+                    <a href="review-list.html" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full flex items-center">
+                        <i class="ri-star-line mr-1"></i>
+                        Review List
+                    </a>
+                    
+                    <a href="{{path('app_activity_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center">
+                        <i class="ri-add-line mr-1"></i>
+                        Add Activity
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Activity Card 1 -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <i class="ri-calendar-event-line text-blue-600 text-xl mr-2"></i>
+                        <h3 class="text-lg font-medium text-gray-900">Maldives Diving</h3>
+                    </div>
+                </div>
+                
+                <div class="p-4">
+                    <div class="mb-4">
+                        <img src="https://via.placeholder.com/400x200?text=Maldives+Diving" alt="Maldives Diving" class="w-full h-40 object-cover rounded-lg">
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center">
+                            <i class="ri-information-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Scuba Diving</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-map-pin-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Maldives</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Start Date: 01/03/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-check-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">End Date: 01/03/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-money-dollar-circle-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Price: $601</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-price-tag-3-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Type: LEISURE</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-hotel-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Hotel: Burj Al Arab</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-car-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Car: mercedes</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-plane-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Flight: F1</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="{{ path('app_activity_details', { id: 1 }) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-md text-sm text-center">
+                            View Details
+                        </a>
+                        <div class="flex space-x-2">
+                        <a href="{{ path('app_activity_update', { id: 1 }) }}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">
+                            <i class="ri-edit-line"></i>
+                        </a>
+                            <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-gray-50 border-t border-gray-200 flex justify-between">
+                    <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm">
+                        accept
+                    </button>
+                    <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm">
+                        cancel
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Activity Card 2 -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <i class="ri-calendar-event-line text-blue-600 text-xl mr-2"></i>
+                        <h3 class="text-lg font-medium text-gray-900">Swiss Alps Hike</h3>
+                    </div>
+                </div>
+                
+                <div class="p-4">
+                    <div class="mb-4">
+                        <img src="https://via.placeholder.com/400x200?text=Swiss+Alps+Hike" alt="Swiss Alps Hike" class="w-full h-40 object-cover rounded-lg">
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center">
+                            <i class="ri-information-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Mountain Hiking</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-map-pin-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Switzerland</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Start Date: 15/04/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-check-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">End Date: 15/04/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-money-dollar-circle-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Price: $300</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-price-tag-3-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Type: MEETINGS</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-hotel-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Hotel: The Dolder Grand</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-car-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Car: mercedes</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-plane-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Flight: F2</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="activity-details.html?id=2" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-md text-sm text-center">
+                            View Details
+                        </a>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">
+                                <i class="ri-edit-line"></i>
+                            </button>
+                            <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-gray-50 border-t border-gray-200 flex justify-between">
+                    <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm">
+                        accept
+                    </button>
+                    <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm">
+                        cancel
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Activity Card 3 -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <i class="ri-calendar-event-line text-blue-600 text-xl mr-2"></i>
+                        <h3 class="text-lg font-medium text-gray-900">test</h3>
+                    </div>
+                </div>
+                
+                <div class="p-4">
+                    <div class="mb-4">
+                        <img src="https://via.placeholder.com/400x200?text=Test+Activity" alt="Test Activity" class="w-full h-40 object-cover rounded-lg">
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center">
+                            <i class="ri-information-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">test</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-map-pin-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Tozeur, Tunisia</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Start Date: 01/03/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-check-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">End Date: 16/03/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-money-dollar-circle-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Price: $250</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-price-tag-3-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Type: MEETINGS</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-hotel-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Hotel: The Dolder Grand</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-car-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Car: mercedes</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-plane-line text-blue-600 w-6"></i>
+                            <span class="text-sm text-gray-700">Flight: F2</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="activity-details.html?id=3" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-md text-sm text-center">
+                            View Details
+                        </a>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">
+                                <i class="ri-edit-line"></i>
+                            </button>
+                            <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-gray-50 border-t border-gray-200 flex justify-between">
+                    <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm">
+                        accept
+                    </button>
+                    <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm">
+                        cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-6 flex items-center justify-center">
+            <div class="flex items-center space-x-2">
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">2</button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">
+                    <i class="ri-arrow-right-s-line"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

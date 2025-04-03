@@ -1,0 +1,243 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}user{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-7xl">
+        <div class="bg-white rounded-lg shadow">
+            <!-- Table toolbar -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="text-sm text-gray-700 mr-2">5 selected</span>
+                    <button class="flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm">
+                        <i class="ri-delete-bin-line mr-1"></i>
+                        Delete
+                    </button>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input 
+                            type="text" 
+                            placeholder="Search users..." 
+                            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
+                        />
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="w-12 px-4 py-3">
+                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                <div class="flex items-center">
+                                    User Name
+                                    <i class="ri-arrow-down-s-line ml-1"></i>
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                <div class="flex items-center">
+                                    Email Address
+                                    <i class="ri-arrow-down-s-line ml-1"></i>
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                <div class="flex items-center">
+                                    Phone Number
+                                    <i class="ri-arrow-down-s-line ml-1"></i>
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                <div class="flex items-center">
+                                    Role
+                                    <i class="ri-arrow-down-s-line ml-1"></i>
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                                <div class="flex items-center">
+                                    Actions
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <!-- User Row 1 -->
+                        <tr class="selected">
+                            <td class="px-4 py-3">
+                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                                        A
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">Admin1</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">admin1@example.com</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">Admin</td>
+                            <td class="px-4 py-3 text-sm">
+                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
+                                    <i class="ri-more-2-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <!-- User Row 2 -->
+                        <tr class="selected">
+                            <td class="px-4 py-3">
+                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                                        A
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">Admin2</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">admin2@example.com</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">Admin</td>
+                            <td class="px-4 py-3 text-sm">
+                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
+                                    <i class="ri-more-2-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <!-- User Row 3 -->
+                        <tr class="selected">
+                            <td class="px-4 py-3">
+                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                                        M
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">Manager</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">manager@example.com</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">Manager</td>
+                            <td class="px-4 py-3 text-sm">
+                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
+                                    <i class="ri-more-2-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <!-- User Row 4 -->
+                        <tr class="selected">
+                            <td class="px-4 py-3">
+                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                                        M
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">Manager1</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">manager1@example.com</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">Manager</td>
+                            <td class="px-4 py-3 text-sm">
+                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
+                                    <i class="ri-more-2-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <!-- User Row 5 -->
+                        <tr class="selected">
+                            <td class="px-4 py-3">
+                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                                        E
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">Employee 1</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">employee1@example.com</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">Employee</td>
+                            <td class="px-4 py-3 text-sm">
+                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
+                                    <i class="ri-more-2-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <!-- User Row 6 -->
+                        <tr>
+                            <td class="px-4 py-3">
+                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mr-3">
+                                        E
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">Employee</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">employee2@example.com</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">Employee</td>
+                            <td class="px-4 py-3 text-sm">
+                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
+                                    <i class="ri-more-2-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing <span class="font-medium">1</span> to <span class="font-medium">6</span> of <span class="font-medium">15</span> results
+                    </p>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-500 flex items-center opacity-50" disabled>
+                        <i class="ri-arrow-left-s-line mr-1"></i>
+                        Previous
+                    </button>
+                    
+                    <div class="flex items-center">
+                        <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm ml-1">2</button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm ml-1">3</button>
+                    </div>
+                    
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-500 flex items-center">
+                        Next
+                        <i class="ri-arrow-right-s-line ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+{% endblock %}

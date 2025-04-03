@@ -8,11 +8,14 @@
                 <span class="text-sm text-gray-700 font-medium" id="current-page">
                     {% set currentRoute = app.request.get('_route') %}
                     {% if currentRoute == 'app_dashboard' %}Dashboard
-                    {% elseif currentRoute starts with 'app_activities' %}Activities
-                    {% elseif currentRoute starts with 'app_users' %}Users
-                    {% elseif currentRoute starts with 'app_trips' %}Trips
-                    {% elseif currentRoute starts with 'app_flights' %}Flights
-                    {% elseif currentRoute starts with 'app_cars' %}Car Rentals
+                    {% elseif currentRoute starts with 'app_activity' %}Activities
+                    {% elseif currentRoute starts with 'app_settings' %}Settings
+
+                    {% elseif currentRoute starts with 'app_user' %}Users
+                    {% elseif currentRoute starts with 'app_hotel' %}Hotels
+                    {% elseif currentRoute starts with 'app_flight' %}Flights
+                    {% elseif currentRoute starts with 'app_car' %}Car
+
                     {% else %}Dashboard
                     {% endif %}
                 </span>
@@ -33,7 +36,6 @@
                 </div>
                 <div class="flex items-center">
                     <span class="text-sm font-medium">{{ app.user ? app.user.username : 'Guest' }}</span>
-                    <i class="ri-arrow-down-s-line ml-1 text-gray-500"></i>
                 </div>
             </div>
         </div>

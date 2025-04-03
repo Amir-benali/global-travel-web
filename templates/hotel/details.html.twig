@@ -1,0 +1,231 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}hotel{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl">
+        <!-- Sub Navigation -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex space-x-4">
+                    <a href="index.html.twig" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a>
+                </div>
+                
+                <a href="{{path('app_hotel_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="ri-add-line mr-1"></i>
+                    ADD HOTEL
+                </a>
+            </div>
+        </div>
+        
+        <!-- Hotel Details -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <!-- Hotel Gallery -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                <div class="lg:col-span-2">
+                    <img src="https://via.placeholder.com/800x400" alt="Grand Plaza Hotel" class="w-full h-full object-cover">
+                </div>
+                <div class="grid grid-cols-2 gap-0">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Room" class="w-full h-full object-cover">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Pool" class="w-full h-full object-cover">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Restaurant" class="w-full h-full object-cover">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Lobby" class="w-full h-full object-cover">
+                </div>
+            </div>
+            
+            <!-- Hotel Info -->
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between">
+                    <div class="mb-6 md:mb-0">
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">Grand Plaza Hotel</h1>
+                        
+                        <div class="flex items-center mb-4">
+                            <div class="flex">
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-half-fill text-yellow-500"></i>
+                            </div>
+                            <span class="ml-2 text-sm text-gray-600">4.8 (120 reviews)</span>
+                        </div>
+                        
+                        <div class="flex items-center text-gray-600 mb-2">
+                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
+                            <span>123 Main Street, New York, USA</span>
+                        </div>
+                        
+                        <div class="flex items-center text-gray-600">
+                            <i class="ri-phone-line text-blue-600 mr-2"></i>
+                            <span>+1 212-555-1234</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg md:w-64">
+                        <div class="text-lg font-semibold text-blue-800 mb-2">Starting from</div>
+                        <div class="text-3xl font-bold text-gray-900 mb-4">$299<span class="text-sm font-normal text-gray-600">/night</span></div>
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Hotel Description -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
+                    <p class="text-gray-600 mb-4">
+                        Luxury hotel with panoramic city views, spa, and fine dining restaurant. Perfect for business travelers and vacationers alike. Our hotel offers the perfect blend of comfort and luxury with state-of-the-art amenities and exceptional service.
+                    </p>
+                    <p class="text-gray-600">
+                        Located in the heart of Manhattan, the Grand Plaza Hotel provides easy access to all major attractions, shopping districts, and business centers. Our 24-hour concierge service ensures all your needs are met during your stay.
+                    </p>
+                </div>
+                
+                <!-- Amenities -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Amenities</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="flex items-center">
+                            <i class="ri-wifi-line text-blue-600 mr-2"></i>
+                            <span class="text-gray-600">Free WiFi</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-swimming-pool-line text-blue-600 mr-2"></i>
+                            <span class="text-gray-600">Swimming Pool</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-restaurant-line text-blue-600 mr-2"></i>
+                            <span class="text-gray-600">Restaurant</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-spa-line text-blue-600 mr-2"></i>
+                            <span class="text-gray-600">Spa & Wellness</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-car-line text-blue-600 mr-2"></i>
+                            <span class="text-gray-600">Parking</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-contrast-drop-2-line text-blue-600 mr-2"></i>
+                            <span class="text-gray-600">Air Conditioning</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rooms -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rooms</h2>
+                    <div class="space-y-4">
+                        <!-- Room 1 -->
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                                <img src="https://via.placeholder.com/400x300" alt="Deluxe Room" class="w-full h-full object-cover">
+                                <div class="p-4 md:col-span-2">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Deluxe Room</h3>
+                                    <p class="text-gray-600 mb-4">Spacious room with king-size bed, work desk, and city view. Perfect for business travelers.</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-gray-600">
+                                            <span class="font-semibold">$299</span> / night
+                                        </div>
+                                        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Room 2 -->
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                                <img src="https://via.placeholder.com/400x300" alt="Executive Suite" class="w-full h-full object-cover">
+                                <div class="p-4 md:col-span-2">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Executive Suite</h3>
+                                    <p class="text-gray-600 mb-4">Luxurious suite with separate living area, premium amenities, and panoramic city views.</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-gray-600">
+                                            <span class="font-semibold">$499</span> / night
+                                        </div>
+                                        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reviews -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Guest Reviews</h2>
+                    <div class="space-y-6">
+                        <!-- Review 1 -->
+                        <div class="border-b border-gray-200 pb-6">
+                            <div class="flex items-center mb-2">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 mr-3"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">John Smith</h4>
+                                    <div class="flex items-center">
+                                        <div class="flex">
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                        </div>
+                                        <span class="ml-2 text-xs text-gray-500">2 weeks ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600">
+                                Excellent service and beautiful rooms. The location is perfect for exploring the city. Would definitely stay here again!
+                            </p>
+                        </div>
+                        
+                        <!-- Review 2 -->
+                        <div class="border-b border-gray-200 pb-6">
+                            <div class="flex items-center mb-2">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 mr-3"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Sarah Johnson</h4>
+                                    <div class="flex items-center">
+                                        <div class="flex">
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
+                                            <i class="ri-star-half-fill text-yellow-500 text-sm"></i>
+                                        </div>
+                                        <span class="ml-2 text-xs text-gray-500">1 month ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600">
+                                Wonderful experience overall. The spa was particularly amazing. Only minor complaint was the slow WiFi in our room.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- View All Reviews -->
+                    <div class="mt-6 text-center">
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">View all 120 reviews</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="border-t border-gray-200 p-4 bg-gray-50 flex justify-end space-x-3">
+                <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100">
+                    <i class="ri-edit-line mr-1"></i> Edit
+                </button>
+                <button class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                    <i class="ri-delete-bin-line mr-1"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

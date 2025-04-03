@@ -1,0 +1,254 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity{% endblock %}
+
+{% block body %}
+
+  <div class="mx-auto max-w-7xl py-6">
+        <!-- Header -->
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Maldives Diving</h1>
+                <div class="flex items-center mt-1">
+                    <a href="{{path('app_activity')}}" class="text-blue-600 hover:underline flex items-center">
+                        <i class="ri-arrow-left-line mr-1"></i>
+                        Back to Activities
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
+                    <i class="ri-edit-line mr-1"></i>
+                    Edit Activity
+                </button>
+                <button class="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center">
+                    <i class="ri-delete-bin-line mr-1"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+        
+        <!-- Activity Details -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="md:flex">
+                <div class="md:w-1/2">
+                    <img src="https://via.placeholder.com/600x400?text=Maldives+Diving" alt="Maldives Diving" class="w-full h-full object-cover">
+                </div>
+                <div class="md:w-1/2 p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                            LEISURE
+                        </span>
+                        <div class="ml-3 flex items-center text-yellow-400">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-half-fill"></i>
+                            <span class="ml-1 text-gray-600 text-sm">(4.5)</span>
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Maldives Diving</h2>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center">
+                            <i class="ri-information-line text-blue-600 w-6"></i>
+                            <span class="text-gray-700">Scuba Diving</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-map-pin-line text-blue-600 w-6"></i>
+                            <span class="text-gray-700">Maldives</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-line text-blue-600 w-6"></i>
+                            <span class="text-gray-700">Start Date: 01/03/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-calendar-check-line text-blue-600 w-6"></i>
+                            <span class="text-gray-700">End Date: 01/03/2025</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-money-dollar-circle-line text-blue-600 w-6"></i>
+                            <span class="text-gray-700">Price: $601</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-sm text-gray-500 mb-1">Hotel</div>
+                            <div class="flex items-center">
+                                <i class="ri-hotel-line text-blue-600 mr-2"></i>
+                                <span class="font-medium">Burj Al Arab</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-sm text-gray-500 mb-1">Car</div>
+                            <div class="flex items-center">
+                                <i class="ri-car-line text-blue-600 mr-2"></i>
+                                <span class="font-medium">Mercedes</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-sm text-gray-500 mb-1">Flight</div>
+                            <div class="flex items-center">
+                                <i class="ri-plane-line text-blue-600 mr-2"></i>
+                                <span class="font-medium">F1</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-sm text-gray-500 mb-1">Status</div>
+                            <div class="flex items-center">
+                                <i class="ri-checkbox-circle-line text-green-600 mr-2"></i>
+                                <span class="font-medium">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 bg-green-600 text-white rounded-lg flex-1">
+                            accept
+                        </button>
+                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg flex-1">
+                            cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold mb-4">Description</h3>
+                <p class="text-gray-700">
+                    Experience the breathtaking underwater world of the Maldives with our premium diving package. Perfect for both beginners and experienced divers, this activity offers an unforgettable adventure exploring vibrant coral reefs and encountering exotic marine life. Our professional instructors ensure a safe and enjoyable experience for all participants.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Reviews Section -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold">Reviews</h3>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
+                        <i class="ri-add-line mr-1"></i>
+                        Add Review
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Reviews List -->
+            <div class="divide-y divide-gray-200">
+                <!-- Review 1 -->
+                <div class="p-6">
+                    <div class="flex items-start">
+                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
+                            JD
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="font-medium text-gray-900">John Doe</h4>
+                                <span class="text-sm text-gray-500">2 days ago</span>
+                            </div>
+                            <div class="flex items-center mb-2 text-yellow-400">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <span class="ml-1 text-gray-600 text-sm">(5.0)</span>
+                            </div>
+                            <p class="text-gray-700">
+                                Amazing experience! The diving instructors were professional and friendly. The underwater scenery was breathtaking with so many colorful fish and coral reefs. Highly recommend this activity to anyone visiting the Maldives.
+                            </p>
+                            <div class="flex mt-3 space-x-2">
+                                <button class="text-blue-600 text-sm hover:underline">Reply</button>
+                                <button class="text-red-600 text-sm hover:underline">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Review 2 -->
+                <div class="p-6">
+                    <div class="flex items-start">
+                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4">
+                            SJ
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="font-medium text-gray-900">Sarah Johnson</h4>
+                                <span class="text-sm text-gray-500">1 week ago</span>
+                            </div>
+                            <div class="flex items-center mb-2 text-yellow-400">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-line"></i>
+                                <span class="ml-1 text-gray-600 text-sm">(4.0)</span>
+                            </div>
+                            <p class="text-gray-700">
+                                Great diving experience overall. The equipment was top-notch and the guides were knowledgeable. The only downside was that the day was a bit cloudy which affected visibility. Would definitely try again on a clearer day.
+                            </p>
+                            <div class="flex mt-3 space-x-2">
+                                <button class="text-blue-600 text-sm hover:underline">Reply</button>
+                                <button class="text-red-600 text-sm hover:underline">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Review 3 -->
+                <div class="p-6">
+                    <div class="flex items-start">
+                        <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
+                            MP
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="font-medium text-gray-900">Michael Parker</h4>
+                                <span class="text-sm text-gray-500">2 weeks ago</span>
+                            </div>
+                            <div class="flex items-center mb-2 text-yellow-400">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-half-fill"></i>
+                                <span class="ml-1 text-gray-600 text-sm">(4.5)</span>
+                            </div>
+                            <p class="text-gray-700">
+                                Excellent diving experience! The water was crystal clear and we saw so many different species of fish. The instructor was very patient with beginners in our group. The hotel accommodation was also fantastic. Would book again!
+                            </p>
+                            <div class="flex mt-3 space-x-2">
+                                <button class="text-blue-600 text-sm hover:underline">Reply</button>
+                                <button class="text-red-600 text-sm hover:underline">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="p-4 border-t border-gray-200 flex items-center justify-center">
+                <div class="flex items-center space-x-2">
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
+                        <i class="ri-arrow-left-s-line"></i>
+                    </button>
+                    
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">2</button>
+                    
+                    <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
