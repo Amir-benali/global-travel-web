@@ -1,0 +1,50 @@
+<aside class="w-64 h-full flex flex-col ">
+        <div class="p-6 flex justify-center">
+            <img src="{{asset('images/logo.jpg')}}" alt="global travel Logo" class="h-36 w-36">
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-1">
+            <!-- Dashboard -->
+            <a href="#" onclick="navigate('dashboard.html')" class="flex items-center px-4 py-3 text-blue-600 bg-blue-50 rounded-lg">
+                <i class="ri-dashboard-line mr-3 text-lg"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <!-- Activities -->
+            <a href="#" onclick="navigate('activities.html')" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <i class="ri-line-chart-line mr-3 text-lg"></i>
+                <span>Activities</span>
+            </a>
+            
+            <!-- Users -->
+            <a href="#" onclick="navigate('users.html')" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <i class="ri-user-line mr-3 text-lg"></i>
+                <span>Users</span>
+            </a>
+            
+            <!-- Trips -->
+            <a href="#" onclick="navigate('trips.html')" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <i class="ri-suitcase-line mr-3 text-lg"></i>
+                <span>Trips</span>
+            </a>
+            
+            <!-- Flights -->
+            <a href="#" onclick="navigate('flights.html')" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <i class="ri-plane-line mr-3 text-lg"></i>
+                <span>Flights</span>
+            </a>
+            
+            <!-- Car Rentals -->
+            <a href="#" onclick="navigate('cars.html')" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <i class="ri-car-line mr-3 text-lg"></i>
+                <span>Car Rentals</span>
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t border-gray-200">
+            <button onclick="navigate('logout.html')" class="flex items-center text-gray-600 hover:text-blue-600 w-full px-4 py-2 rounded-lg transition-colors">
+                <i class="ri-logout-box-line mr-3 text-lg"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>

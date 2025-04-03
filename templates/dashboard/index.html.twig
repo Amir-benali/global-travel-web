@@ -1,0 +1,377 @@
+{# templates/users/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="mx-auto max-w-7xl">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <!-- Users Stat -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Users</p>
+                        <h3 class="text-2xl font-bold">1,482</h3>
+                        <p class="text-xs text-green-500 mt-2 flex items-center">
+                            <i class="ri-arrow-up-line mr-1"></i>
+                            <span>12% from last month</span>
+                        </p>
+                    </div>
+                    <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <i class="ri-user-line text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Trips Stat -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Trips</p>
+                        <h3 class="text-2xl font-bold">845</h3>
+                        <p class="text-xs text-green-500 mt-2 flex items-center">
+                            <i class="ri-arrow-up-line mr-1"></i>
+                            <span>8% from last month</span>
+                        </p>
+                    </div>
+                    <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                        <i class="ri-suitcase-line text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Flights Stat -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Flights</p>
+                        <h3 class="text-2xl font-bold">1,257</h3>
+                        <p class="text-xs text-red-500 mt-2 flex items-center">
+                            <i class="ri-arrow-down-line mr-1"></i>
+                            <span>3% from last month</span>
+                        </p>
+                    </div>
+                    <div class="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
+                        <i class="ri-plane-line text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cars Stat -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Car Rentals</p>
+                        <h3 class="text-2xl font-bold">632</h3>
+                        <p class="text-xs text-green-500 mt-2 flex items-center">
+                            <i class="ri-arrow-up-line mr-1"></i>
+                            <span>15% from last month</span>
+                        </p>
+                    </div>
+                    <div class="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
+                        <i class="ri-car-line text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts - First Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Line Chart -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Monthly Bookings</h3>
+                <canvas id="lineChart" height="250"></canvas>
+            </div>
+            
+            <!-- Bar Chart -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Revenue by Service</h3>
+                <canvas id="barChart" height="250"></canvas>
+            </div>
+        </div>
+        
+        <!-- Charts - Second Row (Pie Charts) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Pie Chart 1 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Booking Distribution by Type</h3>
+                <canvas id="pieChart1" height="250"></canvas>
+            </div>
+            
+            <!-- Pie Chart 2 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Customer Demographics</h3>
+                <canvas id="pieChart2" height="250"></canvas>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Recent Activity</h3>
+                <a href="#" class="text-sm text-blue-600 hover:underline">View All</a>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Activity Item 1 -->
+                <div class="flex items-start">
+                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                        <i class="ri-user-add-line"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">New user registered</p>
+                        <p class="text-xs text-gray-500">John Doe created a new account</p>
+                        <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
+                    </div>
+                </div>
+                
+                <!-- Activity Item 2 -->
+                <div class="flex items-start">
+                    <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
+                        <i class="ri-flight-takeoff-line"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">New flight booked</p>
+                        <p class="text-xs text-gray-500">Sarah Smith booked a flight to Paris</p>
+                        <p class="text-xs text-gray-400 mt-1">5 hours ago</p>
+                    </div>
+                </div>
+                
+                <!-- Activity Item 3 -->
+                <div class="flex items-start">
+                    <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mr-3">
+                        <i class="ri-car-line"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">Car rental confirmed</p>
+                        <p class="text-xs text-gray-500">Michael Johnson rented a Mercedes S Class</p>
+                        <p class="text-xs text-gray-400 mt-1">8 hours ago</p>
+                    </div>
+                </div>
+                
+                <!-- Activity Item 4 -->
+                <div class="flex items-start">
+                    <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+                        <i class="ri-suitcase-line"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">Trip package updated</p>
+                        <p class="text-xs text-gray-500">Admin updated the Paris weekend package</p>
+                        <p class="text-xs text-gray-400 mt-1">Yesterday</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Line Chart - Updated with smoother curves and better colors
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                datasets: [{
+                    label: 'Flights',
+                    data: [65, 59, 80, 81, 56, 55, 70, 75, 80],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Hotels',
+                    data: [28, 48, 40, 19, 86, 27, 45, 60, 65],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Car Rentals',
+                    data: [35, 25, 30, 45, 40, 50, 55, 45, 60],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Bar Chart - Updated with better colors and animations
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        const barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Flights', 'Hotels', 'Car Rentals', 'Packages', 'Activities'],
+                datasets: [{
+                    label: 'Revenue (thousands $)',
+                    data: [120, 90, 70, 85, 50],
+                    backgroundColor: [
+                        'rgba(79, 70, 229, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(236, 72, 153, 0.8)'
+                    ],
+                    borderRadius: 6,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `$${context.raw}k`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value + 'k';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+
+        // Pie Chart 1 - Booking Distribution by Type
+        const pieCtx1 = document.getElementById('pieChart1').getContext('2d');
+        const pieChart1 = new Chart(pieCtx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Leisure', 'Business', 'Family', 'Honeymoon', 'Group'],
+                datasets: [{
+                    data: [35, 25, 20, 10, 10],
+                    backgroundColor: [
+                        'rgba(79, 70, 229, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(236, 72, 153, 0.8)'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 15,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                },
+                cutout: '60%',
+                animation: {
+                    animateRotate: true,
+                    animateScale: true
+                }
+            }
+        });
+
+        // Pie Chart 2 - Customer Demographics
+        const pieCtx2 = document.getElementById('pieChart2').getContext('2d');
+        const pieChart2 = new Chart(pieCtx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['18-24', '25-34', '35-44', '45-54', '55+'],
+                datasets: [{
+                    data: [15, 30, 25, 20, 10],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(249, 115, 22, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(236, 72, 153, 0.8)'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 15,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                },
+                cutout: '60%',
+                animation: {
+                    animateRotate: true,
+                    animateScale: true
+                }
+            }
+        });
+    </script>
+</body>
+</div>
+{% endblock %}
