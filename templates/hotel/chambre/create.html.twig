@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Chambre{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <h1 class="text-xl font-bold text-gray-800">Create New Chambre</h1>
+                <a href="{{ path('app_chambre') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
+                    <i class="ri-arrow-left-line mr-1"></i>
+                    Back to Chambres
+                </a>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white rounded-lg shadow p-6">
+            {{ form_start(form) }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Type -->
+                    <div>
+                        <label for="typeChambreH" class="block text-sm font-medium text-gray-700">Type</label>
+                        {{ form_widget(form.typeChambreH, { 'attr': { 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm' } }) }}
+                        {{ form_errors(form.typeChambreH) }}
+                    </div>
+
+                    <!-- Price -->
+                    <div>
+                        <label for="prixNuitH" class="block text-sm font-medium text-gray-700">Price per Night</label>
+                        {{ form_widget(form.prixNuitH, { 'attr': { 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm' } }) }}
+                        {{ form_errors(form.prixNuitH) }}
+                    </div>
+
+                    <!-- Options -->
+                    <div>
+                        <label for="optionH" class="block text-sm font-medium text-gray-700">Options</label>
+                        {{ form_widget(form.optionH, { 'attr': { 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm' } }) }}
+                        {{ form_errors(form.optionH) }}
+                    </div>
+
+                    <!-- Hotel -->
+                    <div>
+                        <label for="hotel" class="block text-sm font-medium text-gray-700">Hotel</label>
+                        {{ form_widget(form.hotel, { 'attr': { 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm' } }) }}
+                        {{ form_errors(form.hotel) }}
+                    </div>
+
+                    <!-- Availability Date (dispo_h) -->
+                    <div>
+                        <label for="dispo_h" class="block text-sm font-medium text-gray-700">Availability Date</label>
+                        {{ form_widget(form.dispoH, { 'attr': { 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm' } }) }}
+                        {{ form_errors(form.dispoH) }}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-6">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
+                        Save Chambre
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
