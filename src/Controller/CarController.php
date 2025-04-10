@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\CarDriver;
+use App\Entity\CarOffer;
 use App\Entity\PrivateCar;
 use App\Form\CarFormType;
 use App\Form\DataTransformer\StringToFileTransformer;
+use App\Form\DriverFormType;
+use App\Form\OfferFormType;
 use App\Repository\CarDriverRepository;
 use App\Repository\CarOfferRepository;
 use App\Repository\PrivateCarRepository;
@@ -143,6 +147,54 @@ final class CarController extends AbstractController
             'drivers' => $drivers->findAll(),
         ]);
     }
+    #[Route('/car/driver/create', name: 'app_car_driver_create')]
+    public function createDriverPage(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $driver = new CarDriver();
+        $form = $this->createForm(DriverFormType::class, $driver);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Persist the driver
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($driver);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_car_driver');
+        }
+
+        return $this->render('car/driver/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    #[Route('/car/driver/edit/{id}', name: 'app_car_driver_update')]
+    public function editDriverPage(ManagerRegistry $doctrine, Request $request, CarDriver $driver): Response
+    {
+        $form = $this->createForm(DriverFormType::class, $driver);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Update the driver
+            $entityManager = $doctrine->getManager();
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_car_driver');
+        }
+
+        return $this->render('car/driver/update.html.twig', [
+            'form' => $form->createView(),
+            'driver' => $driver,
+        ]);
+    }
+    #[Route('/car/driver/delete/{id}', name: 'app_car_driver_delete')]
+    public function deleteDriverPage(ManagerRegistry $doctrine, CarDriver $driver): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($driver);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_car_driver');
+    }
 
     #[Route('/car/offer', name: 'app_car_offer')]
     public function offerPage(CarOfferRepository $offers): Response
@@ -151,5 +203,61 @@ final class CarController extends AbstractController
             'offers' => $offers->findAll(),
         ]);
     }
+    #[Route('/car/offer/create', name: 'app_car_offer_create')]
+    public function createOfferPage(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $offer = new CarOffer();
+        $form = $this->createForm(OfferFormType::class, $offer);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Persist the offer
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($offer);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_car_offer');
+        }
+
+        return $this->render('car/offer/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    #[Route('/car/offer/edit/{id}', name: 'app_car_offer_update')]
+    public function editOfferPage(ManagerRegistry $doctrine, Request $request, CarOffer $offer): Response
+    {
+        $form = $this->createForm(OfferFormType::class, $offer);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Update the offer
+            $entityManager = $doctrine->getManager();
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_car_offer');
+        }
+
+        return $this->render('car/offer/update.html.twig', [
+            'form' => $form->createView(),
+            'offer' => $offer,
+        ]);
+    }
+    #[Route('/car/offer/delete/{id}', name: 'app_car_offer_delete')]
+    public function deleteOfferPage(ManagerRegistry $doctrine, CarOffer $offer): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($offer);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_car_offer');
+    }
+    #[Route('/car/offer/details/{id}', name: 'app_car_offer_details')]
+    public function offerDetailPage(CarOffer $offer): Response
+    {
+        return $this->render('car/offer/details.html.twig', [
+            'offer' => $offer,
+        ]);
+    }
+
 
 }
