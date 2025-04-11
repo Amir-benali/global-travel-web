@@ -2,29 +2,83 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Form\AuthType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-final class AuthController extends AbstractController
+class AuthController extends AbstractController
 {
-    #[Route('/auth', name: 'app_auth')]
-    public function index(): Response
-    {
-        return $this->render('auth/index.html.twig', [
-        ]);
-    }
-    #[Route('/signin', name: 'app_signin')]
-    public function signinPage(): Response
-    {
-        return $this->render('auth/signin.html.twig', [
-        ]);
-    }
     #[Route('/signup', name: 'app_signup')]
-    public function signupPage(): Response
+    public function signup(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $user = new User();
+        $form = $this->createForm(AuthType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword(
+                $passwordHasher->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            )
+            ->setRoles(['EMPLOYEE'])
+            ->setStatut('actif');
+
+            // Image upload
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                $newFilename = uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move(
+                    $this->getParameter('kernel.project_dir').'/public/uploads/users',
+                    $newFilename
+                );
+                $user->setImage($newFilename);
+            }
+
+            $em->persist($user);
+            $em->flush();
+
+            $this->addFlash('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.');
+            return $this->redirectToRoute('app_signin');
+        }
+
         return $this->render('auth/signup.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
-    
+
+    #[Route('/signin', name: 'app_signin')]
+    public function signin(AuthenticationUtils $authenticationUtils): Response
+    {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        return $this->render('auth/signin.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+        ]);
+    }
+
+    #[Route('/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+        // The logout functionality is handled by Symfony's security system.
+        // No additional code is needed here.
+        throw new \LogicException('This method is intercepted by the logout key on your firewall.');
+    }
 }
