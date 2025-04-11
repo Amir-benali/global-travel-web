@@ -32,7 +32,7 @@ class AuthController extends AbstractController
                     $form->get('password')->getData()
                 )
             )
-            ->setRoles(['EMPLOYEE'])
+            ->setRoles(['ROLE_EMPLOYEE'])
             ->setStatut('actif');
 
             // Image upload
@@ -75,10 +75,13 @@ class AuthController extends AbstractController
     }
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(): void
+    public function logout(Request $request): Response
     {
-        // The logout functionality is handled by Symfony's security system.
-        // No additional code is needed here.
+        $request->getSession()->invalidate();
+        $response = new Response();
+        $response->headers->clearCookie('PHPSESSID');
+        $response->send();
+        return $this->redirectToRoute('app_signin');
         throw new \LogicException('This method is intercepted by the logout key on your firewall.');
     }
 }

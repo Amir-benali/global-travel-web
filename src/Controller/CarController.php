@@ -110,7 +110,7 @@ final class CarController extends AbstractController
                     $car->setImage($imageUrl);
                 } catch (\Exception $e) {
                     $this->addFlash('error', 'Image upload failed: '.$e->getMessage());
-                    return $this->redirectToRoute('app_car_edit', ['id' => $car->getId()]);
+                    return $this->redirectToRoute('app_car_update', ['id' => $car->getId()]);
                 }
             } else {
                 // If no new file was uploaded, keep the existing image
