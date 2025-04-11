@@ -5,11 +5,13 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: "user")]
 #[ORM\UniqueConstraint(name: "email", columns: ["email"])]
-class User
+class User implements UserInterface,PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
@@ -28,8 +30,9 @@ class User
     #[ORM\Column(name: "email", type: "string", length: 255)]
     private string $email;
 
-    #[ORM\Column(name: "roles", type: "string", length: 50, nullable: true)]
-    private ?string $roles = null;
+    #[ORM\Column(type: 'string')]
+    private string $roles = 'EMPLOYEE'; // valeur par défaut (facultatif)
+    
 
     #[ORM\Column(name: "password", type: "string", length: 255)]
     private string $password;
@@ -64,6 +67,32 @@ class User
     #[ORM\Column(name: "reset_token_expiry", type: "datetime", nullable: true)]
     private ?\DateTime $resetTokenExpiry = null;
 
+    public function __construct()
+    {
+        $this->statut = 'actif';
+        $this->roles = 'EMPLOYEE';
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Si vous stockez des données temporaires sensibles, effacez-les ici
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->getUserIdentifier();
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,7 +106,6 @@ class User
     public function setGenre(?string $genre): static
     {
         $this->genre = $genre;
-
         return $this;
     }
 
@@ -89,7 +117,6 @@ class User
     public function setDateNaissance(?\DateTimeInterface $dateNaissance): static
     {
         $this->dateNaissance = $dateNaissance;
-
         return $this;
     }
 
@@ -101,7 +128,6 @@ class User
     public function setAdresse(?string $adresse): static
     {
         $this->adresse = $adresse;
-
         return $this;
     }
 
@@ -113,31 +139,39 @@ class User
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    public function getRoles(): ?string
+    public function getRoles(): array
     {
-        return $this->roles;
+        // Convertit la chaîne en tableau
+        $roles = [];
+    
+        if ($this->roles) {
+            $roles = explode(',', $this->roles); // Exemple: "EMPLOYEE,ADMIN"
+        }
+    
+        // Symfony exige au moins un rôle
+        $roles[] = 'ROLE_USER';
+    
+        return array_unique($roles);
     }
-
-    public function setRoles(?string $roles): static
+    
+    
+    public function setRoles(string|array $roles): static
     {
-        $this->roles = $roles;
-
+        if (is_array($roles)) {
+            $this->roles = implode(',', $roles);
+        } else {
+            $this->roles = $roles;
+        }
+    
         return $this;
     }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
+    
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
@@ -149,7 +183,6 @@ class User
     public function setFirstname(string $firstname): static
     {
         $this->firstname = $firstname;
-
         return $this;
     }
 
@@ -161,7 +194,6 @@ class User
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
-
         return $this;
     }
 
@@ -173,7 +205,6 @@ class User
     public function setPhoneNumber(?string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
-
         return $this;
     }
 
@@ -185,7 +216,6 @@ class User
     public function setImage(?string $image): static
     {
         $this->image = $image;
-
         return $this;
     }
 
@@ -197,7 +227,6 @@ class User
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
-
         return $this;
     }
 
@@ -209,7 +238,6 @@ class User
     public function setPrivileges(?string $privileges): static
     {
         $this->privileges = $privileges;
-
         return $this;
     }
 
@@ -221,7 +249,6 @@ class User
     public function setPoste(?string $poste): static
     {
         $this->poste = $poste;
-
         return $this;
     }
 
@@ -233,7 +260,6 @@ class User
     public function setDepartement(?string $departement): static
     {
         $this->departement = $departement;
-
         return $this;
     }
 
@@ -245,7 +271,6 @@ class User
     public function setResetToken(?string $resetToken): static
     {
         $this->resetToken = $resetToken;
-
         return $this;
     }
 
@@ -257,7 +282,6 @@ class User
     public function setResetTokenExpiry(?\DateTimeInterface $resetTokenExpiry): static
     {
         $this->resetTokenExpiry = $resetTokenExpiry;
-
         return $this;
     }
 }
