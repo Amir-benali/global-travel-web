@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class DashboardController extends AbstractController
 {
+
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(ActivityRepository $activityRepository): Response
     {
@@ -91,5 +92,9 @@ final class DashboardController extends AbstractController
             'status_data' => json_encode(array_values($statusData)),
             'recent_activities' => $recentActivities,
         ]);
+
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        
+        return $this->render('dashboard/index.html.twig');
     }
 }

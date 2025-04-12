@@ -178,91 +178,103 @@
             Enter your information to create an account
           </p>
         </div>
-        <form class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                placeholder="John"
-                required
-                class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-              />
-            </div>
-            <div class="space-y-2">
-              <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                placeholder="Doe"
-                required
-                class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-              />
-            </div>
+        {{ form_start(form, { method: 'POST', attr: { novalidate: 'novalidate', class: 'space-y-4' } }) }}
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            {{ form_label(form.firstname, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+            {{ form_widget(form.firstname, { 'attr': {
+              'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+              'placeholder': 'John'
+            } }) }}
+            {{ form_errors(form.firstname) }}
           </div>
           <div class="space-y-2">
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="john.doe@example.com"
-              required
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-            />
+            {{ form_label(form.lastname, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+            {{ form_widget(form.lastname, { 'attr': {
+              'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+              'placeholder': 'Doe'
+            } }) }}
+            {{ form_errors(form.lastname) }}
           </div>
-          <div class="space-y-2">
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Create a password"
-              required
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-            />
-            <p class="text-xs text-gray-500 dark:text-gray-400">Password must be at least 8 characters long</p>
-          </div>
-          <div class="space-y-2">
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              required
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-            />
-          </div>
-          <div class="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="terms"
-              name="terms"
-              required
-              class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-primary-500"
-            />
-            <label for="terms" class="text-xs text-gray-500 dark:text-gray-400">
-              I agree to the
-              <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
-                Terms of Service
-              </a>
-              and
-              <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
-                Privacy Policy
-              </a>
-            </label>
-          </div>
-          <button
-            type="submit"
-            class="w-full rounded-md bg-primary-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-700 dark:hover:bg-primary-800"
-          >
-            Create Account
-          </button>
-        </form>
+        </div>
+
+        <div class="space-y-2">
+          {{ form_label(form.email, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+          {{ form_widget(form.email, { 'attr': {
+            'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+            'placeholder': 'john.doe@example.com'
+          } }) }}
+          {{ form_errors(form.email) }}
+        </div>
+
+        <div class="space-y-2">
+          {{ form_label(form.password.first, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+          {{ form_widget(form.password.first, { 'attr': {
+            'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+            'placeholder': 'Create a password'
+          } }) }}
+          <p class="text-xs text-gray-500 dark:text-gray-400">Password must be at least 8 characters long</p>
+          {{ form_errors(form.password.first) }}
+        </div>
+
+        <div class="space-y-2">
+          {{ form_label(form.password.second, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+          {{ form_widget(form.password.second, { 'attr': {
+            'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+            'placeholder': 'Confirm your password'
+          } }) }}
+          {{ form_errors(form.password.second) }}
+        </div>
+
+        <div class="space-y-2">
+          {{ form_label(form.genre, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+          {{ form_widget(form.genre, { 'attr': {
+            'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500'
+          } }) }}
+          {{ form_errors(form.genre) }}
+        </div>
+
+        <div class="space-y-2">
+          {{ form_label(form.phoneNumber, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+          {{ form_widget(form.phoneNumber, { 'attr': {
+            'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+            'placeholder': 'Phone number'
+          } }) }}
+          {{ form_errors(form.phoneNumber) }}
+        </div>
+
+        <div class="space-y-2">
+          {{ form_label(form.dateNaissance, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+          {{ form_widget(form.dateNaissance, { 'attr': {
+            'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500'
+          } }) }}
+          {{ form_errors(form.dateNaissance) }}
+        </div>
+
+        <div class="flex items-center space-x-2">
+          {{ form_widget(form.agreeTerms, { 'attr': {
+            'class': 'h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-primary-500'
+          } }) }}
+          <label for="{{ form.agreeTerms.vars.id }}" class="text-xs text-gray-500 dark:text-gray-400">
+            I agree to the
+            <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
+              Terms of Service
+            </a>
+            and
+            <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
+              Privacy Policy
+            </a>
+          </label>
+          {{ form_errors(form.agreeTerms) }}
+        </div>
+
+        <button
+          type="submit"
+          class="w-full rounded-md bg-primary-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-700 dark:hover:bg-primary-800"
+        >
+          Create Account
+        </button>
+      {{ form_end(form) }}
         <div class="relative">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>

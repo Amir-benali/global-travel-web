@@ -1,243 +1,174 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}user{% endblock %}
+{% block title %}Users Management{% endblock %}
 
 {% block body %}
-<div class="mx-auto max-w-7xl">
-        <div class="bg-white rounded-lg shadow">
-            <!-- Table toolbar -->
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                <div class="flex items-center">
-                    <span class="text-sm text-gray-700 mr-2"> selected</span>
-                    <button class="flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm">
-                        <i class="ri-delete-bin-line mr-1"></i>
-                        Delete
-                    </button>
-                </div>
-                
-                <div class="flex items-center space-x-3">
-                    <div class="relative">
-                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input 
-                            type="text" 
-                            placeholder="Search users..." 
-                            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
-                        />
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="w-12 px-4 py-3">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                                <div class="flex items-center">
-                                    User Name
-                                    <i class="ri-arrow-down-s-line ml-1"></i>
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                                <div class="flex items-center">
-                                    Email Address
-                                    <i class="ri-arrow-down-s-line ml-1"></i>
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                                <div class="flex items-center">
-                                    Phone Number
-                                    <i class="ri-arrow-down-s-line ml-1"></i>
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                                <div class="flex items-center">
-                                    Role
-                                    <i class="ri-arrow-down-s-line ml-1"></i>
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                                <div class="flex items-center">
-                                    Actions
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody class="divide-y divide-gray-200 bg-white">
-                        <!-- User Row 1 -->
-                        <tr class="selected">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                                        A
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Admin1</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">admin1@example.com</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">Admin</td>
-                            <td class="px-4 py-3 text-sm">
-                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
-                                    <i class="ri-more-2-fill"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        
-                        <!-- User Row 2 -->
-                        <tr class="selected">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                                        A
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Admin2</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">admin2@example.com</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">Admin</td>
-                            <td class="px-4 py-3 text-sm">
-                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
-                                    <i class="ri-more-2-fill"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        
-                        <!-- User Row 3 -->
-                        <tr class="selected">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                                        M
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Manager</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">manager@example.com</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">Manager</td>
-                            <td class="px-4 py-3 text-sm">
-                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
-                                    <i class="ri-more-2-fill"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        
-                        <!-- User Row 4 -->
-                        <tr class="selected">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                                        M
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Manager1</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">manager1@example.com</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">Manager</td>
-                            <td class="px-4 py-3 text-sm">
-                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
-                                    <i class="ri-more-2-fill"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        
-                        <!-- User Row 5 -->
-                        <tr class="selected">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                                        E
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Employee 1</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">employee1@example.com</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">Employee</td>
-                            <td class="px-4 py-3 text-sm">
-                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
-                                    <i class="ri-more-2-fill"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        
-                        <!-- User Row 6 -->
-                        <tr>
-                            <td class="px-4 py-3">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mr-3">
-                                        E
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Employee</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">employee2@example.com</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">+216.20200200</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">Employee</td>
-                            <td class="px-4 py-3 text-sm">
-                                                                <a href="{{path('app_user_update',{id:1})}}" class="text-gray-400 hover:text-gray-500">
-                                    <i class="ri-more-2-fill"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Pagination -->
-            <div class="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-700">
-                        Showing <span class="font-medium">1</span> to <span class="font-medium">6</span> of <span class="font-medium">15</span> results
-                    </p>
-                </div>
-                
-                <div class="flex items-center space-x-2">
-                    <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-500 flex items-center opacity-50" disabled>
-                        <i class="ri-arrow-left-s-line mr-1"></i>
-                        Previous
-                    </button>
-                    
-                    <div class="flex items-center">
-                        <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
-                        <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm ml-1">2</button>
-                        <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm ml-1">3</button>
-                    </div>
-                    
-                    <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-500 flex items-center">
-                        Next
-                        <i class="ri-arrow-right-s-line ml-1"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
 
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow">
+        <!-- Table toolbar -->
+        <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-center">
+                <button id="delete-selected" class="flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm text-red-600 hover:bg-red-50 hidden">
+                    <i class="ri-delete-bin-line mr-1"></i>
+                    Delete Selected
+                </button>
+            </div>
+            
+            <form method="get" action="{{ path('app_user') }}" class="w-full sm:w-auto">
+                <div class="relative">
+                    <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input 
+                        type="text" 
+                        name="search"
+                        placeholder="Search users..." 
+                        value="{{ app.request.query.get('search') }}"
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-64"
+                    />
+                    {% if app.request.query.get('search') %}
+                        <a href="{{ path('app_user_index') }}" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <i class="ri-close-line"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+        
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="w-12 px-4 py-3">
+                            <input type="checkbox" id="select-all" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                            <div class="flex items-center">
+                                User Name
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                            <div class="flex items-center">
+                                Email Address
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                            <div class="flex items-center">
+                                Phone Number
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                            <div class="flex items-center">
+                                Role
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                            <div class="flex items-center">
+                                Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for user in users %}
+                    <tr class="user-row hover:bg-gray-50" data-user-id="{{ user.id }}">
+                        <td class="px-4 py-3">
+                            <input type="checkbox" class="user-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center">
+                                <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                                    {{ user.firstname|first|upper }}{{ user.lastname|first|upper }}
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">
+                                    {{ user.firstname }} {{ user.lastname }}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-500">{{ user.email }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-500">{{ user.phoneNumber ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-500">
+                            {% if 'ADMIN' in user.roles %}
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Admin</span>
+                            {% elseif 'RESPONSABLE' in user.roles  %}
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Responsable</span>
+                            {% else %}
+                                <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">Employee</span>
+                            {% endif %}</td>
+                        <td class="px-4 py-3 text-sm">
+                            <div class="flex items-center space-x-3">
+                                <a href="{{ path('app_user_update', { id: user.id }) }}" 
+                                   class="text-blue-400 hover:text-blue-600"
+                                   title="Edit">
+                                    <i class="ri-pencil-line"></i>
+                                </a>
+                                <form method="post" action="{{ path('app_user_delete', { id: user.id }) }}" 
+                                      onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                    <button type="submit" class="text-red-400 hover:text-red-600" title="Delete">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                            <i class="ri-user-search-line text-3xl mb-2 text-gray-300"></i>
+                            <p>No users found</p>
+                            {% if app.request.query.get('search') %}
+                                <a href="{{ path('app_user') }}" class="text-blue-500 hover:underline mt-2 inline-block">
+                                    Clear search
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+      
+</div>
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de la sélection multiple
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.user-checkbox');
+    const deleteBtn = document.getElementById('delete-selected');
+    
+    selectAll.addEventListener('change', function() {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+        toggleDeleteButton();
+    });
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', toggleDeleteButton);
+    });
+    
+    function toggleDeleteButton() {
+        const checked = document.querySelectorAll('.user-checkbox:checked');
+        deleteBtn.classList.toggle('hidden', checked.length === 0);
+    }
+    
+    // Confirmation avant suppression multiple
+    deleteBtn.addEventListener('click', function() {
+        const selectedIds = Array.from(document.querySelectorAll('.user-checkbox:checked'))
+            .map(checkbox => checkbox.closest('tr').dataset.userId);
+        
+        if (confirm(`Are you sure you want to delete ${selectedIds.length} selected users?`)) {
+            // Implémentez ici la logique de suppression multiple
+            console.log('Users to delete:', selectedIds);
+        }
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}

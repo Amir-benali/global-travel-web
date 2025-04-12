@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CarDriverRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CarDriverRepository::class)]
 #[ORM\Table(name: "car_driver")]
@@ -15,12 +16,46 @@ class CarDriver
     private int $id;
 
     #[ORM\Column(name: "first_name", type: "string", length: 30)]
+    #[Assert\NotBlank(message: 'First name is required')]
+    #[Assert\Length(
+        min: 2,
+        max: 30,
+        minMessage: 'First name must be at least {{ limit }} characters long',
+        maxMessage: 'First name cannot be longer than {{ limit }} characters'
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z]+$/",
+        message: 'First name can only contain letters'
+    )]
     private string $firstName;
 
     #[ORM\Column(name: "last_name", type: "string", length: 30)]
+    #[Assert\NotBlank(message: 'Last name is required')]
+    #[Assert\Length(
+        min: 2,
+        max: 30,
+        minMessage: 'Last name must be at least {{ limit }} characters long',
+        maxMessage: 'Last name cannot be longer than {{ limit }} characters'
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z]+$/",
+        message: 'Last name can only contain letters'
+    )]
     private string $lastName;
 
     #[ORM\Column(name: "phone", type: "string", length: 15)]
+    #[Assert\NotBlank(message: 'Phone number is required')]
+    #[Assert\Length(
+        min: 10,
+        max: 15,
+        minMessage: 'Phone number must be at least {{ limit }} characters long',
+        maxMessage: 'Phone number cannot be longer than {{ limit }} characters'
+    )]
+    #[Assert\Regex(
+        pattern: "/^\+?[0-9]+$/",
+        message: 'Phone number can only contain numbers and an optional leading +'
+    )]
+
     private string $phone;
 
     public function getId(): ?int
