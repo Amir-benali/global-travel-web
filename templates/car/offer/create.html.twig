@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Offer{% endblock %}
+
+{% block body %}
+ <div class="mx-auto max-w-3xl py-8">
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-gray-800">Create New Offer</h2>
+            <a href="{{path('app_car_offer')}}" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <i class="ri-arrow-left-line mr-1"></i>
+            Back to List
+            </a>
+        </div>
+        </div>
+        {{form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false', 'data-propagation': 'false'}})}}
+        <div class="p-6">
+        <div class="grid grid-cols-1 gap-6 mb-6">
+            <!-- Description -->
+            <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            {{ form_widget(form.description, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500', 'placeholder': 'Enter description'}}) }}
+            <div class="text-red-500 text-sm mt-1">{{ form_errors(form.description) }}</div>
+            </div>
+            <!-- Date -->
+            <div>
+            <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            {{ form_widget(form.date, {'attr': {'class': 'js-datepicker w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500', 'placeholder': 'Select a date'}}) }}
+            <div class="text-red-500 text-sm mt-1">{{ form_errors(form.date) }}</div>
+            </div>
+            <!-- Price -->
+            <div>
+            <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Price</label>
+            {{ form_widget(form.price, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500', 'placeholder': 'Enter price'}}) }}
+            <div class="text-red-500 text-sm mt-1">{{ form_errors(form.price) }}</div>
+            </div>
+            <!-- Car -->
+            <div>
+            <label for="car" class="block text-sm font-medium text-gray-700 mb-1">Car</label>
+            {{ form_widget(form.car, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+            <div class="text-red-500 text-sm mt-1">{{ form_errors(form.car) }}</div>
+            </div>
+
+        </div>
+        </div>
+
+        <div class="flex justify-end space-x-4 mt-4 py-2 px-6">
+        {{ form_widget(form.reset, {'attr': {'class': 'px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400'}}) }}
+        {{ form_widget(form.submit, {'attr': {'class': 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'}}) }}
+        </div>
+        {{form_end(form)}}
+    </div>
+    </div>
+{% endblock %}

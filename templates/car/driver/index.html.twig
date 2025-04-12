@@ -13,7 +13,7 @@
                     <a href="{{path('app_car_offer')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Offer List</a>
                 </div>
                 
-                <a href="add-driver.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <a href="{{path('app_car_driver_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                     <i class="ri-add-line mr-1"></i>
                     ADD
                 </a>
@@ -22,15 +22,16 @@
         
         <!-- Driver Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for driver in drivers %}
             <!-- Driver Card 1 -->
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="p-4 bg-blue-50 border-b border-blue-100 flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                            <i class="ri-user-line text-xl"></i>
+                        <img src="{{ 'https://ui-avatars.com/api/?name=' ~ driver.getFirstname() ~ '+' ~  driver.getLastname()  ~ '&background=dbeafe&color=3b82f6' }}" alt="Driver Image" class="h-12 w-12 rounded-full object-cover">
                         </div>
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900">John Swim</h3>
+                            <h3 class="text-lg font-medium text-gray-900">{{driver.getFirstname() ~ ' ' ~ driver.getLastname()}}  </h3>
                             <span class="text-sm text-blue-600">Professional Driver</span>
                         </div>
                     </div>
@@ -41,20 +42,20 @@
                     <div class="grid grid-cols-2 gap-2 mb-4">
                         <div class="flex items-center">
                             <i class="ri-profile-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">ID: 11</span>
+                            <span class="text-sm text-gray-600">ID: {{driver.getId()}}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-phone-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">+216 55 123 456</span>
+                            <span class="text-sm text-gray-600">{{driver.getPhone()}}</span>
                         </div>
-                        <div class="flex items-center">
+                        {# <div class="flex items-center">
                             <i class="ri-mail-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">john.swim@example.com</span>
+                            <span class="text-sm text-gray-600">{{driver.getFirstname()}}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-calendar-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Joined: Jan 2022</span>
-                        </div>
+                            <span class="text-sm text-gray-600">{{driver.getLastname()}}</span>
+                        </div> #}
                         <div class="flex items-center">
                             <i class="ri-car-line text-blue-600 mr-2"></i>
                             <span class="text-sm text-gray-600">Assigned Cars: 2</span>
@@ -66,111 +67,40 @@
                     </div>
                     
                     <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">Update</button>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
+                         <a href="{{ path('app_car_driver_update', { id: driver.getId() }) }}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">Update</a>
+
+                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm text-center" 
+                               onclick="document.getElementById('delete-alert-{{ driver.getId() }}').classList.remove('hidden'); document.getElementById('delete-alert-{{ driver.getId() }}').classList.add('flex');">
+                            Delete
+                        </button>
+                        <div id="delete-alert-{{ driver.getId() }}" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+                         {% include 'components/alert.html.twig' with {
+                            'id': 'delete-car-' ~ driver.getId(),
+                            'title': 'Delete Car',
+                            'message': 'Are you sure you want to delete this driver?',
+                            'confirmUrl': path('app_car_driver_delete', { id: driver.getId() }),
+                            'type': 'warning',
+                            'buttons': [
+                                {
+                                    'class': 'bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm text-center',
+                                    'text': 'Delete',
+                                    'url': path('app_car_driver_delete', { id: driver.getId() })
+                                },
+                                {
+                                    'class': 'bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded-md text-sm text-center',
+                                    'text': 'Cancel',
+                                    'url': '#',
+                                    'onclick': "document.getElementById('delete-alert-" ~ driver.getId() ~ "').classList.add('hidden'); document.getElementById('delete-alert-" ~ driver.getId() ~ "').classList.remove('flex');"
+                                }
+                            ],
+                        } %}
+                        
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Driver Card 2 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 bg-blue-50 border-b border-blue-100 flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                            <i class="ri-user-line text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-medium text-gray-900">Mark Smith</h3>
-                            <span class="text-sm text-blue-600">Professional Driver</span>
-                        </div>
-                    </div>
-                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Active</span>
-                </div>
-                
-                <div class="p-4">
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-profile-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">ID: 15</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-phone-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">+216 55 789 012</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-mail-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">mark.smith@example.com</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Joined: Mar 2022</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-car-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Assigned Cars: 1</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-star-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Rating: 4.5/5</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">Update</button>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Driver Card 3 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 bg-blue-50 border-b border-blue-100 flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                            <i class="ri-user-line text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-medium text-gray-900">Sarah Johnson</h3>
-                            <span class="text-sm text-blue-600">Professional Driver</span>
-                        </div>
-                    </div>
-                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Active</span>
-                </div>
-                
-                <div class="p-4">
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-profile-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">ID: 22</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-phone-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">+216 55 345 678</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-mail-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">sarah.j@example.com</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Joined: Jun 2022</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-car-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Assigned Cars: 1</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-star-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Rating: 4.9/5</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">Update</button>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
-                    </div>
-                </div>
-            </div>
+          {% endfor %} 
+           
         </div>
         
         <!-- Pagination -->

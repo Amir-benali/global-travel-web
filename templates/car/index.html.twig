@@ -13,7 +13,7 @@
                     <a href="{{path('app_car_offer')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Offer List</a>
                 </div>
                 
-                <a href="add-car.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <a href="{{path('app_car_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                     <i class="ri-add-line mr-1"></i>
                     ADD
                 </a>
@@ -22,24 +22,25 @@
         
         <!-- Car Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Car Card 1 -->
+            <!-- Car Card  -->
+            {% for car in cars %}
             <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://via.placeholder.com/400x250" alt="Mercedes G Class" class="w-full h-48 object-cover">
+                <img src="{{car.getImage()}}" alt="Mercedes G Class" class="w-full h-48 object-cover">
                 <div class="p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Mercedes G Class</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2"{{car.getBrand()}}</h3>
                     
                     <div class="grid grid-cols-2 gap-2 mb-4">
                         <div class="flex items-center">
                             <i class="ri-list-check text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">ID: 27</span>
+                            <span class="text-sm text-gray-600">{{car.getId()}}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-user-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Seats: 4</span>
+                            <span class="text-sm text-gray-600">{{car.getNumPlace()}}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-steering-2-line text-orange-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">Driver: N/A</span>
+                            <span class="text-sm text-gray-600">Driver: {{ car.getIdDriver() is defined ? "1" : "N/A" }}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-profile-line text-red-500 mr-2"></i>
@@ -48,111 +49,43 @@
                     </div>
                     
                     <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">Update</button>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
+                        <a href="{{ path('app_car_update', { id: car.getId() }) }}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">Update</a>
+
+                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm text-center" 
+                               onclick="document.getElementById('delete-alert-{{ car.getId() }}').classList.remove('hidden')">
+                            Delete
+                        </button>
+                        <div id="delete-alert-{{ car.getId() }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                         {% include 'components/alert.html.twig' with {
+                            'id': 'delete-car-' ~ car.getId(),
+                            'title': 'Delete Car',
+                            'message': 'Are you sure you want to delete this car?',
+                            'confirmUrl': path('app_car_delete', { id: car.getId() }),
+                            'type': 'warning',
+                            'buttons': [
+                                {
+                                    'class': 'bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm text-center',
+                                    'text': 'Delete',
+                                    'url': path('app_car_delete', { id: car.getId() })
+                                },
+                                {
+                                    'class': 'bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded-md text-sm text-center',
+                                    'text': 'Cancel',
+                                    'url': '#',
+                                    'onclick': "document.getElementById('delete-alert-" ~ car.getId() ~ "').classList.add('hidden')"
+                                }
+                            ],
+                        } %}
+                        
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Car Card 2 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://via.placeholder.com/400x250" alt="Mercedes S Class" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Mercedes S Class</h3>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-list-check text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">ID: 31</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-user-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Seats: 4</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-steering-2-line text-orange-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">Driver: John Swim</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-profile-line text-red-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">DR ID: 11</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">Update</button>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Car Card 3 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://via.placeholder.com/400x250" alt="BMW 5 Series" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">BMW 5 Series</h3>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-list-check text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">ID: 42</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-user-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Seats: 5</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-steering-2-line text-orange-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">Driver: Mark Smith</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-profile-line text-red-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">DR ID: 15</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">Update</button>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Car Card 4 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://via.placeholder.com/400x250" alt="Audi A6" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Audi A6</h3>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-list-check text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">ID: 53</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-user-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Seats: 5</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-steering-2-line text-orange-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">Driver: N/A</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-profile-line text-red-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">DR ID: N/A</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">Update</button>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+            {% endfor %}
+      <br>
         
         <!-- Pagination -->
-        <div class="mt-6 flex items-center justify-center">
+        <div class="mt-6 flex items-center justify-center mx-auto">
             <div class="flex items-center space-x-2">
                 <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
                     <i class="ri-arrow-left-s-line"></i>
