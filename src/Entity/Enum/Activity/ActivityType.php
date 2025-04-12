@@ -8,4 +8,10 @@ enum ActivityType: string
     case WORKSHOPS = 'WORKSHOPS';
     case TEAM_BUILDING_ACTIVITIES = 'TEAM_BUILDING_ACTIVITIES';
     case LEISURE = 'LEISURE';
+
+
+    public function toString(): string
+    {
+        return $this->value;
+    }
 }

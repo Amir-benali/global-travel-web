@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Entity\Enum\Activity\ActivityType;
 use App\Repository\ActivityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
 #[ORM\Table(name: "activity")]
@@ -20,37 +22,68 @@ class Activity
     private int $id;
 
     #[ORM\Column(name: "dateDebut", type: "datetime")]
+    #[Assert\NotNull(message: "Please select a start date.")]    
     private \DateTime $datedebut;
 
     #[ORM\Column(name: "dateFin", type: "datetime")]
+    #[Assert\NotNull(message: "Please select a finish date.")]    
+    // #[Assert\DateTime]
+    #[Assert\GreaterThanOrEqual(propertyPath: "datedebut", message: "The end date must be greater than or equal to the start date.")]
     private \DateTime $datefin;
 
     #[ORM\Column(name: "description", type: "string", length: 30)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 30, maxMessage: "Description cannot exceed {{ limit }} characters.")]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z0-9\s]+$/",
+        message: "Description can only contain letters, numbers, and spaces."
+    )]
     private string $description;
 
     #[ORM\Column(name: "localisation", type: "string", length: 30)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 30, maxMessage: "Location cannot exceed {{ limit }} characters.")]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z0-9\s]+$/",
+        message: "Location can only contain letters, numbers, and spaces."
+    )]
     private string $localisation;
 
     #[ORM\Column(name: "prixTotal", type: "decimal", precision: 30, scale: 0)]
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+        pattern: "/^\d+(\.\d{1,2})?$/",
+        message: "Price must be a valid decimal number with up to two decimal places."
+    )]
     private string $prixtotal;
 
     #[ORM\Column(name: "nomActivity", type: "string", length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100, maxMessage: "Activity name cannot exceed {{ limit }} characters.")]
     private string $nomactivity;
 
-    #[ORM\Column(name: "typeActivity", type: "string", length: 0)]
-    private string $typeactivity;
+    
+    #[ORM\Column(name: "typeActivity", type: "string", enumType: ActivityType::class, length: 50)]
+    #[Assert\NotBlank]
+    private ActivityType $typeactivity;
 
-    #[ORM\Column(name: "joinHotelId", type: "integer")]
-    private int $joinhotelid;
+    #[ORM\ManyToOne(targetEntity: "Hotel")]
+    #[ORM\JoinColumn(name: "joinHotelId", referencedColumnName: "id_hotel_h")]
+    #[Assert\NotBlank]
+    private Hotel $joinhotel;
 
-    #[ORM\Column(name: "joinVoitureId", type: "integer")]
-    private int $joinvoitureid;
+    #[ORM\ManyToOne(targetEntity: "PrivateCar")]
+    #[ORM\JoinColumn(name: "joinVoitureId", referencedColumnName: "id")]
+    #[Assert\NotBlank]
+    private PrivateCar $joinvoiture;
 
-    #[ORM\Column(name: "joinVolsId", type: "integer")]
-    private int $joinvolsid;
+    #[ORM\ManyToOne(targetEntity: "Flights")]
+    #[ORM\JoinColumn(name: "joinVolsId", referencedColumnName: "id_flight", nullable: true)]
+    private ?Flights $joinvols=null;
 
-    #[ORM\Column(name: "user_id", type: "integer", nullable: true)]
-    private ?int $userId = null;
+    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: true)]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -68,6 +101,12 @@ class Activity
 
         return $this;
     }
+
+/**
+ * Get the end date of the activity.
+ *
+ * @return \DateTimeInterface|null Returns the end date if set, null otherwise.
+ */
 
     public function getDatefin(): ?\DateTimeInterface
     {
@@ -129,63 +168,68 @@ class Activity
         return $this;
     }
 
-    public function getTypeactivity(): ?string
+
+
+
+
+    public function getJoinhotel(): ?Hotel
     {
-        return $this->typeactivity;
+        return $this->joinhotel;
     }
 
-    public function setTypeactivity(string $typeactivity): static
+    public function setJoinhotel(?Hotel $joinhotel): static
     {
-        $this->typeactivity = $typeactivity;
+        $this->joinhotel = $joinhotel;
 
         return $this;
     }
 
-    public function getJoinhotelid(): ?int
+    public function getJoinvoiture(): ?PrivateCar
     {
-        return $this->joinhotelid;
+        return $this->joinvoiture;
     }
 
-    public function setJoinhotelid(int $joinhotelid): static
+    public function setJoinvoiture(?PrivateCar $joinvoiture): static
     {
-        $this->joinhotelid = $joinhotelid;
+        $this->joinvoiture = $joinvoiture;
 
         return $this;
     }
 
-    public function getJoinvoitureid(): ?int
+    public function getJoinvols(): ?Flights
     {
-        return $this->joinvoitureid;
+        return $this->joinvols;
     }
 
-    public function setJoinvoitureid(int $joinvoitureid): static
+    public function setJoinvols(?Flights $joinvols): static
     {
-        $this->joinvoitureid = $joinvoitureid;
+        $this->joinvols = $joinvols;
 
         return $this;
     }
 
-    public function getJoinvolsid(): ?int
+    public function getUser(): ?User
     {
-        return $this->joinvolsid;
+        return $this->user;
     }
 
-    public function setJoinvolsid(int $joinvolsid): static
+    public function setUser(?User $user): static
     {
-        $this->joinvolsid = $joinvolsid;
+        $this->user = $user;
 
         return $this;
     }
-
-    public function getUserId(): ?int
+    public function getTypeactivity(): ?ActivityType
     {
-        return $this->userId;
-    }
+     return $this->typeactivity;
+     }
+public function setTypeactivity(ActivityType $typeactivity): static
+     {
+     $this->typeactivity = $typeactivity;
 
-    public function setUserId(?int $userId): static
-    {
-        $this->userId = $userId;
-
-        return $this;
+         return $this;
     }
+    
+
+   
 }

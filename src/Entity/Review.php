@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\Table(name: "review")]
@@ -23,19 +24,35 @@ class Review
     private int $id;
 
     #[ORM\Column(name: "commentaire", type: "text", length: 65535, nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100, maxMessage: "Comment cannot exceed {{ limit }} characters.")]
+    
     private ?string $commentaire = null;
 
     #[ORM\Column(name: "note", type: "integer")]
+    #[Assert\NotBlank]
+    #[Assert\Range(
+        min: 1,
+        max: 5,
+        notInRangeMessage: "Rating must be between {{ min }} and {{ max }}.",
+    )]
     private int $note;
+
 
     #[ORM\Column(name: "dateReview", type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
     private \DateTime $datereview ;
 
-    #[ORM\Column(name: "activityId", type: "integer")]
-    private int $activityid;
 
-    #[ORM\Column(name: "userId", type: "integer", nullable: true)]
-    private ?int $userid = null;
+    #[ORM\ManyToOne(targetEntity: Activity::class, inversedBy: "reviews")]
+    #[ORM\JoinColumn(name: "activityId", referencedColumnName: "id")]
+    #[Assert\NotBlank]
+    private Activity $activityid;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "reviews")]
+    #[ORM\JoinColumn(name: "userId", referencedColumnName: "id", nullable: true)]
+
+    
+    private ?User $userid = null;
 
     public function getId(): ?int
     {
@@ -78,26 +95,27 @@ class Review
         return $this;
     }
 
-    public function getActivityid(): ?int
-    {
-        return $this->activityid;
-    }
 
-    public function setActivityid(int $activityid): static
-    {
-        $this->activityid = $activityid;
-
-        return $this;
-    }
-
-    public function getUserid(): ?int
+    public function getUserid(): ?User
     {
         return $this->userid;
     }
 
-    public function setUserid(?int $userid): static
+    public function setUserid(?User $userid): static
     {
         $this->userid = $userid;
+
+        return $this;
+    }
+
+    public function getActivityid(): Activity
+    {
+        return $this->activityid;
+    }
+
+    public function setActivityid(Activity $activityid): static
+    {
+        $this->activityid = $activityid;
 
         return $this;
     }
