@@ -11,10 +11,10 @@ use Doctrine\ORM\Mapping as ORM;
 class Airlines
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(name: "airline_id", type: "integer")]
     private int $airlineId;
 
-    #[ORM\Id]
     #[ORM\Column(name: "airline_name", type: "string", length: 100)]
     private string $airlineName;
 
@@ -54,6 +54,13 @@ class Airlines
     public function setAirlineCountry(string $airlineCountry): static
     {
         $this->airlineCountry = $airlineCountry;
+
+        return $this;
+    }
+
+    public function setAirlineName(string $airlineName): static
+    {
+        $this->airlineName = $airlineName;
 
         return $this;
     }
