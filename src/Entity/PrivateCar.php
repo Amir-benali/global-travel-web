@@ -35,13 +35,12 @@ class PrivateCar
     private int $numPlace;
 
     #[ORM\Column(name: "image", type: "string", length: 500)]
-    #[Assert\NotBlank(message: "Please upload an image.")]
+    // #[Assert\NotBlank(message: "Please upload an image.")]
     private string $image;
 
     #[ORM\ManyToOne(targetEntity: "CarDriver")]
-    #[ORM\JoinColumn(name: "id_driver", referencedColumnName: "id")]
-    #[Assert\NotNull]
-    private CarDriver $idDriver;
+    #[ORM\JoinColumn(name: "id_driver", referencedColumnName: "id", nullable: true)]
+    private ?CarDriver $idDriver = null;
 
     public function getId(): ?int
     {
