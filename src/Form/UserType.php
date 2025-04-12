@@ -113,12 +113,7 @@ class UserType extends AbstractType
                 'label' => 'Statut',
                 'attr' => ['class' => 'form-select']
             ])
-            ->add('imageFile', FileType::class, [
-                'label' => 'Photo de profil',
-                'required' => false,
-                'mapped' => false,
-                'attr' => ['class' => 'form-control']
-            ])
+           
             ->add('privileges', TextType::class, [
                 'required' => false,
                 'label' => 'Privilèges (admin)',

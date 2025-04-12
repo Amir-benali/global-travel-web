@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserActivityRepository::class)]
 #[ORM\Table(name: "user_activity")]
-#[ORM\Index(columns: ["user_id"], name: "user_id")]
+#[ORM\Index(columns: ["user_id"], name: "fk_user_id_user_activity")]
 #[ORM\Index(columns: ["activity_id"], name: "activity_id")]
 class UserActivity
 {

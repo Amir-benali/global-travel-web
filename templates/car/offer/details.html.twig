@@ -1,5 +1,5 @@
-  {% extends 'base.html.twig' %}
-{% block title %}Car Offer Details{% endblock %}
+{% extends 'base.html.twig' %}
+{% block title %}{{ offer.description }} - Car Offer Details{% endblock %}
 {% block body %}
     <!-- Main Content -->   
 
@@ -7,9 +7,9 @@
         <!-- Header -->
         <div class="mb-6 flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Weekend Special</h1>
+                <h1 class="text-2xl font-bold text-gray-900">{{ offer.description }}</h1>
                 <div class="flex items-center mt-1">
-                    <a href="offer-list.html" class="text-blue-600 hover:underline flex items-center">
+                    <a href="{{ path('app_car_offer') }}" class="text-blue-600 hover:underline flex items-center">
                         <i class="ri-arrow-left-line mr-1"></i>
                         Back to Offers
                     </a>
@@ -17,11 +17,11 @@
             </div>
             
             <div class="flex space-x-3">
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
+                <a href="{{ path('app_car_offer_update', {'id': offer.id}) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
                     <i class="ri-edit-line mr-1"></i>
                     Edit Offer
-                </button>
-                <button class="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center">
+                </a>
+                <button data-delete-url="{{ path('app_car_offer_delete', {'id': offer.id}) }}" class="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center">
                     <i class="ri-delete-bin-line mr-1"></i>
                     Delete
                 </button>
@@ -32,62 +32,41 @@
         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
             <div class="md:flex">
                 <div class="md:w-1/2">
-                    <img src="https://via.placeholder.com/600x400?text=Weekend+Special" alt="Weekend Special" class="w-full h-full object-cover">
+                    <img src="{{ offer.getCar().getImage() }}" alt="{{ offer.description }}" class="w-full h-full object-cover">
                 </div>
                 <div class="md:w-1/2 p-6">
-                    <div class="flex items-center mb-4">
-                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                            20% OFF
-                        </span>
-                        <div class="ml-3 flex items-center text-yellow-400">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-half-fill"></i>
-                            <span class="ml-1 text-gray-600 text-sm">(4.5)</span>
-                        </div>
-                    </div>
-                    
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Weekend Special</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ offer.description }}</h2>
                     
                     <div class="flex items-center mb-4">
-                        <div class="text-2xl font-bold text-blue-600 mr-2">$120</div>
-                        <div class="text-lg text-gray-500 line-through">$150</div>
-                        <div class="ml-2 text-sm text-gray-500">per day</div>
+    
+                        <div class="text-lg text-gray-500 line-through">${{ offer.price }}</div>
                     </div>
                     
                     <div class="space-y-3 mb-6">
                         <div class="flex items-center">
                             <i class="ri-calendar-line text-blue-600 w-6"></i>
-                            <span class="text-gray-700">Valid: May 1 - Jun 30, 2023</span>
+                            <span class="text-gray-700">Valid: </span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-car-line text-blue-600 w-6"></i>
-                            <span class="text-gray-700">Mercedes S Class</span>
+                            <span class="text-gray-700">{{ offer.getCar().getModel() }}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-user-line text-blue-600 w-6"></i>
-                            <span class="text-gray-700">Seats: 4</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-gas-station-line text-blue-600 w-6"></i>
-                            <span class="text-gray-700">Fuel: Included (100 km/day)</span>
+                            <span class="text-gray-700">Seats: {{ offer.getCar().getNumPlace() }}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-shield-check-line text-blue-600 w-6"></i>
-                            <span class="text-gray-700">Insurance: Comprehensive</span>
+                            <span class="text-gray-700">Insurance: </span>
                         </div>
                     </div>
                     
                     <div class="flex space-x-3">
-                        <button class="px-6 py-3 bg-green-600 text-white rounded-lg flex-1 font-medium hover:bg-green-700">
+                        <a href="#" class="px-6 py-3 bg-green-600 text-white rounded-lg flex-1 font-medium hover:bg-green-700 text-center">
                             Book Now
-                        </button>
-                        <button class="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
-                            <i class="ri-heart-line"></i>
-                        </button>
-                        <button class="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                        </a>
+                
+                        <button class="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50" data-share-id="{{ offer.id }}">
                             <i class="ri-share-line"></i>
                         </button>
                     </div>
@@ -96,91 +75,52 @@
             
             <div class="p-6 border-t border-gray-200">
                 <h3 class="text-lg font-semibold mb-4">Offer Description</h3>
-                <p class="text-gray-700 mb-4">
-                    Enjoy our exclusive Weekend Special offer on the luxurious Mercedes S Class. This premium sedan combines elegant design with cutting-edge technology to provide an exceptional driving experience. Perfect for weekend getaways or special occasions.
-                </p>
-                <p class="text-gray-700">
-                    This special offer includes comprehensive insurance, 100 km of fuel per day, and 24/7 roadside assistance. Available for weekend rentals (Friday to Monday) between May 1 and June 30, 2023. Book early to secure your reservation!
-                </p>
+                <div class="text-gray-700">
+                    {{ offer.description|raw }}
+                </div>
             </div>
             
             <div class="p-6 border-t border-gray-200 bg-gray-50">
                 <h3 class="text-lg font-semibold mb-4">Terms & Conditions</h3>
                 <ul class="list-disc pl-5 text-gray-700 space-y-2">
-                    <li>Valid driver's license required</li>
-                    <li>Minimum age: 25 years</li>
-                    <li>Credit card required for security deposit</li>
-                    <li>Cancellation: Free up to 24 hours before pickup</li>
-                    <li>Additional mileage charged at $0.50 per km</li>
-                    <li>Late return fee: $50 per hour</li>
+                        <li>term</li>
                 </ul>
             </div>
         </div>
         
-        <!-- Related Offers -->
+        {# <!-- Related Offers -->
+        {% if relatedOffers is defined and relatedOffers|length > 0 %}
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="p-6 border-b border-gray-200">
                 <h3 class="text-lg font-semibold">Similar Offers</h3>
             </div>
             
             <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Related Offer 1 -->
+                {% for related in relatedOffers %}
                 <div class="bg-gray-50 rounded-lg overflow-hidden">
                     <div class="relative">
-                        <img src="https://via.placeholder.com/300x150?text=Business+Package" alt="Business Package" class="w-full h-32 object-cover">
-                        <div class="absolute top-2 right-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
-                            PREMIUM
+                        <img src="{{ related.imageUrl|default('https://via.placeholder.com/300x150?text=' ~ related.title|url_encode) }}" alt="{{ related.title }}" class="w-full h-32 object-cover">
+                        {% if related.badge %}
+                        <div class="absolute top-2 right-2 px-2 py-1 bg-{{ related.badgeColor|default('blue') }}-500 text-white text-xs font-medium rounded-full">
+                            {{ related.badge }}
                         </div>
+                        {% endif %}
                     </div>
                     
                     <div class="p-4">
-                        <h4 class="font-medium text-gray-900 mb-1">Business Package</h4>
+                        <h4 class="font-medium text-gray-900 mb-1">{{ related.title }}</h4>
                         <div class="flex items-center mb-2">
-                            <div class="text-base font-bold text-blue-600 mr-2">$200</div>
-                            <div class="text-sm text-gray-500 line-through">$250</div>
+                            <div class="text-base font-bold text-blue-600 mr-2">${{ related.price }}</div>
+                            {% if related.originalPrice %}
+                            <div class="text-sm text-gray-500 line-through">${{ related.originalPrice }}</div>
+                            {% endif %}
                         </div>
-                        <a href="offer-details.html" class="text-blue-600 text-sm hover:underline">View Details</a>
+                        <a href="{{ path('app_car_offer_details', {'id': related.id}) }}" class="text-blue-600 text-sm hover:underline">View Details</a>
                     </div>
                 </div>
-                
-                <!-- Related Offer 2 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden">
-                    <div class="relative">
-                        <img src="https://via.placeholder.com/300x150?text=Family+SUV+Deal" alt="Family SUV Deal" class="w-full h-32 object-cover">
-                        <div class="absolute top-2 right-2 px-2 py-1 bg-blue-500 text-white text-xs font-medium rounded-full">
-                            FAMILY
-                        </div>
-                    </div>
-                    
-                    <div class="p-4">
-                        <h4 class="font-medium text-gray-900 mb-1">Family SUV Deal</h4>
-                        <div class="flex items-center mb-2">
-                            <div class="text-base font-bold text-blue-600 mr-2">$180</div>
-                            <div class="text-sm text-gray-500 line-through">$220</div>
-                        </div>
-                        <a href="offer-details.html" class="text-blue-600 text-sm hover:underline">View Details</a>
-                    </div>
-                </div>
-                
-                <!-- Related Offer 3 -->
-                <div class="bg-gray-50 rounded-lg overflow-hidden">
-                    <div class="relative">
-                        <img src="https://via.placeholder.com/300x150?text=Luxury+Convertible" alt="Luxury Convertible" class="w-full h-32 object-cover">
-                        <div class="absolute top-2 right-2 px-2 py-1 bg-purple-500 text-white text-xs font-medium rounded-full">
-                            LUXURY
-                        </div>
-                    </div>
-                    
-                    <div class="p-4">
-                        <h4 class="font-medium text-gray-900 mb-1">Luxury Convertible</h4>
-                        <div class="flex items-center mb-2">
-                            <div class="text-base font-bold text-blue-600 mr-2">$250</div>
-                            <div class="text-sm text-gray-500 line-through">$300</div>
-                        </div>
-                        <a href="offer-details.html" class="text-blue-600 text-sm hover:underline">View Details</a>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
+        {% endif %} #}
     </div>
 {% endblock %}

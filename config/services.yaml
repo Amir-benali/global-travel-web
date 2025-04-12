@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    azure.blob.connection_string: 'DefaultEndpointsProtocol=https;AccountName=globaltravelst;AccountKey=BZV+gsukTi/C5g8qpM5GeUf1Fy4klSrbJkiASacXlmzhEHv2ZSUe5qSU5bUaFj6+chX+fyjCBkHT+AStlGTwIQ==;EndpointSuffix=core.windows.net'
+    azure.blob.container_name: 'globaltravelstorage'
+    azure.blob.disable_ssl_verification: true
 
 services:
     # default configuration for services in *this* file
@@ -19,6 +22,11 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-
+            
+    App\Service\AzureBlobService:
+            arguments:
+                $connectionString: '%azure.blob.connection_string%'
+                $containerName: '%azure.blob.container_name%'
+                $disableSslVerification: '%azure.blob.disable_ssl_verification%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

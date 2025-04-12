@@ -23,6 +23,7 @@ class AuthController extends AbstractController
 
         $user = new User();
         $form = $this->createForm(AuthType::class, $user);
+        $form->remove('imageFile');
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -32,19 +33,10 @@ class AuthController extends AbstractController
                     $form->get('password')->getData()
                 )
             )
-            ->setRoles(['EMPLOYEE'])
+            ->setRoles(['ROLE_EMPLOYEE'])
             ->setStatut('actif');
 
-            // Image upload
-            $imageFile = $form->get('imageFile')->getData();
-            if ($imageFile) {
-                $newFilename = uniqid().'.'.$imageFile->guessExtension();
-                $imageFile->move(
-                    $this->getParameter('kernel.project_dir').'/public/uploads/users',
-                    $newFilename
-                );
-                $user->setImage($newFilename);
-            }
+            
 
             $em->persist($user);
             $em->flush();
@@ -64,21 +56,28 @@ class AuthController extends AbstractController
         if ($this->getUser()) {
             return $this->redirectToRoute('app_dashboard');
         }
-
+    
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
-
+    
+        // Create login form
+        $form = $this->createForm(AuthType::class);
+    
         return $this->render('auth/signin.html.twig', [
+            'loginForm' => $form->createView(),
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
     }
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(): void
+    public function logout(Request $request): Response
     {
-        // The logout functionality is handled by Symfony's security system.
-        // No additional code is needed here.
+        $request->getSession()->invalidate();
+        $response = new Response();
+        $response->headers->clearCookie('PHPSESSID');
+        $response->send();
+        return $this->redirectToRoute('app_signin');
         throw new \LogicException('This method is intercepted by the logout key on your firewall.');
     }
 }
