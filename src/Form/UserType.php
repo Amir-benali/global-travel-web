@@ -113,6 +113,7 @@ class UserType extends AbstractType
                 'label' => 'Statut',
                 'attr' => ['class' => 'form-select']
             ])
+            
            
             ->add('privileges', TextType::class, [
                 'required' => false,
@@ -129,12 +130,22 @@ class UserType extends AbstractType
                 'label' => 'Département (responsable)',
                 'attr' => ['class' => 'form-control']
             ]);
+
+            if ($options['is_new']) {
+                $builder->add('imageFile', FileType::class, [
+                    'label' => 'Profile Image',
+                    'required' => false,
+                    'mapped' => false, // Not directly mapped to the entity
+                    'attr' => ['class' => 'form-control']
+                ]);
+            }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_new' => false, // Default to false (update form)
             
         ]);
 
