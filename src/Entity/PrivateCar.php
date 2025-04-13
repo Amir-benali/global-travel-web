@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PrivateCarRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PrivateCarRepository::class)]
 #[ORM\Table(name: "private_car")]
@@ -16,20 +17,30 @@ class PrivateCar
     private int $id;
 
     #[ORM\Column(name: "brand", type: "string", length: 30)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 30, min: 2)]
+    #[Assert\Regex(pattern: "/^[a-zA-Z0-9\s]+$/", message: "The brand can only contain letters, numbers, and spaces.")]
     private string $brand;
 
     #[ORM\Column(name: "model", type: "string", length: 30)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 30, min: 2)]
+    #[Assert\Regex(pattern: "/^[a-zA-Z0-9\s]+$/", message: "The model can only contain letters, numbers, and spaces.")]
     private string $model;
 
     #[ORM\Column(name: "num_place", type: "integer")]
+    #[Assert\NotBlank]
+    #[Assert\Positive]
+    #[Assert\Range(min: 1, max: 10, notInRangeMessage: "The number of places must be between {{ min }} and {{ max }}.")]
     private int $numPlace;
 
     #[ORM\Column(name: "image", type: "string", length: 500)]
+    // #[Assert\NotBlank(message: "Please upload an image.")]
     private string $image;
 
     #[ORM\ManyToOne(targetEntity: "CarDriver")]
-    #[ORM\JoinColumn(name: "id_driver", referencedColumnName: "id")]
-    private CarDriver $idDriver;
+    #[ORM\JoinColumn(name: "id_driver", referencedColumnName: "id", nullable: true)]
+    private ?CarDriver $idDriver = null;
 
     public function getId(): ?int
     {

@@ -1,130 +1,174 @@
- {% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}user{% endblock %}
+{% block title %}Edit User - {{ user.firstname }} {{ user.lastname }}{% endblock %}
 
 {% block body %}
- <div class="mx-auto max-w-3xl py-8">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800">Add New User</h2>
-                    <a href="{{path('app_user')}}" class="text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="ri-arrow-left-line mr-1"></i>
-                        Back to List
-                    </a>
-                </div>
+<div class="mx-auto max-w-3xl py-8">
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-800">
+                    <i class="ri-user-settings-line mr-2"></i>
+                    Update User: {{ user.firstname }} {{ user.lastname }}
+                </h2>
+                <a href="{{ path('app_user') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="ri-arrow-left-line mr-1"></i>
+                    Back to List
+                </a>
             </div>
+        </div>
+        
+        <!-- Form -->
+        <div class="p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
             
-            <form class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- First Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- First Name -->
                     <div>
-                        <label for="first-name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                        <input 
-                            type="text" 
-                            id="first-name" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter first name"
-                        >
+                        {{ form_label(form.firstname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.firstname, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
                     </div>
                     
                     <!-- Last Name -->
                     <div>
-                        <label for="last-name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                        <input 
-                            type="text" 
-                            id="last-name" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter last name"
-                        >
+                        {{ form_label(form.lastname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.lastname, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
                     </div>
-                    
+                </div>
+                
+                <!-- Second Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Email -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="example@email.com"
-                        >
+                        {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.email, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
                     </div>
                     
                     <!-- Phone -->
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                        <input 
-                            type="tel" 
-                            id="phone" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="+216 20 200 200"
-                        >
+                        {{ form_label(form.phoneNumber, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.phoneNumber, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                            'placeholder': '+216 20 200 200'
+                        }}) }}
                     </div>
-                    
+                </div>
+                
+                <!-- Third Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Role -->
                     <div>
-                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select 
-                            id="role" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">Select role</option>
-                            <option value="admin">Admin</option>
-                            <option value="manager">Manager</option>
-                            <option value="employee">Employee</option>
-                        </select>
+                        {{ form_label(form.roles, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.roles, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
                     </div>
                     
                     <!-- Status -->
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select 
-                            id="status" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+                        {{ form_label(form.statut, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.statut, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
                     </div>
                 </div>
                 
-                <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Enter password"
-                    >
+                <!-- Fourth Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Genre -->
+                    <div>
+                        {{ form_label(form.genre, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.genre, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
+                    </div>
+                    
+                    <!-- Date de naissance -->
+                    <div>
+                        {{ form_label(form.dateNaissance, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.dateNaissance, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
+                    </div>
                 </div>
                 
-                <div class="mb-6">
-                    <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                    <input 
-                        type="password" 
-                        id="confirm-password" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Confirm password"
-                    >
+                <!-- Password Section -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-md font-medium text-gray-800 mb-3">
+                        <i class="ri-lock-line mr-1"></i>
+                        Password Update
+                    </h3>
+                    {{ form_widget(form.password, {'attr': {
+                        'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3',
+                        'placeholder': 'Leave blank to keep current password'
+                    }}) }}
+                    <p class="text-xs text-gray-500">Only fill this field if you want to change the password</p>
                 </div>
                 
-                <div class="mb-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4">
-                        <span class="ml-2 text-sm text-gray-600">Send welcome email with login details</span>
-                    </label>
+                <!-- Image Upload -->
+                <div>
+                    {{ form_label(form.imageFile, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {% if user.image %}
+                        <div class="flex items-center mb-3">
+                            <img src="{{ asset('uploads/users/' ~ user.image) }}" 
+                                 class="h-16 w-16 rounded-full object-cover mr-4"
+                                 alt="Current profile picture">
+                            <span class="text-sm text-gray-500">Current image</span>
+                        </div>
+                    {% endif %}
+                    {{ form_widget(form.imageFile, {'attr': {
+                        'class': 'block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100'
+                    }}) }}
                 </div>
                 
-                <div class="flex items-center justify-end space-x-3">
-                    <a href="users.html" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                <!-- Role-specific fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Admin Privileges -->
+                    <div>
+                        {{ form_label(form.privileges, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.privileges, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
+                    </div>
+                    
+                    <!-- Employee Post -->
+                    <div>
+                        {{ form_label(form.poste, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.poste, {'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        }}) }}
+                    </div>
+                </div>
+                
+                <!-- Department -->
+                <div>
+                    {{ form_label(form.departement, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.departement, {'attr': {
+                        'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                    }}) }}
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end space-x-3 pt-6">
+                    <a href="{{ path('app_user') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                         Cancel
                     </a>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Create User
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+                        <i class="ri-save-line mr-1"></i>
+                        Update User
                     </button>
                 </div>
-            </form>
+            
+            {{ form_end(form) }}
         </div>
     </div>
-
-    {% endblock %}
+</div>
+{% endblock %}
