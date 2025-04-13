@@ -18,9 +18,7 @@ class CarFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('brand',
-            
-            )
+            ->add('brand',)
             ->add('model')
             ->add('numPlace')
             ->add('image', FileType::class, [
@@ -37,6 +35,7 @@ class CarFormType extends AbstractType
             ])
             ->add('idDriver', EntityType::class, [
                 'class' => CarDriver::class,
+                'required' => false,
                 'choice_label' => function (CarDriver $driver) {
                     return $driver->getFirstName() . ' ' . $driver->getLastName() ;
                 },

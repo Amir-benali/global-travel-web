@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ["joinHotelId"], name: "joinHotelId")]
 #[ORM\Index(columns: ["joinVoitureId"], name: "joinVoitureId")]
 #[ORM\Index(columns: ["joinVolsId"], name: "joinVolsId")]
-#[ORM\Index(columns: ["user_id"], name: "fk_user")]
+#[ORM\Index(columns: ["user_id"], name: "fk_user_activity")]
 class Activity
 {
     #[ORM\Id]
