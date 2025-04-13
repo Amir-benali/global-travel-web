@@ -178,91 +178,182 @@
             Enter your information to create an account
           </p>
         </div>
-        <form class="space-y-4">
+        {{ form_start(form, { 
+          'method': 'POST', 
+          'attr': {
+              'novalidate': 'novalidate', 
+              'data-turbo': 'false', 
+              'data-propagation': 'false',
+              'class': 'space-y-4'
+          } 
+      }) }}
           <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                placeholder="John"
-                required
-                class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-              />
-            </div>
-            <div class="space-y-2">
-              <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                placeholder="Doe"
-                required
-                class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-              />
-            </div>
+              <div class="space-y-1">
+                  {{ form_label(form.firstname, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+                  {{ form_widget(form.firstname, { 'attr': {
+                      'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+                      'placeholder': 'John'
+                  } }) }}
+                  <div class="text-xs text-red-600 dark:text-red-400">{{ form_errors(form.firstname) }}</div>
+              </div>
+              <div class="space-y-1">
+                  {{ form_label(form.lastname, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+                  {{ form_widget(form.lastname, { 'attr': {
+                      'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+                      'placeholder': 'Doe'
+                  } }) }}
+                  <div class="text-xs text-red-600 dark:text-red-400">{{ form_errors(form.lastname) }}</div>
+              </div>
           </div>
-          <div class="space-y-2">
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="john.doe@example.com"
-              required
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-            />
+      
+          <div class="space-y-1">
+              {{ form_label(form.email, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+              {{ form_widget(form.email, { 'attr': {
+                  'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+                  'placeholder': 'john.doe@example.com'
+              } }) }}
+              <div class="text-xs text-red-600 dark:text-red-400">{{ form_errors(form.email) }}</div>
           </div>
-          <div class="space-y-2">
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Create a password"
-              required
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-            />
-            <p class="text-xs text-gray-500 dark:text-gray-400">Password must be at least 8 characters long</p>
+      
+          <div class="space-y-1">
+              {{ form_label(form.password.first) }}
+              <div class="relative">
+                  {{ form_widget(form.password.first, { 'attr': {
+                      'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+                      'placeholder': 'Create a password',
+                      'id': 'create-password'
+                  } }) }}
+                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400" id="toggle-create-password">
+                      <svg class="h-5 w-5" id="create-eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <svg class="h-5 w-5 hidden" id="create-eye-off-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 4.943 14.478 2 10 2a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/>
+                          <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/>
+                      </svg>
+                  </button>
+              </div>
+              <div class="text-xs text-red-600 dark:text-red-400">
+                  {{ form_errors(form.password.first) }}
+              </div>
+              <p class="text-xs text-gray-500 mt-1">
+                  Requirements: 8+ characters with 1 uppercase, 1 lowercase, 1 number, and 1 special character (@$!%*?&#)
+              </p>
           </div>
-          <div class="space-y-2">
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              required
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500"
-            />
+      
+          <div class="space-y-1">
+              {{ form_label(form.password.second) }}
+              <div class="relative">
+                  {{ form_widget(form.password.second, { 'attr': {
+                      'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+                      'placeholder': 'Confirm your password',
+                      'id': 'confirm-password'
+                  } }) }}
+                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400" id="toggle-confirm-password">
+                      <svg class="h-5 w-5" id="confirm-eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <svg class="h-5 w-5 hidden" id="confirm-eye-off-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 4.943 14.478 2 10 2a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/>
+                          <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/>
+                      </svg>
+                  </button>
+              </div>
+              <div class="text-xs text-red-600 dark:text-red-400">
+                  {{ form_errors(form.password.second) }}
+              </div>
           </div>
+      
+          <div class="space-y-1">
+              {{ form_label(form.genre, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+              {{ form_widget(form.genre, { 'attr': {
+                  'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500'
+              } }) }}
+              <div class="text-xs text-red-600 dark:text-red-400">{{ form_errors(form.genre) }}</div>
+          </div>
+      
+          <div class="space-y-1">
+              {{ form_label(form.phoneNumber, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+              {{ form_widget(form.phoneNumber, { 'attr': {
+                  'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500',
+                  'placeholder': 'Phone number (e.g. +1234567890)'
+              } }) }}
+              <div class="text-xs text-red-600 dark:text-red-400">{{ form_errors(form.phoneNumber) }}</div>
+          </div>
+      
+          <div class="space-y-1">
+              {{ form_label(form.dateNaissance, null, { 'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300'} }) }}
+              {{ form_widget(form.dateNaissance, { 'attr': {
+                  'class': 'w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500'
+              } }) }}
+              <div class="text-xs text-red-600 dark:text-red-400">{{ form_errors(form.dateNaissance) }}</div>
+          </div>
+      
           <div class="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="terms"
-              name="terms"
-              required
-              class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-primary-500"
-            />
-            <label for="terms" class="text-xs text-gray-500 dark:text-gray-400">
-              I agree to the
-              <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
-                Terms of Service
-              </a>
-              and
-              <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
-                Privacy Policy
-              </a>
-            </label>
+              {{ form_widget(form.agreeTerms, { 'attr': {
+                  'class': 'h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-primary-500'
+              } }) }}
+              <label for="{{ form.agreeTerms.vars.id }}" class="text-xs text-gray-500 dark:text-gray-400">
+                  I agree to the
+                  <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
+                      Terms of Service
+                  </a>
+                  and
+                  <a href="#" class="text-primary-600 hover:underline dark:text-primary-400">
+                      Privacy Policy
+                  </a>
+              </label>
+              <div class="text-xs text-red-600 dark:text-red-400">{{ form_errors(form.agreeTerms) }}</div>
           </div>
+      
           <button
-            type="submit"
-            class="w-full rounded-md bg-primary-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-700 dark:hover:bg-primary-800"
+              type="submit"
+              class="w-full rounded-md bg-primary-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-700 dark:hover:bg-primary-800"
           >
-            Create Account
+              Create Account
           </button>
-        </form>
+      {{ form_end(form) }}
+      
+      <script>
+      // Password toggle for create password field
+      document.getElementById('toggle-create-password').addEventListener('click', function() {
+          const password = document.getElementById('create-password');
+          const eyeIcon = document.getElementById('create-eye-icon');
+          const eyeOffIcon = document.getElementById('create-eye-off-icon');
+          
+          if (password.type === 'password') {
+              password.type = 'text';
+              eyeIcon.classList.add('hidden');
+              eyeOffIcon.classList.remove('hidden');
+          } else {
+              password.type = 'password';
+              eyeIcon.classList.remove('hidden');
+              eyeOffIcon.classList.add('hidden');
+          }
+      });
+      
+      // Password toggle for confirm password field
+      document.getElementById('toggle-confirm-password').addEventListener('click', function() {
+          const password = document.getElementById('confirm-password');
+          const eyeIcon = document.getElementById('confirm-eye-icon');
+          const eyeOffIcon = document.getElementById('confirm-eye-off-icon');
+          
+          if (password.type === 'password') {
+              password.type = 'text';
+              eyeIcon.classList.add('hidden');
+              eyeOffIcon.classList.remove('hidden');
+          } else {
+              password.type = 'password';
+              eyeIcon.classList.remove('hidden');
+              eyeOffIcon.classList.add('hidden');
+          }
+      });
+      </script>
+
+    
+    
         <div class="relative">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>

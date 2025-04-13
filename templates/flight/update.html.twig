@@ -1,189 +1,73 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Flight{% endblock %}
+{% block title %}Modifier le vol{% endblock %}
 
 {% block body %}
-
     <div class="mx-auto max-w-3xl py-8">
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <div class="p-6 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800">Add New Flight</h2>
-                    <a href="{{path('app_flight')}}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <h2 class="text-xl font-semibold text-gray-800">Modifier le vol</h2>
+                    <a href="{{ path('app_flight') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
                         <i class="ri-arrow-left-line mr-1"></i>
-                        Back to List
+                        Retour à la liste
                     </a>
                 </div>
             </div>
-            
-            <form class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <!-- Flight Number -->
-                    <div>
-                        <label for="flight-number" class="block text-sm font-medium text-gray-700 mb-1">Flight Number</label>
-                        <input 
-                            type="text" 
-                            id="flight-number" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g. TN 507"
-                        >
-                    </div>
-                    
-                    <!-- Airline -->
-                    <div>
-                        <label for="airline" class="block text-sm font-medium text-gray-700 mb-1">Airline</label>
-                        <select 
-                            id="airline" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">Select airline</option>
-                            <option value="tunisair">Tunisair</option>
-                            <option value="airfrance">Air France</option>
-                            <option value="lufthansa">Lufthansa</option>
-                            <option value="emirates">Emirates</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Departure Airport -->
-                    <div>
-                        <label for="departure-airport" class="block text-sm font-medium text-gray-700 mb-1">Departure Airport</label>
-                        <input 
-                            type="text" 
-                            id="departure-airport" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g. TUN"
-                        >
-                    </div>
-                    
-                    <!-- Arrival Airport -->
-                    <div>
-                        <label for="arrival-airport" class="block text-sm font-medium text-gray-700 mb-1">Arrival Airport</label>
-                        <input 
-                            type="text" 
-                            id="arrival-airport" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g. CDG"
-                        >
-                    </div>
-                    
-                    <!-- Departure Date -->
-                    <div>
-                        <label for="departure-date" class="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
-                        <input 
-                            type="date" 
-                            id="departure-date" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                    </div>
-                    
-                    <!-- Arrival Date -->
-                    <div>
-                        <label for="arrival-date" class="block text-sm font-medium text-gray-700 mb-1">Arrival Date</label>
-                        <input 
-                            type="date" 
-                            id="arrival-date" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                    </div>
-                    
-                    <!-- Departure Time -->
-                    <div>
-                        <label for="departure-time" class="block text-sm font-medium text-gray-700 mb-1">Departure Time</label>
-                        <input 
-                            type="time" 
-                            id="departure-time" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                    </div>
-                    
-                    <!-- Arrival Time -->
-                    <div>
-                        <label for="arrival-time" class="block text-sm font-medium text-gray-700 mb-1">Arrival Time</label>
-                        <input 
-                            type="time" 
-                            id="arrival-time" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                    </div>
-                    
-                    <!-- Flight Duration -->
-                    <div>
-                        <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Flight Duration (minutes)</label>
-                        <input 
-                            type="number" 
-                            id="duration" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g. 195"
-                            min="1"
-                        >
-                    </div>
-                    
-                    <!-- Price -->
-                    <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
-                        <input 
-                            type="number" 
-                            id="price" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g. 320"
-                            min="1"
-                            step="0.01"
-                        >
-                    </div>
-                    
-                    <!-- Passengers -->
-                    <div>
-                        <label for="passengers" class="block text-sm font-medium text-gray-700 mb-1">Passengers</label>
-                        <input 
-                            type="number" 
-                            id="passengers" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g. 142"
-                            min="1"
-                        >
-                    </div>
-                    
-                    <!-- Status -->
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select 
-                            id="status" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="scheduled">Scheduled</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="delayed">Delayed</option>
-                            <option value="cancelled">Cancelled</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="mb-6">
-                    <label for="flight-image" class="block text-sm font-medium text-gray-700 mb-1">Flight Image</label>
-                    <div class="flex items-center justify-center w-full">
-                        <label for="flight-image-upload" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <i class="ri-upload-cloud-line text-4xl text-gray-500 mb-2"></i>
-                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 2MB)</p>
-                            </div>
-                            <input id="flight-image-upload" type="file" class="hidden" accept="image/*" />
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="flex items-center justify-end space-x-3">
-                    <a href="flights.html" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                        Cancel
-                    </a>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Save Flight
-                    </button>
-                </div>
-            </form>
+
+            {{ form_start(form, { 'attr': { 'class': 'p-6', 'novalidate': 'novalidate' } }) }}
+            {{ form_widget(form._token) }}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {% for field in form %}
+                    {% if field.vars.block_prefixes[1] != 'hidden' %}
+                        <div>
+                            {{ form_label(field, null, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
+                            {{ form_widget(field, { 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
+                            {{ form_errors(field, { 'attr': { 'class': 'text-red-500 text-sm mt-1' } }) }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="flex items-center justify-end space-x-3">
+                <a href="{{ path('app_flight') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Annuler
+                </a>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Mettre à jour
+                </button>
+            </div>
+            {{ form_end(form) }}
         </div>
     </div>
-</body>
+{% endblock %}
 
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const departureInput = document.getElementById('departureTime');
+            const arrivalInput = document.getElementById('arrivalTime');
+            const durationInput = document.getElementById('durationPerHours');
+
+            function calculateDuration() {
+                const departureTime = new Date(departureInput.value);
+                const arrivalTime = new Date(arrivalInput.value);
+
+                if (!isNaN(departureTime) && !isNaN(arrivalTime)) {
+                    const diffMs = arrivalTime - departureTime;
+                    const diffHours = diffMs / (1000 * 60 * 60);
+
+                    if (diffHours >= 0) {
+                        durationInput.value = diffHours.toFixed(2);
+                    } else {
+                        durationInput.value = '';
+                    }
+                }
+            }
+
+            departureInput.addEventListener('change', calculateDuration);
+            arrivalInput.addEventListener('change', calculateDuration);
+        });
+    </script>
 {% endblock %}

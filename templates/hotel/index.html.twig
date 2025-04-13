@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}hotel{% endblock %}
+{% block title %}Hotel{% endblock %}
 
 {% block body %}
     <div class="mx-auto max-w-7xl">
@@ -14,7 +14,7 @@
                     <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a>
                 </div>
                 
-                <a href="{{path('app_hotel_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <a href="{{ path('app_hotel_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                     <i class="ri-add-line mr-1"></i>
                     ADD HOTEL
                 </a>
@@ -23,104 +23,65 @@
         
         <!-- Hotel Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Hotel Card 1 -->
+            {% for hotel in hotels %}
             <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://via.placeholder.com/400x200" alt="Grand Plaza Hotel" class="w-full h-48 object-cover">
+                <img src="https://haystack-dryers.com/admin/resources/hotel-placeholder-1-w1920.jpg" alt="{{ hotel.nomH }}" class="w-full h-48 object-cover">
                 <div class="p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Grand Plaza Hotel</h3>
+                    <!-- Hotel Name with Icon -->
+                    <h3 class="text-lg font-medium text-gray-900 mb-2 flex items-center">
+                        <i class="ri-hotel-line text-blue-600 mr-2"></i>
+                        {{ hotel.nomH }}
+                    </h3>
                     
                     <div class="grid grid-cols-2 gap-2 mb-4">
                         <div class="flex items-center">
                             <i class="ri-map-pin-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">123 Main Street</span>
+                            <span class="text-sm text-gray-600">{{ hotel.adresseH }}</span>
                         </div>
                         <div class="flex items-center">
-                            <i class="ri-building-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">New York, USA</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-star-fill text-yellow-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">4.8 (120 reviews)</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 line-clamp-2">Luxury hotel with panoramic city views, spa, and fine dining restaurant. Perfect for business travelers and vacationers alike.</p>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <a href="{{path('app_hotel_details',{id:1})}}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">View Details</a>
-                        <a href="{{path('app_hotel_update',{id:1})}}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-md text-sm text-center">Update</a>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Hotel Card 2 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://via.placeholder.com/400x200" alt="Seaside Resort" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Seaside Resort</h3>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">45 Beach Boulevard</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-building-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Miami, USA</span>
+                            <i class="ri-earth-line text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{ hotel.villeH }}, {{ hotel.paysH }}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="ri-star-fill text-yellow-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">4.5 (95 reviews)</span>
+                            <span class="text-sm text-gray-600">{{ hotel.categorieH }} stars</span>
                         </div>
                     </div>
                     
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 line-clamp-2">Beachfront resort with private beach access, infinity pool, and tropical gardens. Ideal for family vacations and romantic getaways.</p>
+                    <!-- Services with Icon -->
+                    <div class="mb-4 flex items-start">
+                        <i class="ri-tools-line text-blue-600 mr-2"></i>
+                        <p class="text-sm text-gray-600 line-clamp-2">{{ hotel.servicesH }}</p>
                     </div>
                     
                     <div class="flex space-x-2">
-                        <a href="{{path('app_hotel_details',{id:1})}}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">View Details</a>
-                        <a href="{{path('app_hotel_update',{id:1})}}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-md text-sm text-center">Update</a>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
+                        <!-- View Details -->
+                        <a href="{{ path('app_hotel_details', { id: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+                            <i class="ri-eye-line"></i>
+                        </a>
+                        
+                        <!-- Update -->
+                        <a href="{{ path('app_hotel_update', { id: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full">
+                            <i class="ri-edit-line"></i>
+                        </a>
+                        
+                        <!-- Delete -->
+                        <form action="{{ path('app_hotel_delete', { id: hotel.idHotelH }) }}" method="post" class="flex items-center justify-center">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ hotel.idHotelH) }}">
+                            <button type="submit" class="flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full" onclick="return confirm('Are you sure you want to delete this hotel?');">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </form>
+                        
+                        <!-- Open Chambre -->
+                        <a href="{{ path('app_chambre', { hotelId: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-full">
+                            <i class="ri-door-line"></i>
+                        </a>
                     </div>
                 </div>
             </div>
-            
-            <!-- Hotel Card 3 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://via.placeholder.com/400x200" alt="Mountain View Lodge" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Mountain View Lodge</h3>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">7 Alpine Road</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-building-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">Denver, USA</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-star-fill text-yellow-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">4.7 (85 reviews)</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 line-clamp-2">Cozy lodge with stunning mountain views, fireplace in every room, and access to hiking trails. Perfect for nature lovers.</p>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <a href="{{path('app_hotel_details',{id:1})}}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">View Details</a>
-                        <a href="{{path('app_hotel_update',{id:1})}}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-md text-sm text-center">Update</a>
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">Delete</button>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
+        </div>
         
         <!-- Pagination -->
         <div class="mt-6 flex items-center justify-center">

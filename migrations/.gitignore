@@ -1,0 +1,8 @@
+# Ignore all files in the migrations directory
+*
+
+# Except this .gitignore file
+!.gitignore
+
+# Common migration file patterns (uncomment if you want more specific ignoring)
+# *.sql
