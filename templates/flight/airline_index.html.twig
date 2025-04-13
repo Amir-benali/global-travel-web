@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+                {% block title %}Compagnies aériennes{% endblock %}
+
+                {% block body %}
+                <div class="mx-auto max-w-7xl">
+                    <!-- Sub Navigation -->
+                    <div class="bg-white rounded-lg shadow mb-6">
+                        <div class="flex items-center justify-between p-4">
+                            <div class="flex space-x-4">
+                                <a href="{{ path('app_flight') }}" class="px-4 py-2 text-gray-600 hover:text-blue-600">All Flights</a>
+                                <a href="{{ path('app_airlines_index') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">Airlines</a>
+                                <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Completed</a>
+                            </div>
+
+                            <a href="{{ path('app_airlines_new') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="ri-add-line mr-1"></i>
+                                Ajouter une compagnie
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Airlines Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code IATA</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for airline in airlines %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ airline.airlineId }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ airline.airlineName }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ airline.airlineIataCode }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ airline.airlineCountry }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="{{ path('app_airlines_edit', { id: airline.airlineId }) }}" class="text-blue-600 hover:text-blue-900">Modifier</a>
+                                            <form action="{{ path('app_airlines_delete', { id: airline.airlineId }) }}" method="post" style="display:inline;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ airline.airlineId) }}">
+                                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr ?');">Supprimer</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endblock %}

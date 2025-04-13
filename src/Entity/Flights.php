@@ -3,12 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\FlightsRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Enum\Flight\FlightStatus;
+
 
 #[ORM\Entity(repositoryClass: FlightsRepository::class)]
 #[ORM\Table(name: "flights")]
-#[ORM\Index(columns: ["airline_name"], name: "flights_ibfk_1")]
+#[ORM\Index(columns: ["airline_id"], name: "flights_ibfk_1")]
 class Flights
 {
     #[ORM\Id]
@@ -40,8 +41,8 @@ class Flights
     #[ORM\Column(name: "flight_base_price", type: "float", precision: 10, scale: 0)]
     private float $flightBasePrice;
 
-    #[ORM\Column(name: "flight_status", type: "string", length: 0)]
-    private string $flightStatus;
+    #[ORM\Column(name: "flight_status", type: "string",enumType: FlightStatus::class)]
+    private FlightStatus $flightStatus;
 
     #[ORM\Column(name: "departure_country", type: "string", length: 150)]
     private string $departureCountry;
@@ -50,8 +51,8 @@ class Flights
     private string $arrivalCountry;
 
     #[ORM\ManyToOne(targetEntity: "Airlines")]
-    #[ORM\JoinColumn(name: "airline_name", referencedColumnName: "airline_name")]
-    private Airlines $airlineName;
+    #[ORM\JoinColumn(name: "airline_id", referencedColumnName: "airline_id")]
+    private Airlines $airlineId;
 
     public function getIdFlight(): ?int
     {
@@ -154,12 +155,12 @@ class Flights
         return $this;
     }
 
-    public function getFlightStatus(): ?string
+    public function getFlightStatus(): ?FlightStatus
     {
         return $this->flightStatus;
     }
 
-    public function setFlightStatus(string $flightStatus): static
+    public function setFlightStatus(FlightStatus $flightStatus): static
     {
         $this->flightStatus = $flightStatus;
 
@@ -190,15 +191,18 @@ class Flights
         return $this;
     }
 
-    public function getAirlineName(): ?Airlines
+    public function getAirlineId(): ?Airlines
     {
-        return $this->airlineName;
+        return $this->airlineId;
     }
-
-    public function setAirlineName(?Airlines $airlineName): static
+    public function setAirlineId(Airlines $airlineId): static
     {
-        $this->airlineName = $airlineName;
+        $this->airlineId = $airlineId;
 
         return $this;
+    }
+    public function getAirlineName(): ?string
+    {
+        return $this->airlineId ? $this->airlineId->getAirlineName() : null;
     }
 }
