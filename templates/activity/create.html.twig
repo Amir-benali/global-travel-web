@@ -111,7 +111,7 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mx-6">
                     <div>
                         {{ form_label(form.joinhotel, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                         {{ form_widget(form.joinhotel, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}, 'choice_label': 'id'}) }}
@@ -125,7 +125,7 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center justify-end space-x-3">
+                <div class="flex items-center justify-end space-x-3 mx-4 mb-2">
                     {{ form_widget(form.cancel, {'attr': {'class': 'px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50'}}) }}
                     {{ form_widget(form.save, {'attr': {'class': 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'}}) }}
                 </div>
