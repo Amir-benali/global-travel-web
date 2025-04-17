@@ -18,9 +18,21 @@ class CarFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('brand',)
-            ->add('model')
-            ->add('numPlace')
+            ->add('brand',null, [
+                'label' => 'Brand',
+                'attr' => ['placeholder' => 'Enter brand'],
+                'empty_data' => '',
+            ])
+            ->add('model',null, [
+                'label' => 'Model',
+                'attr' => ['placeholder' => 'Enter model'],
+                'empty_data' => '',
+            ])
+            ->add('numPlace',null, [
+                'label' => 'Number of Seats',
+                'attr' => ['placeholder' => 'Enter number of seats'],
+                'empty_data' => '',
+            ])
             ->add('image', FileType::class, [
                 'label' => 'Image',
                 'required' => false,
