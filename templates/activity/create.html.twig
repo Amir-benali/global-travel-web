@@ -2,6 +2,43 @@
 
 {% block title %}Create Activity{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #location-autocomplete-results {
+            position: absolute;
+            z-index: 1000;
+            width: calc(100% - 2px);
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-top: 0.25rem;
+            display: none;
+        }
+        #location-autocomplete-results div {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        #location-autocomplete-results div:last-child {
+            border-bottom: none;
+        }
+        #location-autocomplete-results div:hover {
+            background-color: #f8fafc;
+        }
+        .search-loading {
+            color: #6b7280;
+            font-style: italic;
+        }
+        .search-error {
+            color: #ef4444;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="mx-auto max-w-3xl py-8">
         <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -15,48 +52,62 @@
                 </div>
             </div>
             <div class="p-6">
-        {{form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false', 'data-propagation': 'false'}})}}
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
+                
                 <div class="mb-6">
                     {{ form_label(form.nomactivity, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.nomactivity, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                   <div class="text-red-500 text-sm">   {{ form_errors(form.nomactivity,) }} </div>
+                    <div class="text-red-500 text-sm">{{ form_errors(form.nomactivity) }}</div>
                 </div>
                 
                 <div class="mb-6">
                     {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.description, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500', 'rows': 3}}) }}
-                 <div class="text-red-500 text-sm">     {{ form_errors(form.description) }} </div>
+                    <div class="text-red-500 text-sm">{{ form_errors(form.description) }}</div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                     <div>
+                    <div>
                         {{ form_label(form.typeactivity, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                         {{ form_widget(form.typeactivity, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                  <div class="text-red-500 text-sm"> {{ form_errors(form.typeactivity) }}</div>
+                        <div class="text-red-500 text-sm">{{ form_errors(form.typeactivity) }}</div>
                     </div>
-                     
-                    <div>
-                        {{ form_label(form.localisation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.localisation, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                        <div class="text-red-500 text-sm">{{ form_errors(form.localisation) }}  </div>
-                    </div>
-                    
+                  </div>   
+                  
+                  
+                  <div class="relative mb-6">
+    {{ form_label(form.localisation) }}
+    {{ form_widget(form.localisation, {
+        'attr': {
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 location-autocomplete-input',
+            'id': 'activity_localisation',  
+            'autocomplete': 'off',
+            'data-exclude-country': 'true'
+        }
+    }) }}
+    <div id="location-autocomplete-results" class="absolute z-10 bg-white border border-gray-300 rounded-md shadow-lg w-full"></div>
+   <div class="text-red-500 text-sm">  {{ form_errors(form.localisation) }}</div>
+</div>
+
+
+
+
                     <div>
                         {{ form_label(form.datedebut, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                         {{ form_widget(form.datedebut, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                       <div class="text-red-500 text-sm">{{ form_errors(form.datedebut) }} </div>
+                        <div class="text-red-500 text-sm">{{ form_errors(form.datedebut) }}</div>
                     </div>
                     
                     <div>
                         {{ form_label(form.datefin, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                         {{ form_widget(form.datefin, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                      <div class="text-red-500 text-sm">{{ form_errors(form.datefin) }} </div>
+                        <div class="text-red-500 text-sm">{{ form_errors(form.datefin) }}</div>
                     </div>
                     
                     <div>
                         {{ form_label(form.prixtotal, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                         {{ form_widget(form.prixtotal, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                      <div class="text-red-500 text-sm">   {{ form_errors(form.prixtotal) }} </div>
+                        <div class="text-red-500 text-sm">{{ form_errors(form.prixtotal) }}</div>
                     </div>
                 </div>
                 
@@ -64,35 +115,133 @@
                     <div>
                         {{ form_label(form.joinhotel, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                         {{ form_widget(form.joinhotel, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}, 'choice_label': 'id'}) }}
-                       <div class="text-red-500 text-sm">    {{ form_errors(form.joinhotel) }} </div>
+                        <div class="text-red-500 text-sm">{{ form_errors(form.joinhotel) }}</div>
                     </div>
                     
                     <div>
                         {{ form_label(form.joinvoiture, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                         {{ form_widget(form.joinvoiture, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                       <div class="text-red-500 text-sm">  {{ form_errors(form.joinvoiture) }}</div>
+                        <div class="text-red-500 text-sm">{{ form_errors(form.joinvoiture) }}</div>
                     </div>
-                    
-                    {# <div>
-                        {{ form_label(form.joinvols, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.joinvols, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                        {{ form_errors(form.joinvols) }}
-                    </div> #}
-
-                    {# <div>
-                        {{ form_label(form.user, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.user, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                      <div class="text-red-500 text-sm">   {{ form_errors(form.user) }} </div>
-                    </div> #}
                 </div>
                 
                 <div class="flex items-center justify-end space-x-3">
                     {{ form_widget(form.cancel, {'attr': {'class': 'px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50'}}) }}
                     {{ form_widget(form.save, {'attr': {'class': 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'}}) }}
                 </div>
-                </div>
-            {{ form_end(form) }}
-        </div>
+                
+                {{ form_end(form) }}
+            </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+     <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Sélection robuste du champ
+        const input = document.getElementById('activity_localisation') || 
+                     document.querySelector('input[name="activity[localisation]"]') ||
+                     document.querySelector('.location-autocomplete-input');
+        
+        const resultsContainer = document.getElementById('location-autocomplete-results');
+
+        if (!input) {
+            console.error('Erreur: Champ localisation introuvable');
+            return;
+        }
+
+        if (!resultsContainer) {
+            console.error('Erreur: Container des résultats introuvable');
+            return;
+        }
+
+        // 2. Configuration API
+        const apiKey = 'b6ae308ab9e242b382916cd2bf04da70';
+        let currentController = null;
+
+        // 3. Fonctions d'affichage
+        function showLoading() {
+            resultsContainer.innerHTML = '<div class="search-loading px-4 py-2">Recherche...</div>';
+            resultsContainer.style.display = 'block';
+        }
+
+        function showResults(results) {
+            resultsContainer.innerHTML = '';
+            
+            if (!results || results.length === 0) {
+                resultsContainer.innerHTML = '<div class="px-4 py-2 text-gray-500">Aucun résultat</div>';
+                resultsContainer.style.display = 'block';
+                return;
+            }
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.textContent = result.formatted;
+                div.classList.add('result-item');
+                div.addEventListener('click', () => {
+                    input.value = result.formatted;
+                    resultsContainer.style.display = 'none';
+                });
+                resultsContainer.appendChild(div);
+            });
+            resultsContainer.style.display = 'block';
+        }
+
+        // 4. Fonction de recherche
+        function fetchAutocomplete(query) {
+            if (query.length < 2) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            if (currentController) {
+                currentController.abort();
+            }
+
+            showLoading();
+
+            currentController = new AbortController();
+
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(query)}&key=${apiKey}&limit=5&no_annotations=1&language=fr`, {
+                signal: currentController.signal
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur réseau');
+                return response.json();
+            })
+            .then(data => {
+                showResults(data.results || []);
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') {
+                    resultsContainer.innerHTML = '<div class="search-error px-4 py-2">Erreur de recherche</div>';
+                }
+            });
+        }
+
+        // 5. Gestion des événements avec debounce
+        let debounceTimer;
+        input.addEventListener('input', function(e) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                fetchAutocomplete(e.target.value.trim());
+            }, 300);
+        });
+
+        input.addEventListener('focus', function() {
+            if (input.value.trim().length >= 2) {
+                fetchAutocomplete(input.value.trim());
+            }
+        });
+
+        // 6. Fermeture des résultats
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !resultsContainer.contains(e.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    });
+    </script>
 {% endblock %}
