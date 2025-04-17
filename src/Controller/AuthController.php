@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 class AuthController extends AbstractController
 {
@@ -23,25 +24,21 @@ class AuthController extends AbstractController
 
         $user = new User();
         $form = $this->createForm(AuthType::class, $user);
-        $form->remove('imageFile');
+        
+        $form->remove('imageFile'); // Suppression du champ image si non nécessaire à l'inscription
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $passwordHasher->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            )
-            ->setRoles(['ROLE_EMPLOYEE'])
-            ->setStatut('actif');
-
-            
+            $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
+            $user->setPassword($hashedPassword)
+                 ->setRoles(['ROLE_EMPLOYEE'])
+                 ->setStatut('actif');
 
             $em->persist($user);
             $em->flush();
 
             $this->addFlash('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.');
+
             return $this->redirectToRoute('app_signin');
         }
 
@@ -49,35 +46,42 @@ class AuthController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
+    
     #[Route('/signin', name: 'app_signin')]
-    public function signin(AuthenticationUtils $authenticationUtils): Response
+    public function signin(AuthenticationUtils $authenticationUtils, Request $request): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_dashboard');
         }
-    
-        $error = $authenticationUtils->getLastAuthenticationError();
+
+        // Get security error first
+        $authError = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
-    
-        // Create login form
-        $form = $this->createForm(AuthType::class);
-    
+
+        // Create form
+        $form = $this->createForm(AuthType::class, null, ['is_login' => true]);
+        $form->handleRequest($request);
+
+        // Prepare form errors to pass to template
+        $formErrors = [];
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true) as $error) {
+                $formErrors[] = $error->getMessage();
+            }
+        }
+
         return $this->render('auth/signin.html.twig', [
-            'loginForm' => $form->createView(),
+            'form' => $form->createView(),
             'last_username' => $lastUsername,
-            'error' => $error,
+            'auth_error' => $authError,
+            'form_errors' => $formErrors,
         ]);
     }
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(Request $request): Response
+    public function logout(): void
     {
-        $request->getSession()->invalidate();
-        $response = new Response();
-        $response->headers->clearCookie('PHPSESSID');
-        $response->send();
-        return $this->redirectToRoute('app_signin');
-        throw new \LogicException('This method is intercepted by the logout key on your firewall.');
+        throw new \LogicException('This method is intercepted by the firewall.');
     }
+    
 }

@@ -77,55 +77,24 @@ class UserController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'app_user_update')]
-    public function update(
-        User $user,
-        Request $request,
-        EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
-    ): Response {
-        $form = $this->createForm(UserType::class, $user, );
-        $form->handleRequest($request);
+public function update(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
+{
+    $form = $this->createForm(UserType::class, $user, ['is_new' => false]); // <-- is_new: false
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Mise à jour du mot de passe si fourni
-            if ($form->get('password')->getData()) {
-                $hashedPassword = $passwordHasher->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                );
-                $user->setPassword($hashedPassword);
-            }
+    if ($form->isSubmitted() && $form->isValid()) {
+      
 
-            // Gestion de l'image
-            $imageFile = $form->get('imageFile')->getData();
-            if ($imageFile instanceof UploadedFile) {
-                // Suppression ancienne image si elle existe
-                if ($user->getImage()) {
-                    $oldImagePath = $this->getParameter('kernel.project_dir').'/public/uploads/users/'.$user->getImage();
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
-                }
-
-                $newFilename = uniqid().'.'.$imageFile->guessExtension();
-                $imageFile->move(
-                    $this->getParameter('kernel.project_dir').'/public/uploads/users',
-                    $newFilename
-                );
-                $user->setImage($newFilename);
-            }
-
-            $em->flush();
-
-            $this->addFlash('success', 'Utilisateur mis à jour avec succès.');
-            return $this->redirectToRoute('app_user');
-        }
-
-        return $this->render('user/update.html.twig', [
-            'form' => $form->createView(),
-            'user' => $user,
-        ]);
+        $em->flush();
+        return $this->redirectToRoute('app_user');
     }
+
+    return $this->render('user/update.html.twig', [
+        'form' => $form->createView(),
+        'user' => $user,
+    ]);
+}
+
 
     #[Route('/delete/{id}', name: 'app_user_delete')]
     public function delete(
