@@ -3,41 +3,126 @@
 {% block title %}Update Hotel{% endblock %}
 
 {% block body %}
-  <div class="mx-auto max-w-3xl py-8">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800">Update Hotel</h2>
-                    <a href="{{ path('app_hotel') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="ri-arrow-left-line mr-1"></i>
-                        Back to List
-                    </a>
+<div class="mx-auto max-w-3xl py-8">
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-800">Update Hotel</h2>
+                <a href="{{ path('app_hotel') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="ri-arrow-left-line mr-1"></i>
+                    Back to Hotels
+                </a>
+            </div>
+        </div>
+
+        {{ form_start(form, { 
+            'attr': { 
+                'novalidate': 'novalidate',
+                'data-turbo': 'false',
+                'data-propagation': 'false',
+                'class': 'p-6'
+            } 
+        }) }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Hotel Name -->
+                <div>
+                    {{ form_label(form.nomH, 'Hotel Name', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.nomH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.nomH) }}</div>
+                </div>
+
+                <!-- Address -->
+                <div>
+                    {{ form_label(form.adresseH, 'Address', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.adresseH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.adresseH) }}</div>
+                </div>
+
+                <!-- City -->
+                <div>
+                    {{ form_label(form.villeH, 'City', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.villeH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.villeH) }}</div>
+                </div>
+
+                <!-- Country -->
+                <div>
+                    {{ form_label(form.paysH, 'Country', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.paysH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.paysH) }}</div>
+                </div>
+
+                <!-- Category -->
+                <div>
+                    {{ form_label(form.categorieH, 'Category', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.categorieH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.categorieH) }}</div>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    {{ form_label(form.servicesH, 'Services', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.servicesH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.servicesH) }}</div>
+                </div>
+
+                <!-- Coordinates -->
+                <div>
+                    {{ form_label(form.coordonneesH, 'Coordinates', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.coordonneesH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.coordonneesH) }}</div>
+                </div>
+
+                <!-- Reviews -->
+                <div>
+                    {{ form_label(form.avisH, 'Reviews', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.avisH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.avisH) }}</div>
                 </div>
             </div>
-            
-            <!-- Symfony Form -->
-            {{ form_start(form, { 'attr': { 'class': 'p-6' } }) }}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    {{ form_row(form.nomH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                    {{ form_row(form.adresseH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                    {{ form_row(form.villeH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                    {{ form_row(form.paysH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                    {{ form_row(form.categorieH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                    {{ form_row(form.servicesH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                    {{ form_row(form.coordonneesH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                    {{ form_row(form.avisH, { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' }, 'attr': { 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500' } }) }}
-                </div>
-                
-                <!-- Buttons -->
-                <div class="flex items-center justify-end space-x-3">
-                    <a href="{{ path('app_hotel') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                        Cancel
-                    </a>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Update Hotel
-                    </button>
-                </div>
-            {{ form_end(form) }}
-        </div>
+
+            <!-- Form Buttons -->
+            <div class="flex items-center justify-end space-x-3 mt-6">
+                <a href="{{ path('app_hotel') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Update Hotel
+                </button>
+            </div>
+        {{ form_end(form) }}
     </div>
+</div>
 {% endblock %}
