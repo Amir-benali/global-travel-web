@@ -146,5 +146,4 @@ class ActivityController extends AbstractController
     }
 
 
-
 }

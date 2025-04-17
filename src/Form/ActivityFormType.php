@@ -33,13 +33,18 @@ class ActivityFormType extends AbstractType
             ])
             ->add('description', null, [
                 'required' => true,
+                'empty_data' => '',
                 'label' => 'Activity Description',
                 'attr' => ['placeholder' => 'Enter activity description']
             ])
             ->add('localisation', null, [
-                'required' => true,
-                'label' => 'Location',
-                'attr' => ['placeholder' => 'Enter location']
+                'label' => 'Localisation',
+                'empty_data' => '',
+                'attr' => [
+                    'class' => 'location-autocomplete-input',
+                    'autocomplete' => 'off',
+                    'placeholder' => 'Entrez une localisation'
+                ]
             ])
             ->add('prixtotal', null, [
                 'required' => true,
@@ -48,6 +53,7 @@ class ActivityFormType extends AbstractType
             ])
             ->add('nomactivity', null, [
                 'required' => true,
+                'empty_data' => '',
                 'label' => 'Activity Name',
                 'attr' => ['placeholder' => 'Enter activity name']
             ])
@@ -80,6 +86,7 @@ class ActivityFormType extends AbstractType
             //     'required' => false,
             //     'placeholder' => 'Select a user',
             // ])
+
             ->add('save', SubmitType::class, [
                 'label' => 'Save',
             ])
