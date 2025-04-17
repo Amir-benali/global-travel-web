@@ -83,11 +83,7 @@ public function update(User $user, Request $request, EntityManagerInterface $em,
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        // Update password if provided (no image handling)
-        if ($form->get('password')->getData()) {
-            $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
-            $user->setPassword($hashedPassword);
-        }
+      
 
         $em->flush();
         return $this->redirectToRoute('app_user');

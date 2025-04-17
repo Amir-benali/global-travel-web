@@ -8,10 +8,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Length;
 
 class UserType extends AbstractType
 {
@@ -22,49 +24,40 @@ class UserType extends AbstractType
                 'label' => 'Prénom',
                 'attr' => [
                     'placeholder' => 'Votre prénom',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
                 ]
             ])
             ->add('lastname', TextType::class, [
                 'label' => 'Nom',
                 'attr' => [
                     'placeholder' => 'Votre nom',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
                 ]
             ])
             ->add('email', EmailType::class, [
                 'attr' => [
                     'placeholder' => 'email@exemple.com',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
                 ]
-            ])
-            ->add('password', PasswordType::class, [
-                'required' => false,
-                'always_empty' => true,
-                'mapped' => false,
-                'attr' => [
-                    'autocomplete' => 'new-password',
-                    'class' => 'form-control'
-                ],
-                'label' => 'Mot de passe'
             ])
             ->add('genre', ChoiceType::class, [
                 'choices' => [
-                    'Homme' => 'homme',
-                    'Femme' => 'femme',
-                    'Autre' => 'autre'
+                    'Male' => 'male',
+                    'Female' => 'female',
+                    'Other' => 'other'
                 ],
-                'placeholder' => 'Choisir un genre',
-                'required' => false,
-                'label' => 'Genre',
+                'placeholder' => 'Choose your gender',
+                'required' => true,
+                'label' => 'Gender',
                 'attr' => ['class' => 'form-select']
             ])
+            
             ->add('dateNaissance', DateType::class, [
                 'widget' => 'single_text',
                 'required' => false,
                 'html5' => true,
                 'label' => 'Date de naissance',
-                'attr' => ['class' => 'form-control']
+                'attr' => ['class' => 'form-control'],
             ])
             ->add('phoneNumber', TextType::class, [
                 'required' => false,
@@ -75,16 +68,29 @@ class UserType extends AbstractType
                 ]
             ])
             ->add('adresse', TextType::class, [
-                'required' => false,
-                'label' => 'Adresse',
-                'attr' => ['class' => 'form-control']
+                'required' => false, 
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter an address',
+                    ]),
+                    new Length([
+                        'min' => 5,
+                        'max' => 255,
+                        'minMessage' => 'The address must be at least {{ limit }} characters long',
+                        'maxMessage' => 'The address must not exceed {{ limit }} characters',
+                    ]),
+                    new Regex([
+                        'pattern' => '/^[a-zA-Z0-9\s,.\'-]{5,}$/',
+                        'message' => 'The address should contain only letters, numbers, spaces, and basic punctuation',
+                    ]),
+                ],
             ])
             ->add('roles', ChoiceType::class, [
                 'choices' => [
                 
-                    'Admin' => 'ADMIN',
-                    'Responsable' => 'RESPONSABLE',
-                    'Employé' => 'EMPLOYEE'
+                    'Admin' => 'ROLE_ADMIN',
+                    'Responsable' => 'ROLE_RESPONSABLE',
+                    'Employé' => 'ROLE_EMPLOYEE'
                 ],
                 'placeholder' => 'Choose a role',
                 'required' => false,
@@ -112,33 +118,9 @@ class UserType extends AbstractType
                 ],
                 'label' => 'Statut',
                 'attr' => ['class' => 'form-select']
-            ])
-            
-           
-            ->add('privileges', TextType::class, [
-                'required' => false,
-                'label' => 'Privilèges (admin)',
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('poste', TextType::class, [
-                'required' => false,
-                'label' => 'Poste (employé)',
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('departement', TextType::class, [
-                'required' => false,
-                'label' => 'Département (responsable)',
-                'attr' => ['class' => 'form-control']
             ]);
 
-            if ($options['is_new']) {
-                $builder->add('imageFile', FileType::class, [
-                    'label' => 'Profile Image',
-                    'required' => false,
-                    'mapped' => false, // Not directly mapped to the entity
-                    'attr' => ['class' => 'form-control']
-                ]);
-            }
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -146,7 +128,7 @@ class UserType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'is_new' => false, // Default to false (update form)
-            
+
         ]);
 
     }
