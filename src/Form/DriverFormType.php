@@ -14,31 +14,30 @@ class DriverFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstName'
-            , null, [
+            ->add('firstName', null, [
                 'label' => 'First Name',
                 'attr' => ['placeholder' => 'Enter first name'],
+                'empty_data' => '',
             ])
-            
-            ->add('lastName'
-            , null, [
+            ->add('lastName', null, [
                 'label' => 'Last Name',
                 'attr' => ['placeholder' => 'Enter last name'],
+                'empty_data' => '',
             ])
-            ->add('phone'
-            , null, [
+            ->add('phone', null, [
                 'label' => 'Phone',
                 'attr' => ['placeholder' => 'Enter phone number'],
+                'empty_data' => '',
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Add Car',
+                'label' => 'Add Driver',
                 'attr' => ['class' => 'btn btn-primary'],
             ])
             ->add('reset', ResetType::class, [
                 'label' => 'Reset',
                 'attr' => ['class' => 'btn btn-secondary'],
             ])
-            ;
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
