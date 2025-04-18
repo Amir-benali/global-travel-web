@@ -1,0 +1,88 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Hotel{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl">
+        <!-- Sub Navigation -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex space-x-4">
+                    <a href="#" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
+                    {# <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a> #}
+                </div>
+                
+
+            </div>
+        </div>
+        
+        <!-- Hotel Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for hotel in hotels %}
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <img src="https://haystack-dryers.com/admin/resources/hotel-placeholder-1-w1920.jpg" alt="{{ hotel.nomH }}" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <!-- Hotel Name with Icon -->
+                    <h3 class="text-lg font-medium text-gray-900 mb-2 flex items-center">
+                        <i class="ri-hotel-line text-blue-600 mr-2"></i>
+                        {{ hotel.nomH }}
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <div class="flex items-center">
+                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{ hotel.adresseH }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-earth-line text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{ hotel.villeH }}, {{ hotel.paysH }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-star-fill text-yellow-500 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{ hotel.categorieH }} stars</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Services with Icon -->
+                    <div class="mb-4 flex items-start">
+                        <i class="ri-tools-line text-blue-600 mr-2"></i>
+                        <p class="text-sm text-gray-600 line-clamp-2">{{ hotel.servicesH }}</p>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <!-- View Details -->
+                        <a href="{{ path('front_hotel_details', { id: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+                            <i class="ri-eye-line"></i>
+                        </a>
+                        
+  
+                        <!-- Open Chambre -->
+                        <a href="{{ path('front_chambre', { hotelId: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-full">
+                            <i class="ri-door-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-6 flex items-center justify-center">
+            <div class="flex items-center space-x-2">
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">2</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">3</button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">
+                    <i class="ri-arrow-right-s-line"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

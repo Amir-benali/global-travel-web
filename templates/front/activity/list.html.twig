@@ -1,0 +1,134 @@
+{# templates/front/activity/list.html.twig #}
+{% extends 'front.html.twig' %}
+
+{% block title %}Activity List - Front Office{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h1 class="text-2xl font-semibold text-gray-800">Activity List</h1>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <!-- Search Field -->
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="ri-search-line text-gray-400"></i>
+                    </div>
+                    <input type="text" 
+                           id="searchField" 
+                           placeholder="Search activities..." 
+                           class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <!-- Category Filter Dropdown -->
+                <select id="categoryFilter" 
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Filter by Category</option>
+                    <option value="tour">Tour</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="cultural">Cultural</option>
+                    <option value="leisure">Leisure</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Availability</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ACT-4567</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Grand Canyon Tour</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Arizona, USA</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-11-10</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Tour</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Available
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex space-x-2">
+                                <button class="text-blue-600 hover:text-blue-900" title="View">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="text-yellow-600 hover:text-yellow-900" title="Edit">
+                                    <i class="ri-pencil-line"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900" title="Delete">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ACT-5678</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Surfing Lessons</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Malibu, California</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-11-12</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Adventure</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                Limited
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex space-x-2">
+                                <button class="text-blue-600 hover:text-blue-900" title="View">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="text-yellow-600 hover:text-yellow-900" title="Edit">
+                                    <i class="ri-pencil-line"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900" title="Delete">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ACT-6789</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Museum Visit</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">New York, USA</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-11-15</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Cultural</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Booked
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex space-x-2">
+                                <button class="text-blue-600 hover:text-blue-900" title="View">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                <button class="text-yellow-600 hover:text-yellow-900" title="Edit">
+                                    <i class="ri-pencil-line"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900" title="Delete">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

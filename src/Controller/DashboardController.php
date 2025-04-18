@@ -100,4 +100,12 @@ final class DashboardController extends AbstractController
         
         return $this->render('dashboard/index.html.twig');
     }
+
+    #[Route('/travel', name: 'front_dashboard')]
+    public function travelIndex(): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        return $this->render('front/index.html.twig');
+    }
+
 }

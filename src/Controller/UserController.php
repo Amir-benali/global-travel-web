@@ -116,5 +116,15 @@ public function update(User $user, Request $request, EntityManagerInterface $em,
         return $this->redirectToRoute('app_user');
     }
 
+    #[Route('/travel/settings', name: 'front_settings')]
+    public function travelSettingsPage(EntityManagerInterface $em): Response
+    {
+        $users = $em->getRepository(User::class)->findAll();
+        
+        return $this->render('front/settings.html.twig', [
+            'users' => $users,
+        ]);
+    }
+
     
 }
