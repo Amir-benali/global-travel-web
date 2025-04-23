@@ -9,7 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Form\ReviewFormType;
 use App\Entity\Review; 
 use App\Repository\ReviewRepository;
+use App\Service\AkismetSpamChecker;
 use Doctrine\ORM\EntityManagerInterface;
+use Google\Service\CloudBuild\Security;
 
 final class RewiewController extends AbstractController
 {
@@ -23,31 +25,38 @@ final class RewiewController extends AbstractController
     //     ]);
     // }
     #[Route('/review/create', name: 'app_review_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        AkismetSpamChecker $akismet
+    ): Response {
         $review = new Review();
         $form = $this->createForm(ReviewFormType::class, $review);
         
         $form->handleRequest($request);
         
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Displays a list of all reviews.
- *
- * This action fetches all reviews from the database using the ReviewRepository
- * and renders them in the 'rewiew/index.html.twig' template.
- *
- * @param ReviewRepository $reviewRepository The repository to fetch reviews
- * 
- * @return Response The response containing the rendered template
- */
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Modification ici : Utilisation de $this->getUser()
+            $user = $this->getUser();
+            $userEmail = $user ? $user->getUserIdentifier() : null;
+            $clientIp = $request->getClientIp();
+            $userAgent = $request->headers->get('User-Agent');
 
-/*******  4a771e16-14b5-47b4-97b1-b6f50bdc1124  *******/        
-if ($form->isSubmitted() && $form->isValid()) {
+            if ($akismet->isSpam(
+                $review->getCommentaire(),
+                $userEmail,
+                $clientIp,
+                $userAgent
+            )) {
+                $this->addFlash('error', 'Your review has been detected as spam.');
+                return $this->redirectToRoute('app_review_create');
+            }
+
             $entityManager->persist($review);
             $entityManager->flush();
             
-            return $this->redirectToRoute('app_review'); // or redirect to another route
+            $this->addFlash('success', 'successfully! Continue to the next review ');
+            return $this->redirectToRoute('app_review');
         }
         
         return $this->render('rewiew/create.html.twig', [
