@@ -31,7 +31,7 @@ class CarFormType extends AbstractType
             ->add('numPlace',null, [
                 'label' => 'Number of Seats',
                 'attr' => ['placeholder' => 'Enter number of seats'],
-                'empty_data' => '',
+                'empty_data' => -1,
             ])
             ->add('image', FileType::class, [
                 'label' => 'Image',

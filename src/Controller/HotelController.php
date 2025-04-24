@@ -169,4 +169,45 @@ final class HotelController extends AbstractController
 
         return $this->redirectToRoute('app_chambre');
     }
+
+    #[Route('travel/hotel', name: 'front_hotel')]
+    public function travelHotelindex(EntityManagerInterface $entityManager): Response
+    {
+        $hotels = $entityManager->getRepository(Hotel::class)->findAll();
+
+        return $this->render('front/hotel/index.html.twig', [
+            'hotels' => $hotels,
+        ]);
+    }
+    #[Route('travel/chambre', name: 'front_chambre')]
+    public function travelChambreIndex(EntityManagerInterface $entityManager): Response
+    {
+        $chambres = $entityManager->getRepository(Chambre::class)->findAll();
+
+        return $this->render('front/hotel/chambre/index.html.twig', [
+            'chambres' => $chambres,
+        ]);
+    }
+    #[Route('travel/hotel/details/{id}', name: 'front_hotel_details')]
+    public function travelDetails(int $id, EntityManagerInterface $entityManager): Response
+    {
+        $hotel = $entityManager->getRepository(Hotel::class)->find($id);
+        if (!$hotel) {
+            throw $this->createNotFoundException('Hotel not found');
+        }
+
+        return $this->render('front/hotel/chambre/details.html.twig', [
+            'hotel' => $hotel,
+        ]);
+    }
+    #[Route('travel/hotel/book', name: 'front_book_hotel')]
+    public function travelBookHotelIndex(EntityManagerInterface $entityManager): Response
+    {
+        $hotels = $entityManager->getRepository(Hotel::class)->findAll();
+
+        return $this->render('front/hotel/book.html.twig', [
+            'hotels' => $hotels,
+        ]);
+    }
+
 }

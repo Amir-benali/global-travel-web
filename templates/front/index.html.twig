@@ -1,0 +1,165 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Dashboard - Front Office{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-light text-gray-600">Welcome back,</h2>
+                <h1 class="text-3xl font-semibold text-blue-700">{{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Guest' }}</h1>
+            </div>
+            <div class="text-sm text-gray-500">
+                {{ 'now'|date('l, F j, Y') }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- Flights Card -->
+        <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col items-center">
+            <div class="bg-blue-50 p-3 rounded-full mb-4">
+                <i class="ri-plane-line text-blue-600 text-3xl"></i>
+            </div>
+            <div class="text-3xl font-bold text-gray-800">{{ totalFlights ?? 156 }}</div>
+            <div class="text-gray-500">Active Flights</div>
+        </div>
+
+        <!-- Cars Card -->
+        <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col items-center">
+            <div class="bg-green-50 p-3 rounded-full mb-4">
+                <i class="ri-car-line text-green-600 text-3xl"></i>
+            </div>
+            <div class="text-3xl font-bold text-gray-800">{{ totalCars ?? 89 }}</div>
+            <div class="text-gray-500">Available Cars</div>
+        </div>
+
+        <!-- Hotels Card -->
+        <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col items-center">
+            <div class="bg-purple-50 p-3 rounded-full mb-4">
+                <i class="ri-hotel-line text-purple-600 text-3xl"></i>
+            </div>
+            <div class="text-3xl font-bold text-gray-800">{{ totalHotels ?? 45 }}</div>
+            <div class="text-gray-500">Hotel Partners</div>
+        </div>
+
+        <!-- Activities Card -->
+        <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col items-center">
+            <div class="bg-orange-50 p-3 rounded-full mb-4">
+                <i class="ri-calendar-todo-line text-orange-600 text-3xl"></i>
+            </div>
+            <div class="text-3xl font-bold text-gray-800">{{ totalActivities ?? 34 }}</div>
+            <div class="text-gray-500">Today's Activities</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Booking Distribution Chart -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Booking Distribution</h3>
+                <div class="relative">
+                    <button class="flex items-center space-x-1 px-3 py-1 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
+                        <span>This Month</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="bookingChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Revenue by Service Chart -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Revenue by Service</h3>
+                <div class="relative">
+                    <button class="flex items-center space-x-1 px-3 py-1 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
+                        <span>This Month</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Booking Distribution Chart
+    const bookingCtx = document.getElementById('bookingChart').getContext('2d');
+    const bookingChart = new Chart(bookingCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Flights', 'Hotels', 'Cars', 'Activities'],
+            datasets: [{
+                data: [45, 30, 15, 10],
+                backgroundColor: [
+                    '#3b82f6', // blue-500
+                    '#8b5cf6', // purple-500
+                    '#10b981', // green-500
+                    '#f97316'  // orange-500
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                }
+            }
+        }
+    });
+
+    // Revenue by Service Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(revenueCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Flights', 'Hotels', 'Cars', 'Activities'],
+            datasets: [{
+                data: [12000, 8000, 3500, 2500],
+                backgroundColor: [
+                    '#3b82f6', // blue-500
+                    '#8b5cf6', // purple-500
+                    '#10b981', // green-500
+                    '#f97316'  // orange-500
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `$${context.raw.toLocaleString()}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

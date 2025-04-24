@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'front.html.twig' %}
 
 {% block title %}Seat Selection{% endblock %}
 
@@ -76,9 +76,6 @@
                         <rect x="20" y="120" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
                         <rect x="156" y="40" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
                         <rect x="156" y="120" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        
-                        <!-- Text label -->
-                        <text x="95" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333" font-weight="bold">SEDAN</text>
                     </svg>
                 {% elseif seatCount <= 7 %}
                     {% set vehicle_length = 220 %}  <!-- Increased width (switched for portrait) -->
@@ -107,10 +104,7 @@
                         <rect x="20" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
                         <rect x="20" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
                         <rect x="185" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="185" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        
-                        <!-- Text label -->
-                        <text x="110" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333" font-weight="bold">{% if seatCount == 7 %}MINIVAN{% else %}SUV{% endif %}</text>
+                        <rect x="185" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />                        
                     </svg>
                 {% else %}
                     {% set vehicle_length = 230 %}  <!-- Increased width (switched for portrait) -->
@@ -145,9 +139,6 @@
                         <rect x="200" y="40" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
                         <rect x="200" y="160" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
                         <rect x="200" y="280" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        
-                        <!-- Text label -->
-                        <text x="115" y="395" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333" font-weight="bold">{% if seatCount >= 12 %}STRETCH LIMOUSINE{% else %}LUXURY VEHICLE{% endif %}</text>
                     </svg>
                 {% endif %}
             </div>

@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'front.html.twig' %}
 
 {% block title %}offer{% endblock %}
 
@@ -8,15 +8,11 @@
   <div class="bg-white rounded-lg shadow mb-6">
             <div class="flex items-center justify-between p-4">
                 <div class="flex space-x-4">
-                    <a href="{{path('app_car')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Private Car List</a>
-                    <a href="{{path('app_car_driver')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Driver List</a>
-                    <a href="{{path('app_car_offer')}}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">Offer List</a>
+                    <a href="{{path('front_car')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Private Car List</a>
+                    <a href="{{path('front_car_driver')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Driver List</a>
+                    <a href="{{path('front_car_offer')}}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">Offer List</a>
                 </div>
                 
-                <a href="{{path('app_car_offer_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="ri-add-line mr-1"></i>
-                    ADD
-                </a>
             </div>
         </div>
         
@@ -56,34 +52,9 @@
                     </div>
                     
                     <div class="flex space-x-2">
-                        <a href="{{ path('app_car_offer_update', { id: offer.getId() }) }}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">Update</a>
-
-                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm text-center" 
-                            onclick="document.getElementById('delete-alert-{{ offer.getId() }}').classList.remove('hidden'); document.getElementById('delete-alert-{{ offer.getId() }}').classList.add('flex');">
-                            Delete
-                        </button>
-                        <div id="delete-alert-{{ offer.getId() }}" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-                            {% include 'components/alert.html.twig' with {
-                                'id': 'delete-offer-' ~ offer.getId(),
-                                'title': 'Delete Offer',
-                                'message': 'Are you sure you want to delete this offer?',
-                                'confirmUrl': path('app_car_offer_delete', { id: offer.getId() }),
-                                'type': 'warning',
-                                'buttons': [
-                                    {
-                                        'class': 'bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm text-center',
-                                        'text': 'Delete',
-                                        'url': path('app_car_offer_delete', { id: offer.getId() })
-                                    },
-                                    {
-                                        'class': 'bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded-md text-sm text-center',
-                                        'text': 'Cancel',
-                                        'url': '#',
-                                        'onclick': "document.getElementById('delete-alert-" ~ offer.getId() ~ "').classList.add('hidden'); document.getElementById('delete-alert-" ~ offer.getId() ~ "').classList.remove('flex');"
-                                    }
-                                ],
-                            } %}
-                        </div>                    
+                        <a href="{{path('app_car_offer_details',{id:offer.getId()})}}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">
+                            View Details
+                        </a>            
                     </div>
                 </div>
             </div>
