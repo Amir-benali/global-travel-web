@@ -17,7 +17,7 @@ security:
             security: false
         main:
 
-           
+
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 semaine (en secondes)
