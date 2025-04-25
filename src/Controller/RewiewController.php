@@ -103,6 +103,13 @@ public function update(Request $request, EntityManagerInterface $entityManager, 
         return $this->redirectToRoute('app_review');
     }
 
-    
+    #[Route('/travel/reviews', name: 'front_review')]
+    public function travelReviewIndex(ReviewRepository $reviewRepository): Response
+    {
+        $reviews = $reviewRepository->findAll(); // Fetch all reviews from the database
+        return $this->render('front/activity/review/index.html.twig', [
+            'reviews' => $reviews,
+        ]);
+    }
 
 }

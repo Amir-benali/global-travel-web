@@ -38,9 +38,11 @@ class ChambreType extends AbstractType
             ->add('dispoH', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'Availability Date',
+                'required' => false, // Make the field optional
                 'attr' => [
                     'min' => (new \DateTime())->format('Y-m-d'), // Ensures the date is greater than today
-                    'class' => 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm',
+                    'class' => 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                    'placeholder' => 'Select a date (optional)',
                 ],
             ])
             ->add('optionH', TextType::class, [

@@ -24,6 +24,7 @@ class OfferFormType extends AbstractType
             , null, [
                 'label' => 'Description',
                 'attr' => ['placeholder' => 'Enter description'],
+                'empty_data' => '',
             ])
             ->add('date', DateTimeType::class, [
                 'widget' => 'single_text',
@@ -32,20 +33,27 @@ class OfferFormType extends AbstractType
                     'placeholder' => 'Select date and time',
                 ],
                 'label' => 'Date and Time',
+                'empty_data' => null,
+
             ])
             ->add('price'
             , null, [
                 'label' => 'Price',
                 'attr' => ['placeholder' => 'Enter price'],
+                'empty_data' => -1,
+
             ])
             ->add('car', EntityType::class, [
                 'class' => PrivateCar::class,
                 'choice_label' => 'model',
                 'placeholder' => 'Select a car',
+                'empty_data' => -1,
+
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Add Car',
                 'attr' => ['class' => 'btn btn-primary'],
+                
             ])
             ->add('reset', ResetType::class, [
                 'label' => 'Reset',

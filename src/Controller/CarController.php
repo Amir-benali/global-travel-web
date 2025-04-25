@@ -260,4 +260,102 @@ final class CarController extends AbstractController
     }
 
 
+
+    #[Route('/car/book/seats/{id}', name: 'app_car_book_seats')]
+    public function seatSelection(int $id,CarOfferRepository $offer): Response
+    {
+        // Get seat count from request or set default
+        $seatCount = $offer->find($id)->getCar()->getNumPlace(); ;
+        $basePrice = $offer->find($id)->getPrice();
+        // Validate seat count (minimum 4, maximum 8)
+        // $seatCount = max(4, min(8, $seatCount));
+        
+        // Define seat prices based on seat count
+        $seatPrices = [
+            'A2' => 0.15 * $basePrice,
+            'B1' => 0.15 * $basePrice,
+            'B2' => 0.15 * $basePrice,
+            'B3' => 0.12 * $basePrice,
+            'C1' => 0.12 * $basePrice,
+            'C2' => 0.10 * $basePrice,
+            'C3' => 0.10 * $basePrice,
+            'D1' => 0.08 * $basePrice,
+            'D2' => 0.08 * $basePrice,
+            'D3' => 0.08 * $basePrice,
+        ];
+        
+        return $this->render('car/book/seat_selection.html.twig', [
+            'seatCount' => $seatCount,
+            'seatPrices' => $seatPrices,
+            'id' => $offer->find($id)->getId(),
+        ]);
+    }
+
+    #[Route('/car/book/map/{id}', name: 'app_car_map')]
+    public function seatMap(int $id, Request $request, CarOfferRepository $offer): Response
+    {
+        $selectedSeats = $request->get('seats', []);
+        $basePrice = $offer->find($id)->getPrice();
+        $totalPrice = 0;
+        
+        foreach ($selectedSeats as $seat) {
+            // Calculate total price based on selected seats
+            switch ($seat) {
+                case 'A2':
+                case 'B1':
+                case 'B2':
+                    $totalPrice += 0.15 * $basePrice;
+                    break;
+                case 'B3':
+                case 'C1':
+                    $totalPrice += 0.12 * $basePrice;
+                    break;
+                case 'C2':
+                case 'C3':
+                    $totalPrice += 0.10 * $basePrice;
+                    break;
+                case 'D1':
+                case 'D2':
+                case 'D3':
+                    $totalPrice += 0.08 * $basePrice;
+                    break;
+            }
+        }
+
+        return $this->render('car/book/map.html.twig', [
+            'selectedSeats' => $selectedSeats,
+            'totalPrice' => $totalPrice,
+        ]);
+    }
+
+    #[Route('/travel/car', name: 'front_car')]
+    public function travelCarIndex(PrivateCarRepository $carRep): Response
+    {
+        $cars = $carRep->findAll();
+
+        return $this->render('front/car/index.html.twig', [
+            'cars'=> $cars,
+        ]);
+    }
+    #[Route('/travel/car/driver', name: 'front_car_driver')]
+    public function travelDriverPage(CarDriverRepository $drivers): Response
+    {
+        return $this->render('front/car/driver/index.html.twig', [
+            'drivers' => $drivers->findAll(),
+        ]);
+    }
+    #[Route('travel/car/offer', name: 'front_car_offer')]
+    public function travelOfferPage(CarOfferRepository $offers): Response
+    {
+        return $this->render('front/car/offer/index.html.twig', [
+            'offers' => $offers->findAll(),
+        ]);
+    }
+    #[Route('travel/car/book', name: 'front_book_car')]
+    public function travelOfferBookPage(CarOfferRepository $offers): Response
+    {
+        return $this->render('front/car/book.html.twig', [
+            'offers' => $offers->findAll(),
+        ]);
+    }
 }
