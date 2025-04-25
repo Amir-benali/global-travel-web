@@ -5,7 +5,6 @@
         "This file is @generated automatically"
     ],
     "content-hash": "c38456ba462e1b1c8c9f13f53cd38ca6",
-
     "packages": [
         {
             "name": "composer/semver",
@@ -8728,6 +8727,50 @@
                 "source": "https://github.com/SymfonyCasts/tailwind-bundle/tree/v0.9.0"
             },
             "time": "2025-03-22T13:36:15+00:00"
+        },
+        {
+            "name": "tijsverkoyen/akismet",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tijsverkoyen/Akismet.git",
+                "reference": "6f7987fe181fd0fddbc9832f2ddeaf088425c83f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tijsverkoyen/Akismet/zipball/6f7987fe181fd0fddbc9832f2ddeaf088425c83f",
+                "reference": "6f7987fe181fd0fddbc9832f2ddeaf088425c83f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    ""
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Tijs Verkoyen",
+                    "email": "akismet@verkoyen.eu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Akismet is a wrapper-class to communicate with the Akismet API.",
+            "homepage": "https://github.com/tijsverkoyen/Akismet",
+            "support": {
+                "issues": "https://github.com/tijsverkoyen/Akismet/issues",
+                "source": "https://github.com/tijsverkoyen/Akismet/tree/master"
+            },
+            "abandoned": true,
+            "time": "2016-07-19T13:50:18+00:00"
         },
         {
             "name": "twig/extra-bundle",

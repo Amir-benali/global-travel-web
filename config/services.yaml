@@ -7,6 +7,9 @@ parameters:
     azure.blob.connection_string: 'DefaultEndpointsProtocol=https;AccountName=globaltravelst;AccountKey=BZV+gsukTi/C5g8qpM5GeUf1Fy4klSrbJkiASacXlmzhEHv2ZSUe5qSU5bUaFj6+chX+fyjCBkHT+AStlGTwIQ==;EndpointSuffix=core.windows.net'
     azure.blob.container_name: 'globaltravelstorage'
     azure.blob.disable_ssl_verification: true
+    akismet.api_key: '8c085842ad83'
+    akismet.blog_url: 'http://127.0.0.1:8000'
+    
 
 services:
     # default configuration for services in *this* file
@@ -28,5 +31,13 @@ services:
                 $connectionString: '%azure.blob.connection_string%'
                 $containerName: '%azure.blob.container_name%'
                 $disableSslVerification: '%azure.blob.disable_ssl_verification%'
+
+    App\Service\AkismetSpamChecker:
+        arguments:
+            $akismetApiKey: '%akismet.api_key%'  # ← Nom corrigé
+            $akismetBlogUrl: '%akismet.blog_url%' # ← Nom corrigé
+            $httpClient: '@http_client'
+            $logger: '@logger' # Ajouter cette ligne
+    
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

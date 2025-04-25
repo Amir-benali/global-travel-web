@@ -39,6 +39,7 @@ class ActivityController extends AbstractController
     #[Route('/activity/details/{id}', name: 'app_activity_details')]
     public function details(EntityManagerInterface $entityManager, int $id): Response
     {
+        
         $activity = $entityManager->getRepository(Activity::class)->find($id);
         
         if (!$activity) {
@@ -49,6 +50,8 @@ class ActivityController extends AbstractController
             'activity' => $activity,
         ]);
     }
+
+     ///create activity
 
     #[Route('/activity/create', name: 'app_activity_create')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
@@ -77,7 +80,13 @@ class ActivityController extends AbstractController
         return $this->render('activity/create.html.twig', [
             'form' => $form->createView(),
         ]);
-    }    #[Route('/activity/update/{id}', name: 'app_activity_update')]
+
+
+ } 
+
+
+      /// Update activity
+      #[Route('/activity/update/{id}', name: 'app_activity_update')]
     public function update(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
         $activity = $entityManager->getRepository(Activity::class)->find($id);

@@ -128,6 +128,7 @@ class ActivityRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    //ajax
     public function searchByName(string $query): array
 {
     return $this->createQueryBuilder('a')
