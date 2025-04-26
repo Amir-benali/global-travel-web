@@ -42,24 +42,36 @@
                         <th class="w-12 px-4 py-3">
                             <input type="checkbox" id="select-all" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                         </th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                            <div class="flex items-center">
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 sortable" data-field="firstname">
+                            <div class="flex items-center cursor-pointer">
                                 User Name
+                                <svg class="ml-1 w-3 h-3 text-gray-400 sort-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                </svg>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                            <div class="flex items-center">
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 sortable" data-field="email">
+                            <div class="flex items-center cursor-pointer">
                                 Email Address
+                                <svg class="ml-1 w-3 h-3 text-gray-400 sort-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                </svg>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                            <div class="flex items-center">
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 sortable" data-field="phoneNumber">
+                            <div class="flex items-center cursor-pointer">
                                 Phone Number
+                                <svg class="ml-1 w-3 h-3 text-gray-400 sort-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                </svg>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                            <div class="flex items-center">
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 sortable" data-field="roles">
+                            <div class="flex items-center cursor-pointer">
                                 Role
+                                <svg class="ml-1 w-3 h-3 text-gray-400 sort-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                </svg>
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
@@ -69,6 +81,8 @@
                         </th>
                     </tr>
                 </thead>
+                
+                
                 
                 <tbody class="divide-y divide-gray-200 bg-white">
                     {% for user in users %}
@@ -135,6 +149,55 @@
 </div>
 
 {% block javascripts %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.querySelector('input[name="search"]');
+        const tbody = document.querySelector('table tbody');
+        const sortableHeaders = document.querySelectorAll('th.sortable');
+    
+        let sortField = 'firstname';
+        let sortDirection = 'asc';
+    
+        function loadUsers() {
+            const query = searchInput.value;
+    
+            const url = new URL('{{ path('app_user') }}', window.location.origin);
+            url.searchParams.append('search', query);
+            url.searchParams.append('sortField', sortField);
+            url.searchParams.append('sortDirection', sortDirection);
+    
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                tbody.innerHTML = html;
+            });
+        }
+    
+        searchInput.addEventListener('input', function () {
+            loadUsers();
+        });
+    
+        sortableHeaders.forEach(header => {
+            header.addEventListener('click', function () {
+                const field = this.getAttribute('data-field');
+                if (field === sortField) {
+                    // Si on clique deux fois sur la même colonne, on inverse le sens
+                    sortDirection = (sortDirection === 'asc') ? 'desc' : 'asc';
+                } else {
+                    sortField = field;
+                    sortDirection = 'asc';
+                }
+                loadUsers();
+            });
+        });
+    });
+    </script>
+    
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Gestion de la sélection multiple
@@ -170,5 +233,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.querySelector('input[name="search"]');
+    const tbody = document.querySelector('table tbody');
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value;
+
+        fetch('{{ path('app_user') }}?search=' + encodeURIComponent(query), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            tbody.innerHTML = html;
+        });
+    });
+});
+</script>
 {% endblock %}
+
 {% endblock %}

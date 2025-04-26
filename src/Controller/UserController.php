@@ -16,14 +16,42 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class UserController extends AbstractController
 {
     #[Route('/', name: 'app_user')]
-    public function index(EntityManagerInterface $em): Response
-    {
-        $users = $em->getRepository(User::class)->findAll();
-        
-        return $this->render('user/index.html.twig', [
+public function index(Request $request, EntityManagerInterface $em): Response
+{
+    $search = $request->query->get('search');
+    $sortField = $request->query->get('sortField', 'firstname'); // tri par défaut
+    $sortDirection = $request->query->get('sortDirection', 'asc');
+
+    $qb = $em->createQueryBuilder()
+        ->select('u')
+        ->from(User::class, 'u');
+
+    if ($search) {
+        $qb->where('u.firstname LIKE :search')
+            ->orWhere('u.lastname LIKE :search')
+            ->orWhere('u.email LIKE :search')
+            ->orWhere('u.phoneNumber LIKE :search')
+            ->orWhere('u.roles LIKE :search')
+            ->setParameter('search', '%'.$search.'%');
+    }
+
+    // Ajouter le tri ici
+    if (in_array($sortField, ['firstname', 'lastname', 'email', 'phoneNumber', 'roles']) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
+        $qb->orderBy('u.' . $sortField, $sortDirection);
+    }
+
+    $users = $qb->getQuery()->getResult();
+
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('user/_users_table.html.twig', [
             'users' => $users,
         ]);
     }
+
+    return $this->render('user/index.html.twig', [
+        'users' => $users,
+    ]);
+}
 
     #[Route('/settings', name: 'app_settings')]
     public function settingsPage(EntityManagerInterface $em): Response
@@ -99,7 +127,9 @@ public function update(User $user, Request $request, EntityManagerInterface $em,
     #[Route('/delete/{id}', name: 'app_user_delete')]
     public function delete(
         User $user,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface $tokenStorage,
+        Request $request
     ): Response {
         // Suppression de l'image associée
         if ($user->getImage()) {
@@ -108,6 +138,13 @@ public function update(User $user, Request $request, EntityManagerInterface $em,
                 unlink($imagePath);
             }
         }
+
+        if ($user === $this->getUser()) {
+            // Déconnexion
+            $tokenStorage->setToken(null);
+            $request->getSession()->invalidate();
+        }
+    
 
         $em->remove($user);
         $em->flush();
