@@ -16,6 +16,17 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use League\OAuth2\Client\Provider\GoogleUser;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordAuthenticatedToken;
+use Symfony\Component\Security\Core\Security;
+
+
+
+
+
 
 class AuthController extends AbstractController
 {
@@ -133,6 +144,39 @@ class AuthController extends AbstractController
             'form_errors' => $formErrors,
         ]);
     }
+
+
+    #[Route('/connect/google', name: 'connect_google_start')]
+public function connectGoogle(ClientRegistry $clientRegistry)
+{
+    return $clientRegistry
+        ->getClient('google') // nom du client défini dans yaml
+        ->redirect([], []); // Redirige vers Google
+}
+#[Route('/connect/google/check', name: 'connect_google_check')]
+public function connectGoogleCheck(Request $request, $security): Response
+{
+    /** @var UsernamePasswordAuthenticatedToken|null $userToken */
+    $userToken = $security->getToken();
+    
+    if (!$userToken) {
+        throw $this->createAccessDeniedException('No authenticated user.');
+    }
+
+    $user = $userToken->getUser();
+
+    if (!$user) {
+        throw $this->createAccessDeniedException('No user found.');
+    }
+
+    // Ici, tu peux utiliser $user (par exemple afficher son email)
+    // Exemple: dd($user);
+
+    return $this->redirectToRoute('app_dashboard'); // Redirige vers une page de ton choix
+}
+
+
+
 
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void

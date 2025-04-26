@@ -16,6 +16,8 @@
         "google/apiclient": "*",
         "google/apiclient-services": "^0.396.0",
         "knplabs/knp-time-bundle": "^2.4",
+        "knpuniversity/oauth2-client-bundle": "^2.18",
+        "league/oauth2-google": "^4.0",
         "microsoft/azure-storage-blob": "^1.5",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.1",
