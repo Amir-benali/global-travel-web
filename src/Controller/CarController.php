@@ -11,6 +11,7 @@ use App\Form\DriverFormType;
 use App\Form\OfferFormType;
 use App\Repository\CarDriverRepository;
 use App\Repository\CarOfferRepository;
+use App\Repository\CarRouteRepository;
 use App\Repository\PrivateCarRepository;
 use App\Service\AzureBlobService;
 use Doctrine\ORM\EntityManager;
@@ -294,13 +295,23 @@ final class CarController extends AbstractController
     #[Route('/car/book/map/{id}', name: 'app_car_map')]
     public function seatMap(int $id, Request $request, CarOfferRepository $offer): Response
     {
-        $selectedSeats = $request->get('seats', []);
+
+
         $basePrice = $offer->find($id)->getPrice();
         $totalPrice = 0;
+        $selectedSeats = $request->request->get('selected_seats');
+        if (is_string($selectedSeats) && substr($selectedSeats, 0, 1) === '[' && substr($selectedSeats, -1) === ']') {
+            $selectedSeats = json_decode($selectedSeats, true) ?: [];
+        }
         
+        // Ensure $selectedSeats is an array before looping
+        if (!is_array($selectedSeats)) {
+            return $this->redirectToRoute('app_car_book_seats', ['id' => $id]);
+        }
+
         foreach ($selectedSeats as $seat) {
             // Calculate total price based on selected seats
-            switch ($seat) {
+            switch ($seat['id']) {
                 case 'A2':
                 case 'B1':
                 case 'B2':
@@ -322,9 +333,22 @@ final class CarController extends AbstractController
             }
         }
 
+        // // Debug: Log selected seats to the console
+        // dump($selectedSeats);
+        // dump([
+        //     'selectedSeats' => $selectedSeats,
+        //     'basePrice' => $basePrice,
+        //     'totalPrice' => $totalPrice
+        // ]);
+
+        // // Alternative if you want to log to server logs
+        // error_log('Selected seats: ' . json_encode($selectedSeats));
+
         return $this->render('car/book/map.html.twig', [
             'selectedSeats' => $selectedSeats,
             'totalPrice' => $totalPrice,
+            'offer'=> $offer->find($id),
+            'car'=> $offer->find($id)->getCar(),
         ]);
     }
 

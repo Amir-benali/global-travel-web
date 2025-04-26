@@ -8,7 +8,7 @@
         <div class="p-6 border-b border-gray-200">
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-semibold text-gray-800">Select Your Seats</h2>
-                <a href="{{ path('app_car') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <a href="{{ path('front_car') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
                     <i class="ri-arrow-left-line mr-1"></i>
                     Back to List
                 </a>
@@ -338,19 +338,12 @@
                     <!-- Actions -->
                     <form id="seat-form" action="{{ path('app_car_map',{id:id}) }}" method="post" data-turbo="false">
                         <input type="hidden" name="selected_seats" id="selected-seats-input" value="">
-                        <input type="hidden" name="total_price" id="total-price-input" value="0">
                         <div class="space-y-3">
                             <button type="submit" id="seat-continue" disabled 
                                     class="w-full px-4 py-3 bg-gray-300 text-gray-600 rounded-lg font-medium flex items-center justify-center transition-colors duration-200 cursor-not-allowed">
                                 Continue
                                 <i class="ri-arrow-right-line ml-2"></i>
                             </button>
-                            
-                            <a href="{{ path('app_car') }}" 
-                               class="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-medium flex items-center justify-center transition-colors duration-200 text-center">
-                                <i class="ri-arrow-left-line mr-2"></i>
-                                Back to List
-                            </a>
                         </div>
                     </form>
                 </div>
@@ -363,7 +356,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // State
     const selectedSeats = [];
-    
     // DOM Elements
     const seats = document.querySelectorAll('.seat');
     const selectedSeatsContainer = document.getElementById('selected-seats-container');
@@ -413,6 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 price: seatPrice,
                 position: seatPositions[seatId] || 'Passenger seat'
             });
+            document.getElementById('selected-seats-input').value= JSON.stringify(selectedSeats.map(seat => seat.id));
+            console.log(document.getElementById('selected-seats-input').value);
         }
         
         updateSelectedSeatsDisplay();
@@ -440,7 +434,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let html = '<div class="space-y-3">';
         let totalPrice = 0;
-        
         selectedSeats.forEach(seat => {
             totalPrice += seat.price;
             html += `
