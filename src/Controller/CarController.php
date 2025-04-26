@@ -327,4 +327,35 @@ final class CarController extends AbstractController
             'totalPrice' => $totalPrice,
         ]);
     }
+
+    #[Route('/travel/car', name: 'front_car')]
+    public function travelCarIndex(PrivateCarRepository $carRep): Response
+    {
+        $cars = $carRep->findAll();
+
+        return $this->render('front/car/index.html.twig', [
+            'cars'=> $cars,
+        ]);
+    }
+    #[Route('/travel/car/driver', name: 'front_car_driver')]
+    public function travelDriverPage(CarDriverRepository $drivers): Response
+    {
+        return $this->render('front/car/driver/index.html.twig', [
+            'drivers' => $drivers->findAll(),
+        ]);
+    }
+    #[Route('travel/car/offer', name: 'front_car_offer')]
+    public function travelOfferPage(CarOfferRepository $offers): Response
+    {
+        return $this->render('front/car/offer/index.html.twig', [
+            'offers' => $offers->findAll(),
+        ]);
+    }
+    #[Route('travel/car/book', name: 'front_book_car')]
+    public function travelOfferBookPage(CarOfferRepository $offers): Response
+    {
+        return $this->render('front/car/book.html.twig', [
+            'offers' => $offers->findAll(),
+        ]);
+    }
 }

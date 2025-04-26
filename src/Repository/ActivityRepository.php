@@ -351,7 +351,7 @@ public function countCancelledActivities(): int
 public function findRecentActivities(int $limit = 5): array
 {
     return $this->createQueryBuilder('a')
-        ->orderBy('a.datedebut', 'DESC')
+        ->orderBy('a.datedebut', 'ASC')
         ->setMaxResults($limit)
         ->getQuery()
         ->getResult();

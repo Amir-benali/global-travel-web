@@ -1,0 +1,75 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Liste des Avis{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex items-center">
+                    <div class="flex items-center text-2xl font-semibold text-gray-800">
+                        <i class="ri-star-line text-blue-600 mr-2"></i>
+                        Liste des Avis
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                 
+                     
+                    <a href="{{ path('front_activity') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center">
+                        <i class="ri-list-check mr-1"></i>
+                        Liste des Activités
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reviews Grid - Dynamic Version -->
+        <div class="grid grid-cols-1 gap-6">
+            {% for review in reviews %}
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                        <img src="{{ 'https://ui-avatars.com/api/?name=' ~ (review.getUserId() is not null ? review.getUserId().getFirstName() ~ review.getUserId().getLastName() : 'anonymous+user') ~ '&background=random' }}" alt="Profile" class="w-10 h-10 object-cover rounded-full ">
+                             <h3 class="text-lg font-medium text-gray-900">{{ review.getUserId() is not null ? review.getUserId().getFirstName() : "Anonymous user" }}</h3>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500">{{ review.datereview|date('d/m/Y H:i') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center">
+                                <i class="ri-chat-quote-line text-blue-600 w-6"></i>
+                                <span class="text-sm text-gray-700">{{ review.commentaire }}</span>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <i class="ri-star-line text-blue-600 w-6"></i>
+                                <div class="flex items-center ml-1">
+                                    {% for i in 1..5 %}
+                                        <i class="ri-star-fill {% if i <= review.note %}text-yellow-400{% else %}text-gray-300{% endif %}"></i>
+                                    {% endfor %}
+                                    <span class="text-sm text-gray-700 ml-2">({{ review.note }}/5)</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <i class="ri-calendar-event-line text-blue-600 w-6"></i>
+                                <span class="text-sm text-gray-700">Activité: {{ review.getActivityId().getDescription() }}</span>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center text-gray-500">Aucun avis trouvé.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

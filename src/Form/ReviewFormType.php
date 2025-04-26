@@ -20,6 +20,7 @@ class ReviewFormType extends AbstractType
     {
         $builder
             ->add('commentaire', TextareaType::class, [
+                'empty_data' => '',
                 'label' => 'Comment',
                 'attr' => ['rows' => 5]
             ])
@@ -35,7 +36,7 @@ class ReviewFormType extends AbstractType
             ->add('activityId', EntityType::class, [
                 'label' => 'Activity',
                 'class' => Activity::class,
-                'choice_label' => 'description', 
+                'choice_label' => 'nomactivity', 
                 'required' => true,
             ])
             ->add('userid', EntityType::class, [
