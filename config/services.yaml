@@ -7,6 +7,7 @@ parameters:
     azure.blob.connection_string: 'DefaultEndpointsProtocol=https;AccountName=globaltravelst;AccountKey=BZV+gsukTi/C5g8qpM5GeUf1Fy4klSrbJkiASacXlmzhEHv2ZSUe5qSU5bUaFj6+chX+fyjCBkHT+AStlGTwIQ==;EndpointSuffix=core.windows.net'
     azure.blob.container_name: 'globaltravelstorage'
     azure.blob.disable_ssl_verification: true
+    env(NOMINATIM_USER_AGENT): 'GlobalTravelApp/1.0'
 
 services:
     # default configuration for services in *this* file
@@ -28,5 +29,10 @@ services:
                 $connectionString: '%azure.blob.connection_string%'
                 $containerName: '%azure.blob.container_name%'
                 $disableSslVerification: '%azure.blob.disable_ssl_verification%'
+    App\Service\CityDataProvider:
+        arguments:
+            $userAgent: '%env(NOMINATIM_USER_AGENT)%'
+            $cache: '@cache.app'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    

@@ -33,14 +33,9 @@ class Hotel
     )]
     private string $adresseH;
 
-    #[ORM\Column(name: "ville_h", type: "string", length: 255)]
-    #[Assert\NotBlank(message: "The city cannot be blank.")]
-    #[Assert\Length(
-        min: 3,
-        max: 30,
-        minMessage: "The city must be at least {{ limit }} characters long.",
-        maxMessage: "The city cannot be longer than {{ limit }} characters."
-    )]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "City required")]
+    #[Assert\Length(min: 2, max: 255)]
     private string $villeH;
 
     #[ORM\Column(name: "pays_h", type: "string", length: 255)]
@@ -90,7 +85,7 @@ class Hotel
         minMessage: "The review must be at least {{ limit }} characters long.",
         maxMessage: "The review cannot be longer than {{ limit }} characters."
     )]
-    private string $avisH;
+    private string $avisH='great_hotel_review';
 
     // Getters and Setters
     public function getIdHotelH(): ?int { return $this->idHotelH; }
