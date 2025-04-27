@@ -11,73 +11,133 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class AuthController extends AbstractController
 {
     #[Route('/signup', name: 'app_signup')]
-    public function signup(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
-    {
+    public function signup(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $em,
+        HttpClientInterface $httpClient
+    ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_dashboard');
         }
-
+    
         $user = new User();
         $form = $this->createForm(AuthType::class, $user);
         $form->remove('imageFile');
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $passwordHasher->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            )
-            ->setRoles(['ROLE_EMPLOYEE'])
-            ->setStatut('actif');
-
-            
-
+            // 🎯 Vérifier hCaptcha d'abord
+            $captchaToken = $request->request->get('h-captcha-response');
+            if (!$captchaToken) {
+                $this->addFlash('error', 'Veuillez valider le captcha.');
+                return $this->render('auth/signup.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+        
+            // Appel API hCaptcha
+            $captchaResponse = $httpClient->request('POST', 'https://hcaptcha.com/siteverify', [
+                'body' => [
+                    'secret' => 'ES_b5a839be8aa14b89a97dc1d64e0bdc1f', 
+                    'response' => $captchaToken,
+                ],
+            ]);
+        
+            $captchaResult = $captchaResponse->toArray();
+        
+            if (!$captchaResult['success']) {
+                $this->addFlash('error', 'Captcha invalide. Veuillez réessayer.');
+                return $this->render('auth/signup.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+        
+            // 📧 Vérification email avec Abstract API
+            $email = $user->getEmail();
+            $apiKey = '3ef5f391c43b47e18c9746877b762f3a';
+            $url = "https://emailvalidation.abstractapi.com/v1/?api_key=$apiKey&email=$email";
+        
+            try {
+                $response = $httpClient->request('GET', $url);
+                $data = $response->toArray();
+        
+                if (!isset($data['deliverability']) || $data['deliverability'] !== 'DELIVERABLE') {
+                    $this->addFlash('error', 'L\'adresse e-mail fournie n\'est pas valide ou n\'est pas délivrable.');
+                    return $this->render('auth/signup.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+            } catch (ClientExceptionInterface|TransportExceptionInterface $e) {
+                $this->addFlash('error', 'Erreur lors de la vérification de l\'adresse e-mail. Veuillez réessayer.');
+                return $this->render('auth/signup.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+        
+            // 💾 Création du compte
+            $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
+            $user->setPassword($hashedPassword)
+                ->setRoles(['ROLE_EMPLOYEE'])
+                ->setStatut('actif');
+        
             $em->persist($user);
             $em->flush();
-
+        
             $this->addFlash('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.');
             return $this->redirectToRoute('app_signin');
         }
-
+        
         return $this->render('auth/signup.html.twig', [
             'form' => $form->createView(),
         ]);
+        
     }
-
+    
     #[Route('/signin', name: 'app_signin')]
-    public function signin(AuthenticationUtils $authenticationUtils): Response
+    public function signin(AuthenticationUtils $authenticationUtils, Request $request): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_dashboard');
         }
-    
-        $error = $authenticationUtils->getLastAuthenticationError();
+
+        // Get security error first
+        $authError = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
-    
-        // Create login form
-        $form = $this->createForm(AuthType::class);
-    
+
+        // Create form
+        $form = $this->createForm(AuthType::class, null, ['is_login' => true]);
+        $form->handleRequest($request);
+
+        // Prepare form errors to pass to template
+        $formErrors = [];
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true) as $error) {
+                $formErrors[] = $error->getMessage();
+            }
+        }
+
         return $this->render('auth/signin.html.twig', [
-            'loginForm' => $form->createView(),
+            'form' => $form->createView(),
             'last_username' => $lastUsername,
-            'error' => $error,
+            'auth_error' => $authError,
+            'form_errors' => $formErrors,
         ]);
     }
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(Request $request): Response
+    public function logout(): void
     {
-        $request->getSession()->invalidate();
-        $response = new Response();
-        $response->headers->clearCookie('PHPSESSID');
-        $response->send();
-        return $this->redirectToRoute('app_signin');
-        throw new \LogicException('This method is intercepted by the logout key on your firewall.');
+        throw new \LogicException('This method is intercepted by the firewall.');
     }
+    
 }

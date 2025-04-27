@@ -13,6 +13,8 @@
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
+        "google/apiclient": "*",
+        "google/apiclient-services": "^0.396.0",
         "knplabs/knp-time-bundle": "^2.4",
         "microsoft/azure-storage-blob": "^1.5",
         "phpdocumentor/reflection-docblock": "^5.6",
@@ -27,6 +29,7 @@
         "symfony/form": "6.4.*",
         "symfony/framework-bundle": "6.4.*",
         "symfony/http-client": "6.4.*",
+        "symfony/http-foundation": "6.4.*",
         "symfony/intl": "6.4.*",
         "symfony/mailer": "6.4.*",
         "symfony/mime": "6.4.*",
@@ -42,6 +45,7 @@
         "symfony/string": "6.4.*",
         "symfony/translation": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
+        "symfony/uid": "6.4.*",
         "symfony/ux-turbo": "^2.23",
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
@@ -95,7 +99,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": true,
             "require": "6.4.*"
         }
     },

@@ -1,0 +1,508 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Seat Selection{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-7xl py-8 px-4">
+    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-800">Select Your Seats</h2>
+                <a href="{{ path('app_car') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="ri-arrow-left-line mr-1"></i>
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Vehicle visualization -->
+<div class="lg:col-span-2">
+    <div class="relative bg-gradient-to-b from-blue-50 to-gray-100 rounded-2xl p-4 sm:p-6 h-[600px] overflow-hidden shadow-inner flex items-center justify-center">
+        <!-- Vehicle Blueprint Container (Top-Down View) -->
+        <div class="relative w-full h-full max-w-lg mx-auto">
+            <div class="absolute inset-0 flex items-center justify-center opacity-85">
+                {% if seatCount <= 2 %}
+                    {% set vehicle_length = 180 %}  <!-- Increased width (switched for portrait) -->
+                    {% set vehicle_width = 200 %}
+                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-3/4 h-auto max-h-[90%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
+                        <!-- 2-Seater Sports Car Blueprint (Top View) - Updated Design -->
+                        <!-- Main Body Outline -->
+                        <rect x="20" y="30" width="140" height="140" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
+                        
+                        <!-- Cockpit Area -->
+                        <rect x="40" y="40" width="100" height="120" rx="10" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                        
+                        <!-- Center divider line -->
+                        <line x1="90" y1="30" x2="90" y2="170" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                        
+                        <!-- Front details -->
+                        <rect x="30" y="30" width="120" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                        
+                        <!-- Rear details -->
+                        <rect x="30" y="160" width="120" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                        
+                        <!-- Wheels -->
+                        <rect x="25" y="50" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="25" y="110" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="143" y="50" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="143" y="110" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        
+                        <!-- Text label -->
+                        <text x="90" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333" font-weight="bold">SPORTS CAR</text>
+                    </svg>
+                {% elseif seatCount <= 4 %}
+                    {% set vehicle_length = 190 %}  <!-- Increased width (switched for portrait) -->
+                    {% set vehicle_width = 220 %}
+                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-4/5 h-auto max-h-[90%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
+                        <!-- 4-Seater Sedan Blueprint (Top View) -->
+                        <!-- Main Body Outline -->
+                        <rect x="25" y="20" width="140" height="180" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+                        
+                        <!-- Windows -->
+                        <rect x="35" y="35" width="120" height="150" rx="5" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                        
+                        <!-- Center divider line -->
+                        <line x1="95" y1="20" x2="95" y2="200" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                        
+                        <!-- B-pillar (dividing front/rear doors) -->
+
+                        
+                        <!-- Wheels -->
+                        <rect x="20" y="40" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="20" y="120" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="156" y="40" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="156" y="120" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                    </svg>
+                {% elseif seatCount <= 7 %}
+                    {% set vehicle_length = 220 %}  <!-- Increased width (switched for portrait) -->
+                    {% set vehicle_width = 300 %}
+                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-5/6 h-auto max-h-[95%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
+                        <!-- SUV/Minivan Blueprint (Top View) -->
+                        <!-- Main Body Outline -->
+                        <rect x="30" y="25" width="160" height="250" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
+                        
+                        <!-- Windows -->
+                        <rect x="40" y="40" width="140" height="230" rx="8" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                        
+                        <!-- Center divider line -->
+                        <line x1="110" y1="25" x2="110" y2="275" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                        
+                        <!-- Pillars -->
+
+                        
+                        <!-- Front details - hood/grille -->
+                        <rect x="40" y="30" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                        
+                        <!-- Rear details - trunk -->
+                        <rect x="40" y="240" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                        
+                        <!-- Wheels -->
+                        <rect x="20" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="20" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="185" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="185" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />                        
+                    </svg>
+                {% else %}
+                    {% set vehicle_length = 230 %}  <!-- Increased width (switched for portrait) -->
+                    {% set vehicle_width = 400 %}
+                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-11/12 h-auto max-h-full transform " preserveAspectRatio="xMidYMid meet">
+                        <!-- Luxury/Stretch Vehicle Blueprint (Top View) -->
+                        <!-- Main Body Outline -->
+                        <rect x="25" y="20" width="180" height="360" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
+                        
+                        <!-- Windows with division for compartments -->
+                        <rect x="35" y="30" width="160" height="340" rx="10" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                        
+                        <!-- Center divider line -->
+                        <line x1="115" y1="20" x2="115" y2="380" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                        
+                        <!-- Multiple door dividers -->
+                        {% for y in [ 50, 175, 290] %}
+                        <line x1="35" y1="{{ y }}" x2="195" y2="{{ y }}" stroke="#444" stroke-width="{% if y in [190, 210] %}1{% else %}0.7{% endif %}" />
+                        {% endfor %}
+                        
+                        <!-- Front details - hood/grille -->
+                        <rect x="45" y="25" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                        
+                        <!-- Rear details -->
+                        <rect x="45" y="345" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                        
+                        <!-- Wheels - multiple axles -->
+                        <rect x="15" y="40" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="15" y="160" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="15" y="280" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        
+                        <rect x="200" y="40" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="200" y="160" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                        <rect x="200" y="280" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                    </svg>
+                {% endif %}
+            </div>
+
+            <!-- Seat Layout Grid -->
+            <div class="absolute inset-0 flex flex-col justify-center items-center py-6 px-4 z-10">
+                <div class="seat-layout grid grid-cols-1 gap-y-3 sm:gap-y-4 w-full max-w-[200px]">
+                    <!-- Driver and Front Passenger Row -->
+                    <div class="grid grid-cols-2 gap-x-6 place-items-center w-full mb-2">
+                        <!-- Driver Seat (Disabled) -->
+                        <div class="seat-container flex flex-col items-center">
+                            <div class="seat-icon w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-gray-500 bg-gray-400 flex items-center justify-center shadow-md relative">
+                                <i class="ri-steering-fill text-gray-700 text-sm sm:text-base"></i>
+                                <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] font-medium text-gray-700">A1</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Front Passenger Seat -->
+                        {% if seatCount >= 2 %}
+                        <div class="seat-container flex flex-col items-center">
+                            <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                data-seat-id="A2"
+                                data-price="{{ seatPrices['A2'] | default(0) }}">
+                                <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">A2</span>
+                                <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                    ${{ seatPrices['A2'] | default(0) }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Middle Row -->
+                    {% if seatCount >= 3 %}
+                    <div class="grid {% if seatCount == 3 %}grid-cols-1 place-items-center{% elseif seatCount == 4 %}grid-cols-2 gap-x-6{% else %}grid-cols-3 gap-x-4{% endif %} w-full mt-1 mb-2">
+                        {% if seatCount == 3 %}
+                            <div class="seat-container flex flex-col items-center">
+                                <div class="my-10 seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                    data-seat-id="B1"
+                                    data-price="{{ seatPrices['B1'] | default(0) }}">
+                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B1</span>
+                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                        ${{ seatPrices['B1'] | default(0) }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% elseif seatCount == 4 %}
+                            <div class="my-10 seat-container flex flex-col items-center">
+                                <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                    data-seat-id="B1"
+                                    data-price="{{ seatPrices['B1'] | default(0) }}">
+                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B1</span>
+                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                        ${{ seatPrices['B1'] | default(0) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="my-10 seat-container flex flex-col items-center">
+                                <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                    data-seat-id="B2"
+                                    data-price="{{ seatPrices['B2'] | default(0) }}">
+                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B2</span>
+                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                        ${{ seatPrices['B2'] | default(0) }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% elseif seatCount >= 5 %}
+                            {% for i in 1..3 %}
+                                {% set seat_id = 'B' ~ i %}
+                                <div class="my-10 seat-container flex flex-col items-center">
+                                    <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                        data-seat-id="{{ seat_id }}"
+                                        data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                        <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                            ${{ seatPrices[seat_id] | default(0) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Third Row -->
+                    {% if seatCount >= 6 %}
+                    <div class="grid {% if seatCount == 6 %}grid-cols-2 gap-x-6{% else %}grid-cols-{{ (seatCount == 7) ? '2' : '3' }} gap-x-4{% endif %} w-full mt-1 mb-2">
+                        {% if seatCount == 6 %}
+                            {% for i in 1..2 %}
+                                {% set seat_id = 'C' ~ i %}
+                                <div class="seat-container flex flex-col items-center">
+                                    <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                        data-seat-id="{{ seat_id }}"
+                                        data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                        <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                            ${{ seatPrices[seat_id] | default(0) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% elseif seatCount >= 7 %}
+                            {% set third_row_seats = (seatCount == 7) ? 2 : 3 %}
+                            {% for i in 1..third_row_seats %}
+                                {% set seat_id = 'C' ~ i %}
+                                <div class="seat-container flex flex-col items-center">
+                                    <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                        data-seat-id="{{ seat_id }}"
+                                        data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                        <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                            ${{ seatPrices[seat_id] | default(0) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Fourth Row (for 8+ seaters like limousines) -->
+                    {% if seatCount >= 9 %}
+                    <div class="grid grid-cols-3 gap-x-4 w-full mt-1">
+                        {% for i in 1..3 %}
+                            {% set seat_id = 'D' ~ i %}
+                            <div class="seat-container flex flex-col items-center">
+                                <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                    data-seat-id="{{ seat_id }}"
+                                    data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                        ${{ seatPrices[seat_id] | default(0) }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+             <!-- Sidebar --><div class="space-y-6">
+                    <!-- Seat information -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="ri-information-line mr-2 text-blue-500"></i>
+                            Seat Information
+                        </h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg">
+                                <p class="text-xs text-gray-500">Total Seats</p>
+                                <p class="text-lg font-semibold text-blue-700">{{ seatCount }}</p>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg">
+                                <p class="text-xs text-gray-500">Available</p>
+                                <p class="text-lg font-semibold text-blue-700">{{ seatCount - 1 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Selected seats -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="ri-checkbox-circle-line mr-2 text-blue-500"></i>
+                            Selected Seats
+                        </h3>
+                        <div id="selected-seats-container" class="min-h-[100px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4">
+                            <p class="text-sm text-gray-500 text-center py-4">No seats selected yet</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Legend -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="ri-flag-line mr-2 text-blue-500"></i>
+                            Seat Legend
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 rounded border-2 border-blue-300 bg-white mr-3"></div>
+                                <span class="text-sm text-gray-700">Available</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 rounded border-2 border-blue-500 bg-blue-100 mr-3"></div>
+                                <span class="text-sm text-gray-700">Selected</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 rounded border-2 border-gray-400 bg-gray-300 mr-3"></div>
+                                <span class="text-sm text-gray-700">Unavailable (Driver)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <form id="seat-form" action="{{ path('app_car_map',{id:id}) }}" method="post" data-turbo="false">
+                        <input type="hidden" name="selected_seats" id="selected-seats-input" value="">
+                        <input type="hidden" name="total_price" id="total-price-input" value="0">
+                        <div class="space-y-3">
+                            <button type="submit" id="seat-continue" disabled 
+                                    class="w-full px-4 py-3 bg-gray-300 text-gray-600 rounded-lg font-medium flex items-center justify-center transition-colors duration-200 cursor-not-allowed">
+                                Continue
+                                <i class="ri-arrow-right-line ml-2"></i>
+                            </button>
+                            
+                            <a href="{{ path('app_car') }}" 
+                               class="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-medium flex items-center justify-center transition-colors duration-200 text-center">
+                                <i class="ri-arrow-left-line mr-2"></i>
+                                Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // State
+    const selectedSeats = [];
+    
+    // DOM Elements
+    const seats = document.querySelectorAll('.seat');
+    const selectedSeatsContainer = document.getElementById('selected-seats-container');
+    const continueButton = document.getElementById('seat-continue');
+    const selectedSeatsInput = document.getElementById('selected-seats-input');
+    
+    // Seat position descriptions
+    const seatPositions = {
+        'A2': 'Front passenger seat',
+        'B1': 'Back left seat',
+        'B2': 'Back right seat',
+        'B3': 'Back middle seat',
+        'C1': 'Third row left seat',
+        'C2': 'Third row right seat',
+        'C3': 'Third row middle seat',
+        'D1': 'Fourth row left seat',
+        'D2': 'Fourth row middle seat',
+        'D3': 'Fourth row right seat'
+    };
+    
+    // Add event listeners to seats
+    seats.forEach(seat => {
+        seat.addEventListener('click', () => toggleSeatSelection(seat));
+        seat.addEventListener('mouseenter', () => highlightSeat(seat, true));
+        seat.addEventListener('mouseleave', () => highlightSeat(seat, false));
+    });
+    
+    // Toggle seat selection
+    function toggleSeatSelection(seat) {
+        const seatId = seat.dataset.seatId;
+        const seatPrice = parseFloat(seat.dataset.price);
+        
+        // Check if seat is already selected
+        const seatIndex = selectedSeats.findIndex(s => s.id === seatId);
+        
+        if (seatIndex !== -1) {
+            // Deselect seat
+            seat.classList.remove('bg-blue-100', 'border-blue-500', 'shadow-md');
+            seat.classList.add('bg-white', 'border-blue-300', 'hover:bg-blue-50');
+            selectedSeats.splice(seatIndex, 1);
+        } else {
+            // Select seat
+            seat.classList.add('bg-blue-100', 'border-blue-500', 'shadow-md');
+            seat.classList.remove('bg-white', 'border-blue-300', 'hover:bg-blue-50');
+            selectedSeats.push({
+                id: seatId,
+                price: seatPrice,
+                position: seatPositions[seatId] || 'Passenger seat'
+            });
+        }
+        
+        updateSelectedSeatsDisplay();
+        updateContinueButton();
+        updateHiddenInput();
+    }
+    
+    // Highlight seat on hover
+    function highlightSeat(seat, isEntering) {
+        if (!seat.classList.contains('bg-blue-100')) { // Not already selected
+            if (isEntering) {
+                seat.classList.add('shadow-md', 'scale-105', 'z-10', 'bg-blue-50', 'border-blue-400');
+            } else {
+                seat.classList.remove('shadow-md', 'scale-105', 'z-10', 'bg-blue-50', 'border-blue-400');
+            }
+        }
+    }
+    
+    // Update selected seats display
+    function updateSelectedSeatsDisplay() {
+        if (selectedSeats.length === 0) {
+            selectedSeatsContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No seats selected yet</p>';
+            return;
+        }
+        
+        let html = '<div class="space-y-3">';
+        let totalPrice = 0;
+        
+        selectedSeats.forEach(seat => {
+            totalPrice += seat.price;
+            html += `
+                <div class="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
+                    <div>
+                        <p class="text-sm font-medium text-blue-800">${seat.id}</p>
+                        <p class="text-xs text-blue-600">${seat.position}</p>
+                    </div>
+                    <span class="text-sm font-semibold text-blue-700">$${seat.price.toFixed(2)}</span>
+                </div>
+            `;
+        });
+        
+        html += `
+            <div class="border-t border-gray-200 pt-3 mt-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-700">Total:</span>
+                    <span class="text-lg font-bold text-blue-700">$${totalPrice.toFixed(2)}</span>
+                </div>
+            </div>
+        `;
+        
+        selectedSeatsContainer.innerHTML = html;
+    }
+    
+    // Update continue button state
+    function updateContinueButton() {
+        if (selectedSeats.length > 0) {
+            continueButton.disabled = false;
+            continueButton.classList.remove('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
+            continueButton.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+        } else {
+            continueButton.disabled = true;
+            continueButton.classList.add('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
+            continueButton.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+        }
+    }
+    
+    // Update hidden input with selected seats data
+    function updateHiddenInput() {
+        selectedSeatsInput.value = JSON.stringify(selectedSeats);
+    }
+    
+    // Adjust seat spacing (can be called on window resize too)
+    function adjustSeatSpacing() {
+        // Get seat container elements
+        const frontRow = document.querySelector('.seat-layout .flex:first-child');
+        const middleRow = document.querySelector('.seat-layout .flex:nth-child(2)');
+        const backRows = document.querySelectorAll('.seat-layout .flex:nth-child(n+3)');
+        
+        // Apply tighter padding for all rows
+        if (frontRow) frontRow.classList.replace('px-[15%]', 'px-[10%]');
+        if (middleRow) middleRow.classList.replace('px-[10%]', 'px-[5%]');
+        
+        backRows.forEach(row => {
+            row.classList.replace('px-[15%]', 'px-[10%]');
+            row.classList.replace('px-[20%]', 'px-[15%]');
+        });
+    }
+    
+    // Call once on page load
+    adjustSeatSpacing();
+});
+</script>
+{% endblock %}

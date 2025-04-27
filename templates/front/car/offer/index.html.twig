@@ -1,0 +1,82 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}offer{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl">
+        <!-- Sub Navigation -->
+  <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex space-x-4">
+                    <a href="{{path('front_car')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Private Car List</a>
+                    <a href="{{path('front_car_driver')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Driver List</a>
+                    <a href="{{path('front_car_offer')}}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">Offer List</a>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Offer Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for offer in offers %}
+            <!-- Offer Card 1 -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="relative">
+                    <img src="{{offer.getCar().getImage()}}" alt="Weekend Special" class="w-full h-40 object-cover">
+                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-50"></div>
+
+                </div>
+                
+                <div class="p-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{offer.getDescription()}}</h3>
+                    
+                    <div class="flex items-center mb-3">
+                        <div class="text-lg font-bold text-blue-600 mr-2">${{offer.getPrice()}}</div>
+                        {# <div class="text-sm text-gray-500 line-through">$150</div>
+                        <div class="ml-auto text-sm text-gray-500">per day</div> #}
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center">
+                            <i class="ri-calendar-line text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{offer.getDate()|date('m-d-Y H:i:s')}}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-car-line text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{offer.getCar().getModel()}}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-information-line text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{offer.getDescription()|length > 30 ? offer.getDescription()|slice(0, 27) ~ '...' : offer.getDescription()}}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <a href="{{path('app_car_offer_details',{id:offer.getId()})}}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">
+                            View Details
+                        </a>            
+                    </div>
+                </div>
+            </div>
+            
+        {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-6 flex items-center justify-center">
+            <div class="flex items-center space-x-2">
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">2</button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">
+                    <i class="ri-arrow-right-s-line"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
