@@ -1,0 +1,38 @@
+{# templates/activity/_details.html.twig #}
+
+<div class="flex items-start">
+    <i class="ri-information-line text-blue-600 mt-1 mr-3"></i>
+    <p class="text-sm text-gray-700">{{ activity.description|length > 100 ? activity.description|slice(0, 100) ~ '...' : activity.description }}</p>
+</div>
+<div class="flex items-center">
+    <i class="ri-map-pin-line text-blue-600 mr-3"></i>
+    <span class="text-sm text-gray-700">{{ activity.localisation }}</span>
+</div>
+<div class="flex items-center">
+    <i class="ri-calendar-line text-blue-600 mr-3"></i>
+    <span class="text-sm text-gray-700">{{ activity.datedebut|date('M d, Y H:i') }}</span>
+</div>
+<div class="flex items-center">
+    <i class="ri-calendar-check-line text-blue-600 mr-3"></i>
+    <span class="text-sm text-gray-700">{{ activity.datefin|date('M d, Y H:i') }}</span>
+</div>
+<div class="flex items-center">
+    <i class="ri-money-dollar-circle-line text-blue-600 mr-3"></i>
+    <span class="text-sm text-gray-700">${{ activity.prixtotal|number_format(2, '.', ',') }}</span>
+</div>
+<div class="flex items-center">
+    <i class="ri-price-tag-3-line text-blue-600 mr-3"></i>
+    <span class="text-sm text-gray-700">{{ activity.typeactivity.value }}</span>
+</div>
+{% if activity.joinhotel %}
+<div class="flex items-center">
+    <i class="ri-hotel-line text-blue-600 mr-3"></i>
+    <span class="text-sm text-gray-700">{{ activity.joinhotel.nomH }}</span>
+</div>
+{% endif %}
+{% if activity.joinvoiture %}
+<div class="flex items-center">
+    <i class="ri-car-line text-blue-600 mr-3"></i>
+    <span class="text-sm text-gray-700">{{ activity.joinvoiture.model }}</span>
+</div>
+{% endif %}

@@ -2,50 +2,103 @@
 // src/Controller/ActivityController.php
 
 namespace App\Controller;
-use App\Form\ActivityFormType;
-use App\Form\ActivityType;
+
 use App\Entity\Activity;
-use App\Entity\Enum\Type\ActivityTypeType;
-use App\Repository\FlightsRepository;
-use App\Repository\ActivityRepository;
+use App\Form\ActivityFormType;
 use App\Service\GoogleCalendarService;
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
-
-
-
 
 class ActivityController extends AbstractController
 {
+    private RequestStack $requestStack;
+
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+    }
+
     #[Route('/activity', name: 'app_activity')]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $searchQuery = $request->query->get('search', '');
-        $activities = [];
         
+        $queryBuilder = $em->getRepository(Activity::class)
+            ->createQueryBuilder('a')
+            ->orderBy('a.datedebut', 'DESC');
+
         if (!empty($searchQuery)) {
-            $activities = $em->getRepository(Activity::class)->searchByName($searchQuery);
-        } else {
-            $activities = $em->getRepository(Activity::class)->findAll();
+            $queryBuilder
+                ->andWhere('a.nomactivity LIKE :search')
+                ->setParameter('search', '%'.$searchQuery.'%');
         }
+
+        $adapter = new QueryAdapter($queryBuilder);
+        $pager = new Pagerfanta($adapter);
+        $pager->setMaxPerPage(10); // Nombre d'éléments par page
+        $pager->setCurrentPage($request->query->getInt('page', 1));
         
+        // Configuration de la pagination
+        $pager->setMaxPerPage(6); // Nombre d'éléments par page
+        $pager->setCurrentPage($request->query->getInt('page', 1));
+
         return $this->render('activity/index.html.twig', [
-            'activities' => $activities,
+            'pager' => $pager,
             'searchQuery' => $searchQuery,
         ]);
     }
-    #[Route('/activity/details/{id}', name: 'app_activity_details')]
-    public function details(EntityManagerInterface $entityManager, int $id): Response
+
+    #[Route('/activity/search', name: 'app_activity_search', methods: ['GET'])]
+    public function search(Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $query = $request->query->get('query', '');
+        $page = $request->query->getInt('page', 1);
         
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
+        $queryBuilder = $em->getRepository(Activity::class)
+            ->createQueryBuilder('a')
+            ->where('a.nomactivity LIKE :query')
+            ->setParameter('query', '%'.$query.'%');
+
+        $adapter = new QueryAdapter($queryBuilder);
+        $pager = new Pagerfanta($adapter);
+        $pager->setMaxPerPage(5);
+        $pager->setCurrentPage($page);
+
+        $results = [];
+        foreach ($pager->getCurrentPageResults() as $activity) {
+            $results[] = [
+                'id' => $activity->getId(),
+                'name' => $activity->getNomactivity(),
+                'location' => $activity->getLocalisation(),
+                'startDate' => $activity->getDatedebut()->format('M d, Y H:i'),
+                'type' => $activity->getTypeactivity()->value,
+            ];
+        }
+
+        return $this->json([
+            'results' => $results,
+            'pagination' => [
+                'currentPage' => $pager->getCurrentPage(),
+                'hasNextPage' => $pager->hasNextPage(),
+                'totalPages' => $pager->getNbPages()
+            ]
+        ]);
+    }
+
+    #[Route('/activity/details/{id}', name: 'app_activity_details')]
+    public function details(EntityManagerInterface $em, int $id): Response
+    {
+        $activity = $em->getRepository(Activity::class)->find($id);
         
         if (!$activity) {
-            throw $this->createNotFoundException('The requested activity does not exist.');
+            throw $this->createNotFoundException('Activity not found');
         }
         
         return $this->render('activity/details.html.twig', [
@@ -53,65 +106,45 @@ class ActivityController extends AbstractController
         ]);
     }
 
-     ///create activity
+    #[Route('/activity/create', name: 'app_activity_create')]
+    public function create(
+        Request $request, 
+        EntityManagerInterface $em,
+        GoogleCalendarService $calendarService
+    ): Response {
+        $activity = new Activity();
+        $form = $this->createForm(ActivityFormType::class, $activity);
+        $form->handleRequest($request);
 
- 
-     private RequestStack $requestStack;
+        $session = $this->requestStack->getSession();
 
-     public function __construct(RequestStack $requestStack)
-     {
-         $this->requestStack = $requestStack;
-     }
- 
-     #[Route('/activity/create', name: 'app_activity_create')]
-     public function create(
-         Request $request, 
-         EntityManagerInterface $entityManager,
-         GoogleCalendarService $calendarService
-     ): Response {
-         $activity = new Activity();
-         $form = $this->createForm(ActivityFormType::class, $activity);
-         $form->handleRequest($request);
- 
-         $session = $this->requestStack->getSession();
- 
-         if ($form->isSubmitted() && $form->isValid()) {
-             try {
-                 // Créer l'événement Google Calendar
-                 $eventId = $calendarService->createEvent($activity);
-                 
-                 // Stocker l'ID dans la session
-                 $session->set('google_event_id', $eventId);
- 
-                 $entityManager->persist($activity);
-                 $entityManager->flush();
- 
-                 $this->addFlash('success', 'Activity created successfully! Google Event ID: ' . $eventId);
-                 return $this->redirectToRoute('app_activity');
- 
-             } catch (\Exception $e) {
-                 $this->addFlash('error', 'Error: ' . $e->getMessage());
-             }
-         }
- 
-         return $this->render('activity/create.html.twig', [
-             'form' => $form->createView(),
-             'google_connected' => $this->isGoogleConnected()
-         ]);
-     }
- 
-     private function isGoogleConnected(): bool
-     {
-         $token = $this->requestStack->getSession()->get('google_access_token');
-         return !empty($token['access_token']);
-     }
- 
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                // Création d'événement Google Calendar
+                $eventId = $calendarService->createEvent($activity);
+                $session->set('google_event_id', $eventId);
 
-      /// Update activity
-      #[Route('/activity/update/{id}', name: 'app_activity_update')]
-    public function update(Request $request, EntityManagerInterface $entityManager, int $id): Response
+                $em->persist($activity);
+                $em->flush();
+
+                $this->addFlash('success', 'Activity created successfully!');
+                return $this->redirectToRoute('app_activity');
+
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Error: ' . $e->getMessage());
+            }
+        }
+
+        return $this->render('activity/create.html.twig', [
+            'form' => $form->createView(),
+            'google_connected' => $this->isGoogleConnected()
+        ]);
+    }
+
+    #[Route('/activity/update/{id}', name: 'app_activity_update')]
+    public function update(Request $request, EntityManagerInterface $em, int $id): Response
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
+        $activity = $em->getRepository(Activity::class)->find($id);
         
         if (!$activity) {
             throw $this->createNotFoundException('Activity not found');
@@ -121,10 +154,9 @@ class ActivityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
+            $em->flush();
             $this->addFlash('success', 'Activity updated successfully!');
-            return $this->redirectToRoute('app_activity_details', ['id' => $activity->getId()]);
+            return $this->redirectToRoute('app_activity_details', ['id' => $id]);
         }
 
         return $this->render('activity/update.html.twig', [
@@ -134,18 +166,17 @@ class ActivityController extends AbstractController
     }
 
     #[Route('/activity/delete/{id}', name: 'app_activity_delete', methods: ['POST'])]
-    public function delete(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    public function delete(Request $request, EntityManagerInterface $em, int $id): Response
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
+        $activity = $em->getRepository(Activity::class)->find($id);
 
         if (!$activity) {
             throw $this->createNotFoundException('Activity not found');
         }
 
         if ($this->isCsrfTokenValid('delete'.$activity->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($activity);
-            $entityManager->flush();
-
+            $em->remove($activity);
+            $em->flush();
             $this->addFlash('success', 'Activity deleted successfully!');
         }
 

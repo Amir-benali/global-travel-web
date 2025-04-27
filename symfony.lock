@@ -38,6 +38,9 @@
             "./config/packages/google_apiclient.yaml"
         ]
     },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v6.8.0"
+    },
     "knplabs/knp-time-bundle": {
         "version": "v2.4.0"
     },
