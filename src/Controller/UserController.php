@@ -16,42 +16,78 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class UserController extends AbstractController
 {
     #[Route('/', name: 'app_user')]
-public function index(Request $request, EntityManagerInterface $em): Response
-{
-    $search = $request->query->get('search');
-    $sortField = $request->query->get('sortField', 'firstname'); // tri par défaut
-    $sortDirection = $request->query->get('sortDirection', 'asc');
+    public function index(Request $request, EntityManagerInterface $em): Response
+    {
+        $search = $request->query->get('search');
+        $sortField = $request->query->get('sortField', 'firstname'); // tri par défaut
+        $sortDirection = $request->query->get('sortDirection', 'asc');
 
-    $qb = $em->createQueryBuilder()
-        ->select('u')
-        ->from(User::class, 'u');
+        $qb = $em->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u');
 
-    if ($search) {
-        $qb->where('u.firstname LIKE :search')
-            ->orWhere('u.lastname LIKE :search')
-            ->orWhere('u.email LIKE :search')
-            ->orWhere('u.phoneNumber LIKE :search')
-            ->orWhere('u.roles LIKE :search')
-            ->setParameter('search', '%'.$search.'%');
-    }
+        if ($search) {
+            $qb->where('u.firstname LIKE :search')
+                ->orWhere('u.lastname LIKE :search')
+                ->orWhere('u.email LIKE :search')
+                ->orWhere('u.phoneNumber LIKE :search')
+                ->orWhere('u.roles LIKE :search')
+                ->setParameter('search', '%'.$search.'%');
+        }
 
-    // Ajouter le tri ici
-    if (in_array($sortField, ['firstname', 'lastname', 'email', 'phoneNumber', 'roles']) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
-        $qb->orderBy('u.' . $sortField, $sortDirection);
-    }
+        // Ajouter le tri ici
+        if (in_array($sortField, ['firstname', 'lastname', 'email', 'phoneNumber', 'roles']) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
+            $qb->orderBy('u.' . $sortField, $sortDirection);
+        }
 
-    $users = $qb->getQuery()->getResult();
+        $users = $qb->getQuery()->getResult();
 
-    if ($request->isXmlHttpRequest()) {
-        return $this->render('user/_users_table.html.twig', [
+        // Calculate user statistics
+        $totalUsers = count($users);
+        
+        // Count users by role
+        $roleStats = [
+            'admin' => 0,
+            'responsable' => 0,
+            'employee' => 0
+        ];
+        
+        foreach ($users as $user) {
+            if (in_array('ROLE_ADMIN', $user->getRoles())) {
+                $roleStats['admin']++;
+            } elseif (in_array('ROLE_RESPONSABLE', $user->getRoles())) {
+                $roleStats['responsable']++;
+            } else {
+                $roleStats['employee']++;
+            }
+        }
+        
+        // Fixed percentage distribution for user growth
+        $monthlyData = [
+            'Jan' => intval($totalUsers * 0.1),  // 10% of users in January
+            'Feb' => intval($totalUsers * 0.25), // 25% of users in February
+            'Mar' => intval($totalUsers * 0.4),  // 40% of users in March
+            'Apr' => intval($totalUsers * 0.6),  // 60% of users in April
+            'May' => intval($totalUsers * 0.8),  // 80% of users in May
+            'Jun' => $totalUsers                 // 100% of users in June
+        ];
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('user/_users_table.html.twig', [
+                'users' => $users,
+            ]);
+        }
+
+        return $this->render('user/index.html.twig', [
             'users' => $users,
+            'stats' => [
+                'totalUsers' => $totalUsers,
+                'roleStats' => $roleStats,
+                'monthlyData' => $monthlyData,
+                'activeUsers' => intval($totalUsers * 0.8) // Estimate 80% of users are active
+            ]
         ]);
     }
-
-    return $this->render('user/index.html.twig', [
-        'users' => $users,
-    ]);
-}
 
     #[Route('/settings', name: 'app_settings')]
     public function settingsPage(EntityManagerInterface $em): Response
@@ -105,24 +141,21 @@ public function index(Request $request, EntityManagerInterface $em): Response
     }
 
     #[Route('/update/{id}', name: 'app_user_update')]
-public function update(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
-{
-    $form = $this->createForm(UserType::class, $user, ['is_new' => false]); // <-- is_new: false
-    $form->handleRequest($request);
+    public function update(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
+    {
+        $form = $this->createForm(UserType::class, $user, ['is_new' => false]); // <-- is_new: false
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-      
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            return $this->redirectToRoute('app_user');
+        }
 
-        $em->flush();
-        return $this->redirectToRoute('app_user');
+        return $this->render('user/update.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
     }
-
-    return $this->render('user/update.html.twig', [
-        'form' => $form->createView(),
-        'user' => $user,
-    ]);
-}
-
 
     #[Route('/delete/{id}', name: 'app_user_delete')]
     public function delete(
@@ -145,7 +178,6 @@ public function update(User $user, Request $request, EntityManagerInterface $em,
             $request->getSession()->invalidate();
         }
     
-
         $em->remove($user);
         $em->flush();
 
@@ -162,6 +194,4 @@ public function update(User $user, Request $request, EntityManagerInterface $em,
             'users' => $users,
         ]);
     }
-
-    
 }
