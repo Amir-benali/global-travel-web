@@ -27,17 +27,15 @@ final class FlightController extends AbstractController
 
 
 
-    #[Route('/flight/create', name: 'app_flight_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager,\App\Service\AirportService $airportService): Response
+  #[Route('/flight/create', name: 'app_flight_create')]
+    public function create(Request $request, EntityManagerInterface $entityManager, \App\Service\AirportService $airportService): Response
     {
         $flight = new Flights();
 
-
         // Créer le formulaire
         $form = $this->createForm(FlightType::class, $flight, [
-            'airport_service' =>$airportService,
+            'airport_service' => $airportService,
         ]);
-
 
         // Gérer la soumission
         $form->handleRequest($request);
@@ -51,6 +49,19 @@ final class FlightController extends AbstractController
                 $duration = $arrivalTime->getTimestamp() - $departureTime->getTimestamp();
                 $flight->setDurationPerHours($duration / 3600); // Convertir en heures
             }
+
+            // Générer les sièges disponibles
+            $seatsNumber = $flight->getSeatsnumber();
+            $availableSeats = [];
+            $rows = ceil($seatsNumber / 5); // Supposons 2 colonnes (A et B)
+            foreach (range(1, $rows) as $row) {
+                foreach (['A', 'B','C','D','E'] as $column) {
+                    if (count($availableSeats) < $seatsNumber) {
+                        $availableSeats[] = $row . $column;
+                    }
+                }
+            }
+            $flight->setAvailableSeats($availableSeats);
 
             $entityManager->persist($flight);
             $entityManager->flush();
@@ -91,12 +102,24 @@ final class FlightController extends AbstractController
 
             if ($departureTime && $arrivalTime) {
                 $duration = $arrivalTime->getTimestamp() - $departureTime->getTimestamp();
-                $flight->setDurationPerHours($duration / 3600); // Convertir en heures
+                $flight->setDurationPerHours($duration / 3600);
             }
 
-            $entityManager->flush();
+            // Générer les sièges disponibles
+            $seatsNumber=$flight->getSeatsnumber();
+            $availableSeats=[];
+            $rows=ceil($seatsNumber/5);
+            foreach (range(1,$rows) as $row){
+                foreach (((['A','B','C','D','E']))   as $column){
+                    if (count($availableSeats)<$seatsNumber){
+                        $availableSeats[]=$row.$column;
+                    }
+                }
+            }
+            $flight->setAvailableSeats(($availableSeats));
 
-            $this->addFlash('success', 'Le vol a été mis à jour avec succès.');
+
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_flight');
         }
@@ -107,21 +130,19 @@ final class FlightController extends AbstractController
         ]);
     }
 
-    #[Route('/flight/delete/{id}', name: 'app_flight_delete', methods: ['POST'])]
+    #[Route('/flight/delete/{id}', name: 'app_flight_delete')]
     public function delete(int $id, EntityManagerInterface $entityManager, FlightsRepository $flightsRepository): Response
     {
         $flight = $flightsRepository->find($id);
 
         if (!$flight) {
-            throw $this->createNotFoundException('Vol non trouvé.');
+            throw $this->createNotFoundException('Flight not found');
         }
 
         $entityManager->remove($flight);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Le vol a été supprimé avec succès.');
 
         return $this->redirectToRoute('app_flight');
     }
-
 }
