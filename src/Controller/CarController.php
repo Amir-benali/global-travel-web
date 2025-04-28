@@ -11,15 +11,21 @@ use App\Form\DriverFormType;
 use App\Form\OfferFormType;
 use App\Repository\CarDriverRepository;
 use App\Repository\CarOfferRepository;
+use App\Repository\CarRouteRepository;
 use App\Repository\PrivateCarRepository;
+use App\Repository\UserRepository;
 use App\Service\AzureBlobService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
+use Google\Service\ShoppingContent\Amount;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class CarController extends AbstractController
 {
@@ -262,7 +268,7 @@ final class CarController extends AbstractController
 
 
     #[Route('/car/book/seats/{id}', name: 'app_car_book_seats')]
-    public function seatSelection(int $id,CarOfferRepository $offer): Response
+    public function seatSelection(int $id,CarOfferRepository $offer,UserRepository $user): Response
     {
         // Get seat count from request or set default
         $seatCount = $offer->find($id)->getCar()->getNumPlace(); ;
@@ -270,6 +276,7 @@ final class CarController extends AbstractController
         // Validate seat count (minimum 4, maximum 8)
         // $seatCount = max(4, min(8, $seatCount));
         
+        $employees = $user->findBy(['roles' => 'ROLE_EMPLOYEE']);  
         // Define seat prices based on seat count
         $seatPrices = [
             'A2' => 0.15 * $basePrice,
@@ -288,43 +295,116 @@ final class CarController extends AbstractController
             'seatCount' => $seatCount,
             'seatPrices' => $seatPrices,
             'id' => $offer->find($id)->getId(),
+            'offer'=> $offer->find($id),
+            'employees' => $employees,
         ]);
     }
 
     #[Route('/car/book/map/{id}', name: 'app_car_map')]
-    public function seatMap(int $id, Request $request, CarOfferRepository $offer): Response
+    public function seatMap(int $id, Request $request, CarOfferRepository $offer, UserRepository $user): Response
     {
-        $selectedSeats = $request->get('seats', []);
         $basePrice = $offer->find($id)->getPrice();
         $totalPrice = 0;
+        $employees = $user->findBy(['roles' => 'ROLE_EMPLOYEE']);
         
-        foreach ($selectedSeats as $seat) {
-            // Calculate total price based on selected seats
-            switch ($seat) {
-                case 'A2':
-                case 'B1':
-                case 'B2':
-                    $totalPrice += 0.15 * $basePrice;
-                    break;
-                case 'B3':
-                case 'C1':
-                    $totalPrice += 0.12 * $basePrice;
-                    break;
-                case 'C2':
-                case 'C3':
-                    $totalPrice += 0.10 * $basePrice;
-                    break;
-                case 'D1':
-                case 'D2':
-                case 'D3':
-                    $totalPrice += 0.08 * $basePrice;
-                    break;
+        // Get selected seats data from the form
+        $selectedSeatsJson = $request->request->get('selected_seats');
+        $selectedSeats = [];
+        
+        if ($selectedSeatsJson) {
+            // Handle both JSON string and direct array formats
+            if (is_string($selectedSeatsJson) && (substr($selectedSeatsJson, 0, 1) === '[' || substr($selectedSeatsJson, 0, 1) === '{')) {
+                $selectedSeats = json_decode($selectedSeatsJson, true) ?: [];
+            } else {
+                $selectedSeats = $selectedSeatsJson;
             }
         }
-
+        
+        // Get employee assignments
+        $employeeAssignmentsJson = $request->request->get('employee_assignments');
+        $employeeAssignments = [];
+        
+        if ($employeeAssignmentsJson) {
+            if (is_string($employeeAssignmentsJson)) {
+                $employeeAssignments = json_decode($employeeAssignmentsJson, true) ?: [];
+            } else {
+                $employeeAssignments = $employeeAssignmentsJson;
+            }
+        }
+        
+        // Process selected seats to calculate price and get seat details
+        $processedSeats = [];
+        $seatPositions = [
+            'A2' => 'Front passenger seat',
+            'B1' => 'Back left seat',
+            'B2' => 'Back right seat',
+            'B3' => 'Back middle seat',
+            'C1' => 'Third row left seat',
+            'C2' => 'Third row right seat',
+            'C3' => 'Third row middle seat',
+            'D1' => 'Fourth row left seat',
+            'D2' => 'Fourth row middle seat',
+            'D3' => 'Fourth row right seat'
+        ];
+        
+        // If selectedSeats is array of IDs, convert to objects with price and position
+        if (is_array($selectedSeats)) {
+            foreach ($selectedSeats as $seatId) {
+                $price = 0;
+                switch ($seatId) {
+                    case 'A2':
+                    case 'B1':
+                    case 'B2':
+                        $price = 0.15 * $basePrice;
+                        break;
+                    case 'B3':
+                    case 'C1':
+                        $price = 0.12 * $basePrice;
+                        break;
+                    case 'C2':
+                    case 'C3':
+                        $price = 0.10 * $basePrice;
+                        break;
+                    case 'D1':
+                    case 'D2':
+                    case 'D3':
+                        $price = 0.08 * $basePrice;
+                        break;
+                }
+                
+                $totalPrice += $price;
+                $processedSeats[] = [
+                    'id' => $seatId,
+                    'price' => $price,
+                    'position' => $seatPositions[$seatId] ?? 'Passenger seat',
+                    'employeeId' => $employeeAssignments[$seatId] ?? null
+                ];
+            }
+        }
+        
+        // Get assigned employee details for display
+        $assignedEmployees = [];
+        foreach ($employeeAssignments as $seatId => $employeeId) {
+            if ($employeeId) {
+                $employee = $user->find($employeeId);
+                if ($employee) {
+                    $assignedEmployees[$seatId] = [
+                        'id' => $employeeId,
+                        'firstName' => $employee->getFirstName(),
+                        'lastName' => $employee->getLastName(),
+                    ];
+                }
+            }
+        }
+        
         return $this->render('car/book/map.html.twig', [
-            'selectedSeats' => $selectedSeats,
+            'selectedSeats' => $processedSeats,
             'totalPrice' => $totalPrice,
+            'offer' => $offer->find($id),
+            'car' => $offer->find($id)->getCar(),
+            'employees' => $employees,
+            'assignedEmployees' => $assignedEmployees,
+            'seatPositions' => $seatPositions
         ]);
     }
 
@@ -357,5 +437,65 @@ final class CarController extends AbstractController
         return $this->render('front/car/book.html.twig', [
             'offers' => $offers->findAll(),
         ]);
+    }
+    #[Route('travel/car/offer/checkout', name: 'front_car_offer_checkout')]
+    public function checkout(Request $req): Response
+    {
+        // Check if total_price exists in request parameters, try both POST and GET
+        $price = 0;
+        if ($req->request->has('total_price')) {
+            $price = floatval($req->request->get('total_price'));
+        } elseif ($req->query->has('total_price')) {
+            $price = floatval($req->query->get('total_price'));
+        } else {
+            // Handle the missing parameter case
+            $this->addFlash('error', 'Total price was not provided');
+            return $this->redirectToRoute('front_book_car');
+        }
+    
+        Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+        
+        // Generate absolute URLs
+        $successUrl = $this->generateUrl('car_payment_success', ['amount' => $price], UrlGeneratorInterface::ABSOLUTE_URL);
+        $cancelUrl = $this->generateUrl('car_payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        
+        $session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                        'name' => 'Dev Product',
+                    ],
+                    'unit_amount' => $price * 100, 
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+
+        ]);
+        
+        return $this->redirect($session->url, 303);
+    }
+    #[Route('travel/car/offer/success', name: 'car_payment_success')]
+    public function success(Request $req): Response
+    {
+        $amount = 0;
+        if ($req->request->has('amount')) {
+            $amount = floatval($req->request->get('amount'));
+        } elseif ($req->query->has('amount')) {
+            $amount = floatval($req->query->get('amount'));
+        }
+        return $this->render('payment/success.html.twig', [
+            'amount' => $amount,
+        ]);
+    }
+
+    #[Route('travel/car/offer/cancel', name: 'car_payment_cancel')]
+    public function cancel(): Response
+    {
+        return $this->render('payment/cancel.html.twig');
     }
 }
