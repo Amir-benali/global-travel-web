@@ -1,0 +1,53 @@
+{# templates/_pagination.html.twig #}
+
+{% if pager.haveToPaginate() %}
+<nav class="flex justify-center my-8">
+    <div class="flex space-x-2">
+        {% if pager.hasPreviousPage() %}
+            <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': pager.previousPage})) }}" 
+               class="px-4 py-2 border rounded hover:bg-gray-100">
+                Précédent
+            </a>
+        {% endif %}
+
+        {% set current = pager.currentPage %}
+        {% set last = pager.nbPages %}
+        {% set start = max(current - 2, 1) %}
+        {% set end = min(current + 2, last) %}
+
+        {% if start > 1 %}
+            <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': 1})) }}" 
+               class="px-4 py-2 border rounded hover:bg-gray-100">
+                1
+            </a>
+            {% if start > 2 %}<span class="px-4 py-2">...</span>{% endif %}
+        {% endif %}
+
+        {% for page in start..end %}
+            {% if page == current %}
+                <span class="px-4 py-2 border rounded bg-blue-500 text-white">{{ page }}</span>
+            {% else %}
+                <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}" 
+                   class="px-4 py-2 border rounded hover:bg-gray-100">
+                    {{ page }}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+        {% if end < last %}
+            {% if end < last - 1 %}<span class="px-4 py-2">...</span>{% endif %}
+            <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': last})) }}" 
+               class="px-4 py-2 border rounded hover:bg-gray-100">
+                {{ last }}
+            </a>
+        {% endif %}
+
+        {% if pager.hasNextPage() %}
+            <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': pager.nextPage})) }}" 
+               class="px-4 py-2 border rounded hover:bg-gray-100">
+                Suivant
+            </a>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}

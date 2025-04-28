@@ -108,7 +108,7 @@
         
         <!-- Activity Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="activityGrid">
-            {% for activity in activities %}
+            {% for activity in pager.currentPageResults %}
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-200">
                     <div class="p-5 border-b border-gray-200">
                         <div class="flex items-center">
@@ -191,6 +191,10 @@
                 </div>
             {% endfor %}
         </div>
+
+        {# Pagination #}
+        {% include '_pagination.html.twig' with { pager: pager } %}
+
     </div>
 {% endblock %}
 
@@ -206,36 +210,32 @@
             let searchTimeout;
             let currentSearch = '{{ app.request.query.get('search', '') }}';
 
-            // Initialize with current search value
             if (currentSearch) {
                 searchInput.value = currentSearch;
             }
 
-            // Search input event listener for live results
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 const query = this.value.trim();
                 
-                // Show loading icon
                 searchIcon.style.display = 'none';
                 loadingIcon.style.display = 'block';
                 searchResults.style.display = 'none';
 
                 if (query.length >= 2) {
                     searchTimeout = setTimeout(() => {
-                        fetch(`/activity/search?query=${encodeURIComponent(query)}`)
+                        fetch(`/activity/search?query=${encodeURIComponent(query)}&page=1`)
                             .then(response => {
                                 if (!response.ok) throw new Error('Network response was not ok');
                                 return response.json();
                             })
                             .then(data => {
-                                // Hide loading icon, show search icon
                                 loadingIcon.style.display = 'none';
                                 searchIcon.style.display = 'block';
 
-                                if (data.length > 0) {
+                                if (data.results.length > 0) {
                                     searchResults.innerHTML = '';
-                                    data.forEach(activity => {
+                                    data.results.forEach(activity => {
                                         const resultItem = document.createElement('div');
                                         resultItem.className = 'search-result-item';
                                         resultItem.innerHTML = `
@@ -259,14 +259,12 @@
                                 loadingIcon.style.display = 'none';
                                 searchIcon.style.display = 'block';
                             });
-                    }, 500); // 500ms delay after typing stops
+                    }, 500);
                 } else if (query.length === 0) {
-                    // Hide loading immediately if query is empty
                     loadingIcon.style.display = 'none';
                     searchIcon.style.display = 'block';
                     searchResults.style.display = 'none';
                 } else {
-                    // Hide loading after short delay for very short queries
                     setTimeout(() => {
                         loadingIcon.style.display = 'none';
                         searchIcon.style.display = 'block';
@@ -274,28 +272,24 @@
                 }
             });
 
-            // Hide results when clicking outside
             document.addEventListener('click', function(e) {
                 if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                     searchResults.style.display = 'none';
                 }
             });
 
-            // Prevent form submission if empty
             searchForm.addEventListener('submit', function(e) {
                 if (searchInput.value.trim().length === 0) {
                     e.preventDefault();
                 }
             });
 
-            // Show results on focus if there's a current search
             searchInput.addEventListener('focus', function() {
                 if (this.value.trim().length >= 2 && searchResults.children.length > 0) {
                     searchResults.style.display = 'block';
                 }
             });
 
-            // Initialize search if page was loaded with a search query
             if (currentSearch && currentSearch.length >= 2) {
                 const event = new Event('input', { bubbles: true });
                 searchInput.dispatchEvent(event);
