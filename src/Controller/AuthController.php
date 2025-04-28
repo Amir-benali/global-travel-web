@@ -50,13 +50,12 @@ class AuthController extends AbstractController
             // 🎯 Vérifier hCaptcha d'abord
             $captchaToken = $request->request->get('h-captcha-response');
             if (!$captchaToken) {
-                $this->addFlash('error', 'Veuillez valider le captcha.');
+                $this->addFlash('error', 'Please complete the captcha.');
                 return $this->render('auth/signup.html.twig', [
                     'form' => $form->createView(),
                 ]);
             }
         
-            // Appel API hCaptcha
             $captchaResponse = $httpClient->request('POST', 'https://hcaptcha.com/siteverify', [
                 'body' => [
                     'secret' => 'ES_b5a839be8aa14b89a97dc1d64e0bdc1f', 
@@ -67,7 +66,7 @@ class AuthController extends AbstractController
             $captchaResult = $captchaResponse->toArray();
         
             if (!$captchaResult['success']) {
-                $this->addFlash('error', 'Captcha invalide. Veuillez réessayer.');
+                $this->addFlash('error', 'Invalid captcha. Please try again.');
                 return $this->render('auth/signup.html.twig', [
                     'form' => $form->createView(),
                 ]);
@@ -83,20 +82,43 @@ class AuthController extends AbstractController
                 $data = $response->toArray();
         
                 if (!isset($data['deliverability']) || $data['deliverability'] !== 'DELIVERABLE') {
-                    $this->addFlash('error', 'L\'adresse e-mail fournie n\'est pas valide ou n\'est pas délivrable.');
+                    $this->addFlash('error', 'The provided email address is not valid or not deliverable.');
                     return $this->render('auth/signup.html.twig', [
                         'form' => $form->createView(),
                     ]);
                 }
             } catch (ClientExceptionInterface|TransportExceptionInterface $e) {
-                $this->addFlash('error', 'Erreur lors de la vérification de l\'adresse e-mail. Veuillez réessayer.');
+                $this->addFlash('error', 'Error verifying email address. Please try again.');
+                return $this->render('auth/signup.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+    
+            // 🔥 Vérification du mot de passe avec API Azure
+            $password = $form->get('password')->getData();
+            try {
+                $apiResponse = $httpClient->request('POST', 'https://password-exposed-aramgmhfh4f5dpc0.germanywestcentral-01.azurewebsites.net/predict', [
+                    'json' => [
+                        'password' => $password,
+                    ],
+                ]);
+    
+                $result = $apiResponse->toArray();
+                if (isset($result['breached']) && $result['breached'] === true) {
+                    $this->addFlash('error', 'This password has been exposed in a data breach. Please choose a different password.');
+                    return $this->render('auth/signup.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+            } catch (ClientExceptionInterface|TransportExceptionInterface $e) {
+                $this->addFlash('error', 'Error verifying password exposure. Please try again.');
                 return $this->render('auth/signup.html.twig', [
                     'form' => $form->createView(),
                 ]);
             }
         
             // 💾 Création du compte
-            $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
+            $hashedPassword = $passwordHasher->hashPassword($user, $password);
             $user->setPassword($hashedPassword)
                 ->setRoles(['ROLE_EMPLOYEE'])
                 ->setStatut('actif');
@@ -104,15 +126,15 @@ class AuthController extends AbstractController
             $em->persist($user);
             $em->flush();
         
-            $this->addFlash('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.');
+            $this->addFlash('success', 'Sign-up successful! You can now log in.');
             return $this->redirectToRoute('app_signin');
         }
         
         return $this->render('auth/signup.html.twig', [
             'form' => $form->createView(),
         ]);
-        
     }
+    
     
     #[Route('/signin', name: 'app_signin')]
     public function signin(AuthenticationUtils $authenticationUtils, Request $request): Response
