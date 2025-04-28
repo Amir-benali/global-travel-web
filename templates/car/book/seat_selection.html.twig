@@ -3,7 +3,7 @@
 {% block title %}Seat Selection{% endblock %}
 
 {% block body %}
-<div class="mx-auto max-w-7xl py-8 px-4">
+<div class="mx-auto max-w-[95rem] py-8 px-4">
     <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
         <div class="p-6 border-b border-gray-200">
             <div class="flex items-center justify-between">
@@ -18,338 +18,570 @@
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="p-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Vehicle visualization -->
-<div class="lg:col-span-2">
-    <div class="relative bg-gradient-to-b from-blue-50 to-gray-100 rounded-2xl p-4 sm:p-6 h-[600px] overflow-hidden shadow-inner flex items-center justify-center">
-        <!-- Vehicle Blueprint Container (Top-Down View) -->
-        <div class="relative w-full h-full max-w-lg mx-auto">
-            <div class="absolute inset-0 flex items-center justify-center opacity-85">
-                {% if seatCount <= 2 %}
-                    {% set vehicle_length = 180 %}  <!-- Increased width (switched for portrait) -->
-                    {% set vehicle_width = 200 %}
-                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-3/4 h-auto max-h-[90%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
-                        <!-- 2-Seater Sports Car Blueprint (Top View) - Updated Design -->
-                        <!-- Main Body Outline -->
-                        <rect x="20" y="30" width="140" height="140" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
-                        
-                        <!-- Cockpit Area -->
-                        <rect x="40" y="40" width="100" height="120" rx="10" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
-                        
-                        <!-- Center divider line -->
-                        <line x1="90" y1="30" x2="90" y2="170" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
-                        
-                        <!-- Front details -->
-                        <rect x="30" y="30" width="120" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
-                        
-                        <!-- Rear details -->
-                        <rect x="30" y="160" width="120" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
-                        
-                        <!-- Wheels -->
-                        <rect x="25" y="50" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="25" y="110" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="143" y="50" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="143" y="110" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        
-                        <!-- Text label -->
-                        <text x="90" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333" font-weight="bold">SPORTS CAR</text>
-                    </svg>
-                {% elseif seatCount <= 4 %}
-                    {% set vehicle_length = 190 %}  <!-- Increased width (switched for portrait) -->
-                    {% set vehicle_width = 220 %}
-                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-4/5 h-auto max-h-[90%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
-                        <!-- 4-Seater Sedan Blueprint (Top View) -->
-                        <!-- Main Body Outline -->
-                        <rect x="25" y="20" width="140" height="180" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
-                        
-                        <!-- Windows -->
-                        <rect x="35" y="35" width="120" height="150" rx="5" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
-                        
-                        <!-- Center divider line -->
-                        <line x1="95" y1="20" x2="95" y2="200" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
-                        
-                        <!-- B-pillar (dividing front/rear doors) -->
+            <form id="seat-form" action="{{ path('app_car_map',{id:id}) }}" method="post" data-turbo="false">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-                        
-                        <!-- Wheels -->
-                        <rect x="20" y="40" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="20" y="120" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="156" y="40" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="156" y="120" width="14" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                    </svg>
-                {% elseif seatCount <= 7 %}
-                    {% set vehicle_length = 220 %}  <!-- Increased width (switched for portrait) -->
-                    {% set vehicle_width = 300 %}
-                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-5/6 h-auto max-h-[95%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
-                        <!-- SUV/Minivan Blueprint (Top View) -->
-                        <!-- Main Body Outline -->
-                        <rect x="30" y="25" width="160" height="250" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
-                        
-                        <!-- Windows -->
-                        <rect x="40" y="40" width="140" height="230" rx="8" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
-                        
-                        <!-- Center divider line -->
-                        <line x1="110" y1="25" x2="110" y2="275" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
-                        
-                        <!-- Pillars -->
+                    <!-- Left Section (Vehicle Viz + Legend) -->
+                    <div class="lg:col-span-2 space-y-8">
 
-                        
-                        <!-- Front details - hood/grille -->
-                        <rect x="40" y="30" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
-                        
-                        <!-- Rear details - trunk -->
-                        <rect x="40" y="240" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
-                        
-                        <!-- Wheels -->
-                        <rect x="20" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="20" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="185" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="185" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />                        
-                    </svg>
-                {% else %}
-                    {% set vehicle_length = 230 %}  <!-- Increased width (switched for portrait) -->
-                    {% set vehicle_width = 400 %}
-                    <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-11/12 h-auto max-h-full transform " preserveAspectRatio="xMidYMid meet">
-                        <!-- Luxury/Stretch Vehicle Blueprint (Top View) -->
-                        <!-- Main Body Outline -->
-                        <rect x="25" y="20" width="180" height="360" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
-                        
-                        <!-- Windows with division for compartments -->
-                        <rect x="35" y="30" width="160" height="340" rx="10" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
-                        
-                        <!-- Center divider line -->
-                        <line x1="115" y1="20" x2="115" y2="380" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
-                        
-                        <!-- Multiple door dividers -->
-                        {% for y in [ 50, 175, 290] %}
-                        <line x1="35" y1="{{ y }}" x2="195" y2="{{ y }}" stroke="#444" stroke-width="{% if y in [190, 210] %}1{% else %}0.7{% endif %}" />
-                        {% endfor %}
-                        
-                        <!-- Front details - hood/grille -->
-                        <rect x="45" y="25" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
-                        
-                        <!-- Rear details -->
-                        <rect x="45" y="345" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
-                        
-                        <!-- Wheels - multiple axles -->
-                        <rect x="15" y="40" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="15" y="160" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="15" y="280" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        
-                        <rect x="200" y="40" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="200" y="160" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                        <rect x="200" y="280" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
-                    </svg>
-                {% endif %}
-            </div>
+                        <!-- Vehicle visualization -->
+                        <div>
+                            <div class="relative bg-gradient-to-b from-blue-50 to-gray-100 rounded-2xl p-4 sm:p-6 h-[600px] overflow-hidden shadow-inner flex items-center justify-center">
+                                <!-- Vehicle Blueprint Container (Top-Down View) -->
+                                <div class="relative w-full h-full max-w-lg mx-auto">
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-85">
+                                        {% if seatCount <= 2 %}
+                                            {% set vehicle_length = 180 %}
+                                            {% set vehicle_width = 200 %}
+                                            <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-3/4 h-auto max-h-[90%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
+                                                <!-- 2-Seater Sports Car Blueprint -->
+                                                <rect x="20" y="30" width="140" height="140" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
+                                                <rect x="40" y="40" width="100" height="120" rx="10" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                                                <line x1="90" y1="30" x2="90" y2="170" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                                                <rect x="30" y="30" width="120" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                                                <rect x="30" y="160" width="120" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                                                <rect x="25" y="50" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="25" y="110" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="143" y="50" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="143" y="110" width="12" height="20" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <text x="90" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333" font-weight="bold">SPORTS CAR</text>
+                                            </svg>
+                                        {% elseif seatCount <= 4 %}
+                                            {% set vehicle_length = 190 %}
+                                            {% set vehicle_width = 200 %}
+                                            <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-4/5 h-auto max-h-[90%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
+                                                <!-- 4-Seater Sedan Blueprint -->
+                                                <rect x="35" y="20" width="120" height="180" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+                                                <rect x="45" y="35" width="100" height="150" rx="5" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                                                <line x1="95" y1="20" x2="95" y2="200" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                                                <rect x="25" y="40" width="12" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="25" y="160" width="12" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="153" y="40" width="12" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="153" y="160" width="12" height="22" rx="2" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                            </svg>
+                                        {% elseif seatCount <= 7 %}
+                                            {% set vehicle_length = 220 %}
+                                            {% set vehicle_width = 300 %}
+                                            <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-5/6 h-auto max-h-[95%] transform rotate-0" preserveAspectRatio="xMidYMid meet">
+                                                <!-- SUV/Minivan Blueprint -->
+                                                <rect x="30" y="25" width="160" height="250" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
+                                                <rect x="40" y="40" width="140" height="230" rx="8" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                                                <line x1="110" y1="25" x2="110" y2="275" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                                                <rect x="40" y="30" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                                                <rect x="40" y="240" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                                                <rect x="20" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="20" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="185" y="50" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="185" y="200" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                            </svg>
+                                        {% else %}
+                                            {% set vehicle_length = 230 %}
+                                            {% set vehicle_width = 400 %}
+                                            <svg viewBox="0 0 {{ vehicle_length }} {{ vehicle_width }}" class="w-11/12 h-auto max-h-full transform " preserveAspectRatio="xMidYMid meet">
+                                                <!-- Luxury/Stretch Vehicle Blueprint -->
+                                                <rect x="25" y="20" width="180" height="360" rx="15" fill="white" stroke="#444" stroke-width="1.2" />
+                                                <rect x="35" y="30" width="160" height="340" rx="10" fill="#f0f9ff" stroke="#444" stroke-width="0.7" />
+                                                <line x1="115" y1="20" x2="115" y2="380" stroke="#555" stroke-width="0.5" stroke-dasharray="3,1" />
+                                                {% for y in [ 50, 175, 290] %}
+                                                <line x1="35" y1="{{ y }}" x2="195" y2="{{ y }}" stroke="#444" stroke-width="{% if y in [190, 210] %}1{% else %}0.7{% endif %}" />
+                                                {% endfor %}
+                                                <rect x="45" y="25" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                                                <rect x="45" y="345" width="140" height="10" rx="5" fill="#e5e7eb" stroke="#444" stroke-width="0.5" />
+                                                <rect x="15" y="40" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="15" y="160" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="15" y="280" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="200" y="40" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="200" y="160" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                                <rect x="200" y="280" width="15" height="25" rx="3" fill="#d1d5db" stroke="#444" stroke-width="1" />
+                                            </svg>
+                                        {% endif %}
+                                    </div>
 
-            <!-- Seat Layout Grid -->
-            <div class="absolute inset-0 flex flex-col justify-center items-center py-6 px-4 z-10">
-                <div class="seat-layout grid grid-cols-1 gap-y-3 sm:gap-y-4 w-full max-w-[200px]">
-                    <!-- Driver and Front Passenger Row -->
-                    <div class="grid grid-cols-2 gap-x-6 place-items-center w-full mb-2">
-                        <!-- Driver Seat (Disabled) -->
-                        <div class="seat-container flex flex-col items-center">
-                            <div class="seat-icon w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-gray-500 bg-gray-400 flex items-center justify-center shadow-md relative">
-                                <i class="ri-steering-fill text-gray-700 text-sm sm:text-base"></i>
-                                <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] font-medium text-gray-700">A1</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Front Passenger Seat -->
-                        {% if seatCount >= 2 %}
-                        <div class="seat-container flex flex-col items-center">
-                            <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                data-seat-id="A2"
-                                data-price="{{ seatPrices['A2'] | default(0) }}">
-                                <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">A2</span>
-                                <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                    ${{ seatPrices['A2'] | default(0) }}
-                                </span>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Middle Row -->
-                    {% if seatCount >= 3 %}
-                    <div class="grid {% if seatCount == 3 %}grid-cols-1 place-items-center{% elseif seatCount == 4 %}grid-cols-2 gap-x-6{% else %}grid-cols-3 gap-x-4{% endif %} w-full mt-1 mb-2">
-                        {% if seatCount == 3 %}
-                            <div class="seat-container flex flex-col items-center">
-                                <div class="my-10 seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                    data-seat-id="B1"
-                                    data-price="{{ seatPrices['B1'] | default(0) }}">
-                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B1</span>
-                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                        ${{ seatPrices['B1'] | default(0) }}
-                                    </span>
-                                </div>
-                            </div>
-                        {% elseif seatCount == 4 %}
-                            <div class="my-10 seat-container flex flex-col items-center">
-                                <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                    data-seat-id="B1"
-                                    data-price="{{ seatPrices['B1'] | default(0) }}">
-                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B1</span>
-                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                        ${{ seatPrices['B1'] | default(0) }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="my-10 seat-container flex flex-col items-center">
-                                <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                    data-seat-id="B2"
-                                    data-price="{{ seatPrices['B2'] | default(0) }}">
-                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B2</span>
-                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                        ${{ seatPrices['B2'] | default(0) }}
-                                    </span>
-                                </div>
-                            </div>
-                        {% elseif seatCount >= 5 %}
-                            {% for i in 1..3 %}
-                                {% set seat_id = 'B' ~ i %}
-                                <div class="my-10 seat-container flex flex-col items-center">
-                                    <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                        data-seat-id="{{ seat_id }}"
-                                        data-price="{{ seatPrices[seat_id] | default(0) }}">
-                                        <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
-                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                            ${{ seatPrices[seat_id] | default(0) }}
-                                        </span>
+                                    <!-- Seat Layout Grid -->
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center py-6 px-4 z-10">
+                                        <div class="seat-layout grid grid-cols-1 gap-y-3 sm:gap-y-4 w-full max-w-[200px]">
+                                            <!-- Driver and Front Passenger Row -->
+                                            <div class="grid grid-cols-2 gap-x-6 place-items-center w-full mb-2">
+                                                <!-- Driver Seat (Disabled) -->
+                                                <div class="seat-container flex flex-col items-center">
+                                                    <div class="seat-icon w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-gray-500 bg-gray-400 flex items-center justify-center shadow-md relative">
+                                                        <i class="ri-steering-fill text-gray-700 text-sm sm:text-base"></i>
+                                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] font-medium text-gray-700">A1</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Front Passenger Seat -->
+                                                {% if seatCount >= 2 %}
+                                                <div class="seat-container flex flex-col items-center">
+                                                    <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                        data-seat-id="A2"
+                                                        data-price="{{ seatPrices['A2'] | default(0) }}">
+                                                        <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">A2</span>
+                                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                            ${{ seatPrices['A2'] | default(0) }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Middle Row -->
+                                            {% if seatCount >= 3 %}
+                                            <div class="grid {% if seatCount == 3 %}grid-cols-1 place-items-center{% elseif seatCount == 4 %}grid-cols-2 gap-x-6{% else %}grid-cols-3 gap-x-4{% endif %} w-full mt-1 mb-2">
+                                                {% if seatCount == 3 %}
+                                                    <div class="seat-container flex flex-col items-center">
+                                                        <div class="my-10 seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                            data-seat-id="B1"
+                                                            data-price="{{ seatPrices['B1'] | default(0) }}">
+                                                            <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B1</span>
+                                                            <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                                ${{ seatPrices['B1'] | default(0) }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                {% elseif seatCount == 4 %}
+                                                    <div class="my-10 seat-container flex flex-col items-center">
+                                                        <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                            data-seat-id="B1"
+                                                            data-price="{{ seatPrices['B1'] | default(0) }}">
+                                                            <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B1</span>
+                                                            <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                                ${{ seatPrices['B1'] | default(0) }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="my-10 seat-container flex flex-col items-center">
+                                                        <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                            data-seat-id="B2"
+                                                            data-price="{{ seatPrices['B2'] | default(0) }}">
+                                                            <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">B2</span>
+                                                            <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                                ${{ seatPrices['B2'] | default(0) }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                {% elseif seatCount >= 5 %}
+                                                    {% for i in 1..3 %}
+                                                        {% set seat_id = 'B' ~ i %}
+                                                        <div class="my-10 seat-container flex flex-col items-center">
+                                                            <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                                data-seat-id="{{ seat_id }}"
+                                                                data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                                                <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                                                <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                                    ${{ seatPrices[seat_id] | default(0) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Third Row -->
+                                            {% if seatCount >= 6 %}
+                                            <div class="grid {% if seatCount == 6 %}grid-cols-2 gap-x-6{% else %}grid-cols-{{ (seatCount == 7) ? '2' : '3' }} gap-x-4{% endif %} w-full mt-1 mb-2">
+                                                {% if seatCount == 6 %}
+                                                    {% for i in 1..2 %}
+                                                        {% set seat_id = 'C' ~ i %}
+                                                        <div class="seat-container flex flex-col items-center">
+                                                            <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                                data-seat-id="{{ seat_id }}"
+                                                                data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                                                <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                                                <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                                    ${{ seatPrices[seat_id] | default(0) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% elseif seatCount >= 7 %}
+                                                    {% set third_row_seats = (seatCount == 7) ? 2 : 3 %}
+                                                    {% for i in 1..third_row_seats %}
+                                                        {% set seat_id = 'C' ~ i %}
+                                                        <div class="seat-container flex flex-col items-center">
+                                                            <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                                data-seat-id="{{ seat_id }}"
+                                                                data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                                                <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                                                <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                                    ${{ seatPrices[seat_id] | default(0) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Fourth Row (for 8+ seaters like limousines) -->
+                                            {% if seatCount >= 9 %}
+                                            <div class="grid grid-cols-3 gap-x-4 w-full mt-1">
+                                                {% for i in 1..3 %}
+                                                    {% set seat_id = 'D' ~ i %}
+                                                    <div class="seat-container flex flex-col items-center">
+                                                        <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
+                                                            data-seat-id="{{ seat_id }}"
+                                                            data-price="{{ seatPrices[seat_id] | default(0) }}">
+                                                            <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
+                                                            <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
+                                                                ${{ seatPrices[seat_id] | default(0) }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Third Row -->
-                    {% if seatCount >= 6 %}
-                    <div class="grid {% if seatCount == 6 %}grid-cols-2 gap-x-6{% else %}grid-cols-{{ (seatCount == 7) ? '2' : '3' }} gap-x-4{% endif %} w-full mt-1 mb-2">
-                        {% if seatCount == 6 %}
-                            {% for i in 1..2 %}
-                                {% set seat_id = 'C' ~ i %}
-                                <div class="seat-container flex flex-col items-center">
-                                    <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                        data-seat-id="{{ seat_id }}"
-                                        data-price="{{ seatPrices[seat_id] | default(0) }}">
-                                        <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
-                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                            ${{ seatPrices[seat_id] | default(0) }}
-                                        </span>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% elseif seatCount >= 7 %}
-                            {% set third_row_seats = (seatCount == 7) ? 2 : 3 %}
-                            {% for i in 1..third_row_seats %}
-                                {% set seat_id = 'C' ~ i %}
-                                <div class="seat-container flex flex-col items-center">
-                                    <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                        data-seat-id="{{ seat_id }}"
-                                        data-price="{{ seatPrices[seat_id] | default(0) }}">
-                                        <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
-                                        <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                            ${{ seatPrices[seat_id] | default(0) }}
-                                        </span>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Fourth Row (for 8+ seaters like limousines) -->
-                    {% if seatCount >= 9 %}
-                    <div class="grid grid-cols-3 gap-x-4 w-full mt-1">
-                        {% for i in 1..3 %}
-                            {% set seat_id = 'D' ~ i %}
-                            <div class="seat-container flex flex-col items-center">
-                                <div class="seat seat-available w-8 h-9 sm:w-9 sm:h-10 rounded-md border-2 border-blue-500 bg-white hover:bg-blue-100 flex items-center justify-center shadow-md cursor-pointer transition-all duration-150 transform hover:scale-105 relative"
-                                    data-seat-id="{{ seat_id }}"
-                                    data-price="{{ seatPrices[seat_id] | default(0) }}">
-                                    <span class="text-[10px] sm:text-[11px] font-medium text-blue-900">{{ seat_id }}</span>
-                                    <span class="absolute -bottom-3.5 text-[8px] sm:text-[10px] text-blue-700">
-                                        ${{ seatPrices[seat_id] | default(0) }}
-                                    </span>
-                                </div>
                             </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-             <!-- Sidebar --><div class="space-y-6">
-                    <!-- Seat information -->
-                    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
-                            <i class="ri-information-line mr-2 text-blue-500"></i>
-                            Seat Information
-                        </h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg">
-                                <p class="text-xs text-gray-500">Total Seats</p>
-                                <p class="text-lg font-semibold text-blue-700">{{ seatCount }}</p>
-                            </div>
-                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg">
-                                <p class="text-xs text-gray-500">Available</p>
-                                <p class="text-lg font-semibold text-blue-700">{{ seatCount - 1 }}</p>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
+                                <i class="ri-flag-line mr-2 text-blue-500"></i>
+                                Seat Legend
+                            </h3>
+                            <div class="flex flex-wrap gap-x-6 gap-y-3">
+                                <div class="flex items-center">
+                                    <div class="w-5 h-5 rounded border-2 border-blue-300 bg-white mr-3 flex-shrink-0"></div>
+                                    <span class="text-sm text-gray-700">Available</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-5 h-5 rounded border-2 border-blue-500 bg-blue-100 mr-3 flex-shrink-0"></div>
+                                    <span class="text-sm text-gray-700">Selected</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-400 bg-gray-300 mr-3 flex-shrink-0"></div>
+                                    <span class="text-sm text-gray-700">Unavailable (Driver)</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Selected seats -->
-                    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
-                            <i class="ri-checkbox-circle-line mr-2 text-blue-500"></i>
-                            Selected Seats
-                        </h3>
-                        <div id="selected-seats-container" class="min-h-[100px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4">
-                            <p class="text-sm text-gray-500 text-center py-4">No seats selected yet</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Legend -->
-                    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
-                            <i class="ri-flag-line mr-2 text-blue-500"></i>
-                            Seat Legend
-                        </h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center">
-                                <div class="w-5 h-5 rounded border-2 border-blue-300 bg-white mr-3"></div>
-                                <span class="text-sm text-gray-700">Available</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-5 h-5 rounded border-2 border-blue-500 bg-blue-100 mr-3"></div>
-                                <span class="text-sm text-gray-700">Selected</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-5 h-5 rounded border-2 border-gray-400 bg-gray-300 mr-3"></div>
-                                <span class="text-sm text-gray-700">Unavailable (Driver)</span>
+
+                    <!-- Right Sidebar Section -->
+                    <div class="lg:col-span-2 space-y-6 flex flex-col"> {# Changed lg:col-span-1 to lg:col-span-2 #}
+                                            <!-- Seat information -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300 ">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
+                                <i class="ri-information-line mr-2 text-blue-500"></i>
+                                Seat Information
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-500">Total Seats</p>
+                                    <p class="text-lg font-semibold text-blue-700">{{ seatCount }}</p>
+                                </div>
+                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-500">Available</p>
+                                    <p class="text-lg font-semibold text-blue-700">{{ seatCount - 1 }}</p> {# Assuming driver is always unavailable #}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Actions -->
-                    <form id="seat-form" action="{{ path('app_car_map',{id:id}) }}" method="post" data-turbo="false">
-                        <input type="hidden" name="selected_seats" id="selected-seats-input" value="">
-                        <div class="space-y-3">
-                            <button type="submit" id="seat-continue" disabled 
+
+                        <!-- Sidebar Grid (Selected Seats + Employees) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> {# Removed flex-grow from here #}
+                            <!-- Selected seats -->
+                            <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
+                                <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center flex-shrink-0">
+                                    <i class="ri-checkbox-circle-line mr-2 text-blue-500"></i>
+                                    Selected Seats
+                                </h3>
+                                <div id="selected-seats-container" class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 overflow-y-auto"> {# Removed min-h-[100px] and flex-grow #}
+                                    <p class="text-sm text-gray-500 text-center py-4">No seats selected yet</p>
+                                </div>
+                            </div>
+
+                            <!-- Employee selection -->
+                            <div id="employee-selection-container" class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
+                                <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center flex-shrink-0">
+                                    <i class="ri-user-line mr-2 text-blue-500"></i>
+                                    Assign Employees
+                                </h3>
+                                <div id="employee-selections" class="space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 overflow-y-auto"> {# Removed min-h-[100px] and flex-grow #}
+                                    <p id="no-seats-message" class="text-sm text-gray-500 text-center py-4">Select seats to assign employees</p>
+
+                                    {% set seatIds = ['A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'] %}
+
+                                    {% for seatId in seatIds %}
+                                        <div id="employee-selection-{{ seatId }}" class="employee-selection-item flex flex-col bg-blue-50 p-3 rounded-lg shadow-sm transition-all duration-300 transform hover:shadow-md hover:bg-blue-100 hidden">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <div class="flex items-center">
+                                                    <div class="flex items-center justify-center w-8 h-8 bg-blue-200 rounded-md text-blue-800 font-bold mr-3">
+                                                        {{ seatId }}
+                                                    </div>
+                                                    <p class="text-sm font-medium text-blue-800">Seat {{ seatId }}</p>
+                                                </div>
+                                                <span class="text-xs px-2 py-0.5 bg-blue-200 text-blue-800 rounded-full">{{ seatPositions[seatId] | default('Seat') }}</span>
+                                            </div>
+
+                                            <div class="relative" data-seat-id="{{ seatId }}" style="position: relative; z-index: 1;">
+                                                <div class="custom-select-header flex items-center justify-between border border-blue-300 rounded-lg p-2 bg-white cursor-pointer">
+                                                    <div class="flex items-center min-h-[36px]">
+                                                        <div id="selected-employee-avatar-{{ seatId }}" class="w-8 h-8 rounded-full bg-gray-200 mr-2 flex-shrink-0 overflow-hidden">
+                                                            <i class="ri-user-line text-gray-500 flex items-center justify-center h-full"></i>
+                                                        </div>
+                                                        <div id="selected-employee-name-{{ seatId }}" class="text-sm text-gray-600">Select an employee</div>
+                                                    </div>
+                                                    <i class="ri-arrow-down-s-line text-blue-500"></i>
+                                                </div>
+                                                <div class="custom-select-options absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto hidden z-[1000]">
+                                                    <div class="p-2 border-b border-gray-100">
+                                                        <div class="option-item flex items-center p-2 hover:bg-blue-50 rounded cursor-pointer" data-value="" data-seat-id="{{ seatId }}">
+                                                            <div class="w-8 h-8 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
+                                                                <i class="ri-user-line text-gray-500"></i>
+                                                            </div>
+                                                            <span class="text-sm text-gray-600">Select an employee</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="p-2">
+                                                        {% if employees is defined and employees is not empty %}
+                                                            {% for emp in employees %}
+                                                                <div class="option-item employee-option flex items-center p-2 hover:bg-blue-50 rounded cursor-pointer transition-all duration-200 transform hover:translate-x-1"
+                                                                    data-value="{{ emp.id }}"
+                                                                    data-seat-id="{{ seatId }}"
+                                                                    data-name="{{ emp.firstName }} {{ emp.lastName }}"
+                                                                    data-avatar="https://ui-avatars.com/api/?name={{ emp.firstName }}+{{ emp.lastName }}&background=random">
+                                                                    <div class="w-8 h-8 rounded-full bg-gray-200 mr-2 overflow-hidden">
+                                                                        <img src="https://ui-avatars.com/api/?name={{ emp.firstName }}+{{ emp.lastName }}&background=random" alt="{{ emp.firstName }}" class="w-full h-full object-cover">
+                                                                    </div>
+                                                                    <span class="text-sm font-medium">{{ emp.firstName }} {{ emp.lastName }}</span>
+                                                                </div>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            <div class="p-4 text-center text-sm text-gray-500">
+                                                                No employees available
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="employee-for-seat-{{ seatId }}" class="employee-select" data-seat-id="{{ seatId }}" value="">
+                                                <input type="hidden" name="selected_seats" id="selected-seats" value="{{ seatId }}">
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <input type="hidden" name="employee_assignments" id="employee-assignments-input" value="{}">
+
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    // Employee assignments state
+                                    const employeeAssignments = {};
+                                    let highestZIndex = 1000;
+
+                                    // DOM Elements
+                                    const selectedSeatsInput = document.getElementById('selected-seats-input');
+                                    const employeeAssignmentsInput = document.getElementById('employee-assignments-input');
+                                    const noSeatsMessage = document.getElementById('no-seats-message');
+
+                                    // Set up custom select dropdowns
+                                    document.querySelectorAll('.custom-select-header').forEach(header => {
+                                        header.addEventListener('click', function(e) {
+                                            e.stopPropagation();
+                                            const wrapper = this.closest('.relative');
+                                            const optionsContainer = wrapper.querySelector('.custom-select-options');
+
+                                            // Close all other dropdowns
+                                            document.querySelectorAll('.custom-select-options').forEach(dropdown => {
+                                                if (dropdown !== optionsContainer) {
+                                                    dropdown.classList.add('hidden');
+                                                }
+                                            });
+
+                                            // Reset all relative elements z-index
+                                            document.querySelectorAll('.relative[data-seat-id]').forEach(el => {
+                                                el.style.zIndex = '1';
+                                            });
+
+                                            // Toggle this dropdown
+                                            optionsContainer.classList.toggle('hidden');
+
+                                            // If opening the dropdown, bring it to front with highest z-index
+                                            if (!optionsContainer.classList.contains('hidden')) {
+                                                highestZIndex += 10;
+                                                wrapper.style.zIndex = highestZIndex;
+                                            }
+                                        });
+                                    });
+
+                                    // Handle option selection
+                                    document.querySelectorAll('.option-item').forEach(option => {
+                                        option.addEventListener('click', function() {
+                                            const seatId = this.dataset.seatId;
+                                            const employeeId = this.dataset.value;
+                                            const employeeName = this.dataset.name || '';
+                                            const employeeAvatar = this.dataset.avatar || '';
+
+                                            // Update the hidden input
+                                            const hiddenInput = document.getElementById('employee-for-seat-' + seatId);
+                                            hiddenInput.value = employeeId;
+
+                                            // Update the visual display
+                                            const nameDisplay = document.getElementById('selected-employee-name-' + seatId);
+                                            const avatarContainer = document.getElementById('selected-employee-avatar-' + seatId);
+
+                                            if (employeeId) {
+                                                nameDisplay.textContent = employeeName;
+                                                avatarContainer.innerHTML = `<img src="${employeeAvatar}" alt="${employeeName}" class="w-full h-full object-cover">`;
+                                            } else {
+                                                nameDisplay.textContent = 'Select an employee';
+                                                avatarContainer.innerHTML = `<i class="ri-user-line text-gray-500 flex items-center justify-center h-full"></i>`;
+                                            }
+
+                                            // Close the dropdown
+                                            const wrapper = this.closest('.relative');
+                                            wrapper.querySelector('.custom-select-options').classList.add('hidden');
+
+                                            // Update assignments
+                                            updateEmployeeAssignments(seatId, employeeId);
+                                            validateForm();
+                                        });
+                                    });
+
+                                    // Close dropdowns when clicking outside
+                                    document.addEventListener('click', function() {
+                                        document.querySelectorAll('.custom-select-options').forEach(dropdown => {
+                                            dropdown.classList.add('hidden');
+                                        });
+                                    });
+
+                                    // Add a seat selection observer (already exists in main script, ensure no conflict)
+                                    // If the main script handles this, this might be redundant.
+                                    // Assuming the main script handles seat clicks and calls updateEmployeeSelections.
+
+                                    // Global function to update employee assignments
+                                    window.updateEmployeeAssignments = function(seatId, employeeId) {
+                                        if (employeeId) {
+                                            employeeAssignments[seatId] = employeeId;
+                                        } else {
+                                            delete employeeAssignments[seatId];
+                                        }
+
+                                        employeeAssignmentsInput.value = JSON.stringify(employeeAssignments);
+                                        updateAvailableEmployees();
+                                        validateForm(); // Call main validation logic
+                                    };
+
+                                    // Function to update available employees
+                                    function updateAvailableEmployees() {
+                                        const assignedEmployees = Object.values(employeeAssignments).filter(Boolean);
+
+                                        document.querySelectorAll('.employee-option').forEach(option => {
+                                            const employeeId = option.dataset.value;
+                                            const optionSeatId = option.dataset.seatId;
+
+                                            if (assignedEmployees.includes(employeeId) && employeeAssignments[optionSeatId] !== employeeId) {
+                                                option.classList.add('hidden');
+                                            } else {
+                                                option.classList.remove('hidden');
+                                            }
+                                        });
+                                    }
+
+                                    // Make this function available globally (ensure it doesn't conflict with main script)
+                                    window.updateEmployeeSelections = function updateEmployeeSelections() {
+                                        const currentSelectedSeats = JSON.parse(selectedSeatsInput.value || "[]");
+
+                                        document.querySelectorAll('.employee-selection-item').forEach(item => {
+                                            item.classList.add('hidden');
+                                        });
+
+                                        if (!currentSelectedSeats.length) {
+                                            noSeatsMessage.classList.remove('hidden');
+                                            // Clear assignments if no seats are selected
+                                            Object.keys(employeeAssignments).forEach(seatId => delete employeeAssignments[seatId]);
+                                            employeeAssignmentsInput.value = "{}";
+                                            updateAvailableEmployees(); // Ensure employees become available again
+                                            return;
+                                        }
+
+                                        noSeatsMessage.classList.add('hidden');
+
+                                        // Clean up employee assignments for deselected seats
+                                        Object.keys(employeeAssignments).forEach(seatId => {
+                                            if (!currentSelectedSeats.includes(seatId)) {
+                                                delete employeeAssignments[seatId];
+                                                // Reset the dropdown for the deselected seat
+                                                const nameDisplay = document.getElementById('selected-employee-name-' + seatId);
+                                                const avatarContainer = document.getElementById('selected-employee-avatar-' + seatId);
+                                                const hiddenInput = document.getElementById('employee-for-seat-' + seatId);
+                                                if (nameDisplay) nameDisplay.textContent = 'Select an employee';
+                                                if (avatarContainer) avatarContainer.innerHTML = `<i class="ri-user-line text-gray-500 flex items-center justify-center h-full"></i>`;
+                                                if (hiddenInput) hiddenInput.value = '';
+                                            }
+                                        });
+
+                                        currentSelectedSeats.forEach(seatId => {
+                                            const selectionItem = document.getElementById('employee-selection-' + seatId);
+                                            if (selectionItem) {
+                                                selectionItem.classList.remove('hidden');
+                                            }
+                                        });
+
+                                        employeeAssignmentsInput.value = JSON.stringify(employeeAssignments);
+                                        updateAvailableEmployees();
+                                    }
+
+                                    // Form validation function (ensure it uses the main continue button)
+                                    function validateForm() {
+                                        const continueButton = document.getElementById('seat-continue'); // Main button outside this script scope
+                                        if (!continueButton) return; // Guard if button not found
+
+                                        const currentSelectedSeats = JSON.parse(selectedSeatsInput.value || "[]");
+
+                                        if (currentSelectedSeats.length === 0) {
+                                            continueButton.disabled = true;
+                                            continueButton.classList.add('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
+                                            continueButton.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                                            return;
+                                        }
+
+                                        // Check if all selected seats have employees assigned
+                                        const allSeatsAssigned = currentSelectedSeats.every(seatId => {
+                                            return employeeAssignments[seatId] && employeeAssignments[seatId].length > 0;
+                                        });
+
+                                        if (allSeatsAssigned) {
+                                            continueButton.disabled = false;
+                                            continueButton.classList.remove('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
+                                            continueButton.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                                        } else {
+                                            continueButton.disabled = true;
+                                            continueButton.classList.add('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
+                                            continueButton.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                                        }
+                                    }
+
+                                    // Make validateForm globally accessible if needed by the main script
+                                    window.validateEmployeeAssignments = validateForm;
+
+                                    // Initialize
+                                    updateEmployeeSelections();
+                                    validateForm(); // Initial validation
+                                });
+                                </script>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-auto pt-6"> {# Use mt-auto to push to bottom, pt-6 for spacing #}
+                            <input type="hidden" name="selected_seats" id="selected-seats-input" value="">
+                            {# employee_assignments input is now inside the employee selection div #}
+                            <button type="submit" id="seat-continue" disabled
                                     class="w-full px-4 py-3 bg-gray-300 text-gray-600 rounded-lg font-medium flex items-center justify-center transition-colors duration-200 cursor-not-allowed">
                                 Continue
                                 <i class="ri-arrow-right-line ml-2"></i>
                             </button>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+                    </div>
+
+                </div> <!-- End Main Grid -->
+            </form> {# End Form #}
+        </div> <!-- End Padding Div -->
+    </div> <!-- End Main Content Area BG -->
 </div>
 
 <script>
@@ -396,6 +628,11 @@ document.addEventListener('DOMContentLoaded', function() {
             seat.classList.remove('bg-blue-100', 'border-blue-500', 'shadow-md');
             seat.classList.add('bg-white', 'border-blue-300', 'hover:bg-blue-50');
             selectedSeats.splice(seatIndex, 1);
+            
+            // Clean up any employee assignments for this seat
+            if (window.updateEmployeeAssignments) {
+                window.updateEmployeeAssignments(seatId, '');
+            }
         } else {
             // Select seat
             seat.classList.add('bg-blue-100', 'border-blue-500', 'shadow-md');
@@ -405,8 +642,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 price: seatPrice,
                 position: seatPositions[seatId] || 'Passenger seat'
             });
-            document.getElementById('selected-seats-input').value= JSON.stringify(selectedSeats.map(seat => seat.id));
-            console.log(document.getElementById('selected-seats-input').value);
         }
         
         updateSelectedSeatsDisplay();
@@ -459,12 +694,24 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedSeatsContainer.innerHTML = html;
     }
     
-    // Update continue button state
+    // Update continue button state based on selection and employee assignments
     function updateContinueButton() {
         if (selectedSeats.length > 0) {
-            continueButton.disabled = false;
-            continueButton.classList.remove('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
-            continueButton.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+            // Check if all selected seats have employee assignments
+            const assignments = JSON.parse(document.getElementById('employee-assignments-input').value || "{}");
+            const allSeatsAssigned = selectedSeats.every(seat => 
+                assignments[seat.id] && assignments[seat.id].length > 0
+            );
+            
+            if (allSeatsAssigned) {
+                continueButton.disabled = false;
+                continueButton.classList.remove('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
+                continueButton.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+            } else {
+                continueButton.disabled = true;
+                continueButton.classList.add('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
+                continueButton.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+            }
         } else {
             continueButton.disabled = true;
             continueButton.classList.add('bg-gray-300', 'text-gray-600', 'cursor-not-allowed');
@@ -474,7 +721,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update hidden input with selected seats data
     function updateHiddenInput() {
-        selectedSeatsInput.value = JSON.stringify(selectedSeats);
+        selectedSeatsInput.value = JSON.stringify(selectedSeats.map(seat => seat.id));
+        
+        // Trigger the employee selection update whenever seats change
+        if (window.updateEmployeeSelections) {
+            setTimeout(() => window.updateEmployeeSelections(), 50);
+        }
     }
     
     // Adjust seat spacing (can be called on window resize too)
@@ -493,6 +745,42 @@ document.addEventListener('DOMContentLoaded', function() {
             row.classList.replace('px-[20%]', 'px-[15%]');
         });
     }
+    
+    // Add event listener to form submission
+    document.getElementById('seat-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate seats are selected
+        if (selectedSeats.length === 0) {
+            alert('Please select at least one seat');
+            return;
+        }
+        
+        // Validate all selected seats have employees assigned
+        const assignments = JSON.parse(document.getElementById('employee-assignments-input').value || "{}");
+        const unassignedSeats = selectedSeats.filter(seat => 
+            !assignments[seat.id] || assignments[seat.id].length === 0
+        );
+        
+        if (unassignedSeats.length > 0) {
+            alert(`Please assign employees to the following seats: ${unassignedSeats.map(s => s.id).join(', ')}`);
+            return;
+        }
+        
+        // Show selected employees and submit the form
+        let message = "Selected employees:\n\n";
+        
+        selectedSeats.forEach(seat => {
+            const employeeId = assignments[seat.id];
+            const employeeOption = document.querySelector(`.option-item[data-value="${employeeId}"]`);
+            const employeeName = employeeOption ? employeeOption.dataset.name : 'Unknown';
+            
+            message += `Seat ${seat.id}: ${employeeName}\n`;
+        });
+        
+        alert(message);
+        this.submit();
+    });
     
     // Call once on page load
     adjustSeatSpacing();
