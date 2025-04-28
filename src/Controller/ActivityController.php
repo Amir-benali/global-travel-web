@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use GuzzleHttp\Client;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ActivityController extends AbstractController
 {
@@ -42,11 +45,7 @@ class ActivityController extends AbstractController
 
         $adapter = new QueryAdapter($queryBuilder);
         $pager = new Pagerfanta($adapter);
-        $pager->setMaxPerPage(10); // Nombre d'éléments par page
-        $pager->setCurrentPage($request->query->getInt('page', 1));
-        
-        // Configuration de la pagination
-        $pager->setMaxPerPage(6); // Nombre d'éléments par page
+        $pager->setMaxPerPage(10);
         $pager->setCurrentPage($request->query->getInt('page', 1));
 
         return $this->render('activity/index.html.twig', [
@@ -115,12 +114,11 @@ class ActivityController extends AbstractController
         $activity = new Activity();
         $form = $this->createForm(ActivityFormType::class, $activity);
         $form->handleRequest($request);
-
+             
         $session = $this->requestStack->getSession();
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                // Création d'événement Google Calendar
                 $eventId = $calendarService->createEvent($activity);
                 $session->set('google_event_id', $eventId);
 

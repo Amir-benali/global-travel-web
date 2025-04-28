@@ -11,6 +11,8 @@ parameters:
     akismet.blog_url: 'http://127.0.0.1:8000'
     google_client_secret_path: '%kernel.project_dir%/config/google_client_secret.json'
     google_calendar_id: 'primary'
+    facebook_client_id: '%env(FB_ID)%'
+    facebook_client_secret: '%env(FB_SECRET)%'
 
     
 
