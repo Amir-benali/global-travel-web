@@ -84,52 +84,39 @@ class UserType extends AbstractType
                         'message' => 'The address should contain only letters, numbers, spaces, and basic punctuation',
                     ]),
                 ],
-            ])
-            ->add('roles', ChoiceType::class, [
+            ]);
+
+        if (!$options['is_settings']) {
+            $builder->add('roles', ChoiceType::class, [
                 'choices' => [
-                
                     'Admin' => 'ROLE_ADMIN',
                     'Responsable' => 'ROLE_RESPONSABLE',
                     'Employé' => 'ROLE_EMPLOYEE'
                 ],
                 'placeholder' => 'Choose a role',
                 'required' => false,
-                'multiple' =>true,
+                'multiple' => true,
                 'label' => 'Role',
                 'attr' => ['class' => 'form-select']
-            ])
-            // ->add('roles'
-            // , ChoiceType::class, [
-            //     'choices' => [
-            //         'Admin' => 'ADMIN',
-            //         'Responsable' => 'RESPONSABLE',
-            //         'Employee' => 'EMPLOYEE'
-            //     ],
-            //     'label' => 'Rôle',
-            //     'attr' => ['class' => 'form-select'],
-            //     'multiple' => false,
-            //     'expanded' => false
-            // ]
-            // )
-            ->add('statut', ChoiceType::class, [
-                'choices' => [
-                    'Actif' => 'actif',
-                    'Inactif' => 'inactif'
-                ],
-                'label' => 'Statut',
-                'attr' => ['class' => 'form-select']
             ]);
+        }
 
-
+        $builder->add('statut', ChoiceType::class, [
+            'choices' => [
+                'Actif' => 'actif',
+                'Inactif' => 'inactif'
+            ],
+            'label' => 'Statut',
+            'attr' => ['class' => 'form-select']
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'is_new' => false, // Default to false (update form)
-
+            'is_new' => false,
+            'is_settings' => false,
         ]);
-
     }
 }

@@ -10,78 +10,115 @@
                 <h2 class="text-xl font-semibold text-gray-800">User Settings</h2>
             </div>
             
-            <form class="p-6">
-                <!-- Profile Picture Upload -->
-                <div class="mb-8 text-center relative group">
-                    <div class="mx-auto w-32 h-32 rounded-full bg-gray-200 mb-4 relative overflow-hidden">
-                        <img src="https://ui-avatars.com/api/?name=Amir+Benali&background=random" alt="Profile" class="w-full h-full object-cover">
-                        <label class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <i class="ri-camera-line text-white text-2xl"></i>
-                            <input type="file" class="hidden" accept="image/*">
-                        </label>
-                    </div>
+            {{ form_start(form, {
+                method: 'POST',
+                attr: {
+                    novalidate: 'novalidate',
+                    'data-turbo': 'false',
+                    class: 'p-6 space-y-8'
+                }
+            }) }}
+            
+            <!-- Profile Picture -->
+            <div class="mb-8 text-center relative group">
+                <div class="mx-auto w-32 h-32 rounded-full bg-gray-200 mb-4 relative overflow-hidden">
+                    <img src="https://ui-avatars.com/api/?name={{ app.user.firstname }}+{{ app.user.lastname }}&background=random"
+                         class="w-full h-full object-cover" alt="Profile Picture">
+                    <label class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                        <i class="ri-camera-line text-white text-2xl"></i>
+                        <input type="file" class="hidden" accept="image/*">
+                    </label>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <!-- First Name -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                        <input 
-                            type="text" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            value="amir"
-                        >
-                    </div>
-                    
-                    <!-- Last Name -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                        <input 
-                            type="text" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            value="benali"
-                        >
-                    </div>
-                    
-                    <!-- Email -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input 
-                            type="email" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            value="amir@gmail.com"
-                        >
-                    </div>
-                    
-                    <!-- Phone -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                        <input 
-                            type="tel" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            value="99887766"
-                        >
-                    </div>
-                    
-                    <!-- Role -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="admin" selected>Admin</option>
-                            <option value="manager">Manager</option>
-                            <option value="user">User</option>
-                        </select>
-                    </div>
+            </div>
+            
+            <!-- Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- First Name -->
+                <div>
+                    {{ form_label(form.firstname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.firstname, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.firstname.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
                 </div>
-                
-                <div class="flex items-center justify-end space-x-3">
-                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Save Changes
-                    </button>
+            
+                <!-- Last Name -->
+                <div>
+                    {{ form_label(form.lastname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.lastname, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.lastname.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
                 </div>
-            </form>
+            
+                <!-- Email -->
+                <div class="md:col-span-2">
+                    {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.email, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.email.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            
+                <!-- Phone -->
+                <div>
+                    {{ form_label(form.phoneNumber, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.phoneNumber, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.phoneNumber.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            
+            
+                <!-- Statut -->
+                <div>
+                    {{ form_label(form.statut, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.statut, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.statut.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            
+                <!-- Genre -->
+                <div>
+                    {{ form_label(form.genre, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.genre, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.genre.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            
+                <!-- Date de Naissance -->
+                <div>
+                    {{ form_label(form.dateNaissance, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.dateNaissance, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.dateNaissance.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            
+                <!-- Adresse -->
+                <div class="md:col-span-2">
+                    {{ form_label(form.adresse, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.adresse, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
+                    {% for error in form.adresse.vars.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="flex items-center justify-end space-x-3">
+                <a href="{{ path('app_dashboard') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Save Changes
+                </button>
+            </div>
+            
+            {{ form_end(form) }}
+            
         </div>
     </div>
 {% endblock %}

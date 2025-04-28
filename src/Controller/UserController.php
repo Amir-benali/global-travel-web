@@ -89,15 +89,38 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/settings', name: 'app_settings')]
-    public function settingsPage(EntityManagerInterface $em): Response
-    {
-        $users = $em->getRepository(User::class)->findAll();
-        
-        return $this->render('user/settings.html.twig', [
-            'users' => $users,
-        ]);
+   #[Route('/settings', name: 'app_settings')]
+public function settingsPage(
+    Request $request,
+    EntityManagerInterface $em
+): Response {
+    /** @var \App\Entity\User $user */
+    $user = $this->getUser();
+
+    if (!$user) {
+        $this->addFlash('error', 'Veuillez vous connecter.');
+        return $this->redirectToRoute('app_signin');
     }
+
+    $form = $this->createForm(UserType::class, $user, [
+        'is_settings' => true
+    ]);
+    
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $em->persist($user);
+        $em->flush();
+
+        $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+        return $this->redirectToRoute('app_settings');
+    }
+
+    return $this->render('user/settings.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+
 
     #[Route('/create', name: 'app_user_create')]
     public function create(
