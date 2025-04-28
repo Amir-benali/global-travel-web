@@ -9,6 +9,9 @@ parameters:
     azure.blob.disable_ssl_verification: true
     akismet.api_key: '8c085842ad83'
     akismet.blog_url: 'http://127.0.0.1:8000'
+    google_client_secret_path: '%kernel.project_dir%/config/google_client_secret.json'
+    google_calendar_id: 'primary'
+
     
 
 services:
@@ -38,6 +41,13 @@ services:
             $akismetBlogUrl: '%akismet.blog_url%' # ← Nom corrigé
             $httpClient: '@http_client'
             $logger: '@logger' # Ajouter cette ligne
+
+    App\Service\GoogleCalendarService:  
+        arguments:
+            $requestStack: '@request_stack'
+            $googleClientSecretPath: '%kernel.project_dir%/config/google_client_secret.json'
+            
+
     
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

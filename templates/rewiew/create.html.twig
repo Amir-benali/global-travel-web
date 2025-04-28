@@ -17,7 +17,7 @@
             
             <div class="p-6">
                 {# Messages Flash #}
-           {% for flash_type in ['success', 'error'] %}
+           {% for flash_type in [ 'error'] %}
     {% for message in app.flashes(flash_type) %}
         <div class="mb-4 p-4 rounded-lg flex items-start border-l-4 {% if flash_type == 'success' %}bg-green-100 border-green-500 text-green-800{% else %}bg-red-100 border-red-500 text-red-800{% endif %}">
             <div class="flex-shrink-0">

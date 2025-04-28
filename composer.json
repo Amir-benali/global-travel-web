@@ -13,7 +13,7 @@
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
-        "google/apiclient": "*",
+        "google/apiclient": "^2.18",
         "google/apiclient-services": "^0.396.0",
         "knplabs/knp-time-bundle": "^2.4",
         "microsoft/azure-storage-blob": "^1.5",

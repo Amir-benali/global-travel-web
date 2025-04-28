@@ -8,11 +8,13 @@ use App\Entity\Activity;
 use App\Entity\Enum\Type\ActivityTypeType;
 use App\Repository\FlightsRepository;
 use App\Repository\ActivityRepository;
+use App\Service\GoogleCalendarService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 
 
@@ -53,37 +55,57 @@ class ActivityController extends AbstractController
 
      ///create activity
 
-    #[Route('/activity/create', name: 'app_activity_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $activity = new Activity();
-        $form = $this->createForm(ActivityFormType::class, $activity);
-        
-        $form->handleRequest($request);
-    
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                try {
-                    $entityManager->persist($activity);
-                    $entityManager->flush();
-                    
-                    $this->addFlash('success', 'Activity created successfully!');
-                    return $this->redirectToRoute('app_activity');
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Error creating activity: '.$e->getMessage());
-                }
-            } else {
-                $this->addFlash('error', 'Please correct the errors in the form');
-            }
-        }
-    
-        return $this->render('activity/create.html.twig', [
-            'form' => $form->createView(),
-        ]);
+ 
+     private RequestStack $requestStack;
 
-
- } 
-
+     public function __construct(RequestStack $requestStack)
+     {
+         $this->requestStack = $requestStack;
+     }
+ 
+     #[Route('/activity/create', name: 'app_activity_create')]
+     public function create(
+         Request $request, 
+         EntityManagerInterface $entityManager,
+         GoogleCalendarService $calendarService
+     ): Response {
+         $activity = new Activity();
+         $form = $this->createForm(ActivityFormType::class, $activity);
+         $form->handleRequest($request);
+ 
+         $session = $this->requestStack->getSession();
+ 
+         if ($form->isSubmitted() && $form->isValid()) {
+             try {
+                 // Créer l'événement Google Calendar
+                 $eventId = $calendarService->createEvent($activity);
+                 
+                 // Stocker l'ID dans la session
+                 $session->set('google_event_id', $eventId);
+ 
+                 $entityManager->persist($activity);
+                 $entityManager->flush();
+ 
+                 $this->addFlash('success', 'Activity created successfully! Google Event ID: ' . $eventId);
+                 return $this->redirectToRoute('app_activity');
+ 
+             } catch (\Exception $e) {
+                 $this->addFlash('error', 'Error: ' . $e->getMessage());
+             }
+         }
+ 
+         return $this->render('activity/create.html.twig', [
+             'form' => $form->createView(),
+             'google_connected' => $this->isGoogleConnected()
+         ]);
+     }
+ 
+     private function isGoogleConnected(): bool
+     {
+         $token = $this->requestStack->getSession()->get('google_access_token');
+         return !empty($token['access_token']);
+     }
+ 
 
       /// Update activity
       #[Route('/activity/update/{id}', name: 'app_activity_update')]
