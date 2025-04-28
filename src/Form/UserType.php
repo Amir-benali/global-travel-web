@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\File;
 
 class UserType extends AbstractType
 {
@@ -85,6 +86,25 @@ class UserType extends AbstractType
                     ]),
                 ],
             ]);
+
+            if (!empty($options['is_settings']) && $options['is_settings'] === true) {
+                $builder->add('profilePicture', FileType::class, [
+                    'label' => 'Photo de profil',
+                    'mapped' => false,
+                    'required' => false,
+                    'attr' => [
+                        'accept' => 'image/*',
+                        'class' => 'form-control',
+                    ],
+                    'constraints' => [
+                        new File([
+                            'maxSize' => '2M',
+                            'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
+                            'mimeTypesMessage' => 'Please upload a valid image (jpeg, png, webp)',
+                        ]),
+                    ],
+                ]);
+            }
 
         if (!$options['is_settings']) {
             $builder->add('roles', ChoiceType::class, [

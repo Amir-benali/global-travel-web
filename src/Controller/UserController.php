@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Service\AzureBlobService;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -92,7 +93,8 @@ class UserController extends AbstractController
    #[Route('/settings', name: 'app_settings')]
 public function settingsPage(
     Request $request,
-    EntityManagerInterface $em
+    EntityManagerInterface $em,
+    AzureBlobService $azureBlobService
 ): Response {
     /** @var \App\Entity\User $user */
     $user = $this->getUser();
@@ -109,6 +111,17 @@ public function settingsPage(
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+        $uploadedFile = $form->get('profilePicture')->getData();
+        
+        if ($uploadedFile) {
+            try {
+                $imageUrl = $azureBlobService->uploadImage($uploadedFile);
+                $user->setImage($imageUrl); // Suppose que User a un champ "image"
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Image upload failed: '.$e->getMessage());
+                return $this->redirectToRoute('app_settings');
+            }
+        }
         $em->persist($user);
         $em->flush();
 
@@ -118,6 +131,7 @@ public function settingsPage(
 
     return $this->render('user/settings.html.twig', [
         'form' => $form->createView(),
+        'currentImageUrl' => $user->getImage(), // Optionnel pour l'affichage actuel
     ]);
 }
 
