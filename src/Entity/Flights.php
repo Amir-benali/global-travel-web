@@ -51,12 +51,19 @@ class Flights
     #[Assert\Positive(message: "Duration should be positif.")]
     private int $durationPerHours;
 
-    #[ORM\Column(name: "available_seats", type: "integer")]
+    #[ORM\Column(name: "seats_number", type: "integer")]
     #[Assert\GreaterThanOrEqual(
         value: 0,
         message: "Seat number can not be equal to 0."
     )]
-    private int $availableSeats;
+    #[Assert\LessThanOrEqual(
+        value: 50,
+        message: "Seat number can not exceed 50."
+    )]
+    private int $seats_number;
+
+    #[ORM\Column(name: "available_seats", type: "json")]
+    private array $availableSeats = [];
 
     #[ORM\Column(name: "flight_base_price", type: "float", precision: 10, scale: 0)]
     #[Assert\GreaterThan(
@@ -160,16 +167,27 @@ class Flights
         return $this;
     }
 
-    public function getAvailableSeats(): ?int
+    public function getAvailableSeats(): array
     {
         return $this->availableSeats;
     }
 
-    public function setAvailableSeats(int $availableSeats): self
+    public function setAvailableSeats(array $availableSeats): self
     {
         $this->availableSeats = $availableSeats;
+        return $this;
+    }
+
+    public  function setSeatsnumber(int $seatsNumber): self
+    {
+        $this->seats_number = $seatsNumber;
 
         return $this;
+    }
+
+    public function getSeatsnumber(): ?int
+    {
+        return $this->seats_number;
     }
 
     public function getFlightBasePrice(): ?float

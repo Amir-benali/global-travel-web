@@ -51,7 +51,7 @@
                 </div>
                 <div class="flex items-center">
                     <div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
-                    <span class="text-xs text-gray-700">Destination</span>
+                    <span class="text-xs text-gray-700">Destination </span>
                 </div>
                 <div class="flex items-center">
                     <div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
@@ -64,6 +64,81 @@
     <!-- Sidebar Container - Takes 30% on larger screens -->
     <div class="w-full md:w-4/12 bg-white border-l border-gray-200 p-4">
         <div class="h-full flex flex-col">
+        <div class="border-b pb-4 mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Booking Summary</h2>
+            
+            <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                <!-- Car Details Section -->
+                <div class="mb-3 pb-3 border-b border-blue-100">
+                    <h3 class="font-semibold text-gray-700 mb-2">Car Details</h3>
+                    <div class="flex items-center mb-2">
+                        <i class="ri-car-line text-blue-600 mr-2"></i>
+                        <span>{{ car.model|default('Standard Vehicle') }}</span>
+                    </div>
+                    <div class="flex items-center mb-2">
+                        <i class="ri-dashboard-3-line text-blue-600 mr-2"></i>
+                        <span>{{ car.brand|default('Economy') }}</span>
+                    </div>
+                </div>
+                
+                <!-- Seats Section -->
+                <div class="flex items-center mb-2">
+                    <i class="ri-user-line text-blue-600 mr-2"></i>
+                    <span>{{ selectedSeats|length|default(1) }} seat(s)</span>
+                </div>
+                
+                <!-- Combined Seats and Employees Section in 2 columns -->
+                <div class="mb-3 pb-3 border-b border-blue-100">
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Selected Seat IDs Column -->
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <i class="ri-checkbox-multiple-line text-blue-600 mr-2"></i>
+                                <span class="font-semibold">Selected Seats:</span>
+                            </div>
+                            <div class="ml-1">
+                                {% if selectedSeats|default([]) is not empty %}
+                                    {% for seat in selectedSeats %}
+                                        <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-1 mb-1 text-xs">{{ seat.id }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-sm text-gray-500">None selected</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Assigned Employees Column -->
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <i class="ri-user-star-line text-blue-600 mr-2"></i>
+                                <span class="font-semibold">Assigned Employees:</span>
+                            </div>
+                            <div class="ml-1">
+                                {% if assignedEmployees|default([]) is not empty %}
+                                    {% for employee in assignedEmployees %}
+                                        <div class="flex items-center mb-1">
+                                            <div class="w-6 h-6 rounded-full bg-gray-200 mr-1 overflow-hidden">
+                                                <img src="https://ui-avatars.com/api/?name={{ employee.firstName }}+{{ employee.lastName }}&background=random" 
+                                                     alt="{{ employee.firstName }}" class="w-full h-full object-cover">
+                                            </div>
+                                            <span class="text-xs">{{ employee.firstName }} {{ employee.lastName }}</span>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-sm text-gray-500">None assigned</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-blue-100">
+                    <span class="font-bold">Total Price:</span>
+                    <span class="font-bold text-blue-700">{{ totalPrice|default('0.00') ~ ' $' }}</span>
+                </div>
+            </div>
+        </div>
+
             <div class="border-b pb-4 mb-4">
                 <h2 class="text-xl font-bold text-gray-800">Trip Details</h2>
                 <p class="text-sm text-gray-500">Click on the map to set pickup and destination</p>
@@ -100,17 +175,86 @@
                     </div>
                 </div>
             </div>
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <i class="ri-money-dollar-circle-line text-blue-500 mr-2"></i>
+                    <h3 class="font-semibold text-gray-700">Price Calculation</h3>
+                </div>
+                <div class="text-sm text-gray-500 ml-6 p-2 bg-gray-50 rounded">
+                    <div class="flex justify-between mb-1">
+                        <span>Base price:</span>
+                        <span id="base-price">{{ totalPrice|default('0.00') }} $</span>
+                    </div>
+                    <div class="flex justify-between mb-1" id="distance-price-container">
+                        <span>Distance fee:</span>
+                        <span id="distance-price">0.00 $</span>
+                    </div>
+                    <div class="flex justify-between font-medium pt-1 border-t border-gray-200">
+                        <span>Final price:</span>
+                        <span id="final-price-display">{{ totalPrice|default('0.00') }} $</span>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Price calculation parameters
+                const BASE_PRICE = {{ totalPrice|default(0)|json_encode|raw }};
+                const PRICE_PER_KM = 5; // price per km in dollars
+                
+                // Function to update price based on distance
+                function updatePrice(distanceKm) {
+                    if (!distanceKm) return;
+                    
+                    const distanceFee = distanceKm * PRICE_PER_KM;
+                    const finalPrice = BASE_PRICE + distanceFee;
+                    
+                    document.getElementById('distance-price').textContent = distanceFee.toFixed(2) + ' $';
+                    document.getElementById('distance-price-container').classList.remove('hidden');
+                    document.getElementById('final-price-display').textContent = finalPrice.toFixed(2) + ' $';
+                    document.getElementById('total-price').value = finalPrice.toFixed(2);
+                }
+                
+                // Update event listener for when distance is calculated
+                document.addEventListener('DOMContentLoaded', function() {
+                    const distanceObserver = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                                const distanceText = document.getElementById('distance-value').textContent;
+                                const distanceMatch = distanceText.match(/(\d+\.?\d*)\s*km/);
+                                if (distanceMatch && distanceMatch[1]) {
+                                    const distance = parseFloat(distanceMatch[1]);
+                                    updatePrice(distance);
+                                }
+                            }
+                        });
+                    });
+                    
+                    const distanceValueElement = document.getElementById('distance-value');
+                    if (distanceValueElement) {
+                        distanceObserver.observe(distanceValueElement, { 
+                            characterData: true, 
+                            childList: true, 
+                            subtree: true 
+                        });
+                    }
+                });
+            </script>
             
-            <button id="checkout-btn" disabled
-                class="w-full py-3 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition">
-                Proceed to Checkout
-            </button>
+            <div>
+                <input type="hidden" name="total_price" id="total-price" value="{{ totalPrice|default(0) }}">
+                <button id="checkout-btn" disabled
+                    class="w-full py-3 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition"
+                    onclick="window.location.href = '/travel/car/offer/checkout?total_price=' + document.getElementById('total-price').value">
+                    Proceed to Checkout
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
     // API key for OpenRouteService
     const apiKey = "5b3ce3597851110001cf62482c7f9379af9f439789ddb44c6fe4debe";
     
@@ -144,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle location error
     map.on('locationerror', (e) => {
-        alert(`Location access denied: ${e.message}`);
+//        alert(`Location access denied: ${e.message}`);
     });
     
     // Create custom icons
@@ -169,7 +313,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     map.on('click', async function(e) {
         const latlng = e.latlng;
-        
+            // Access data passed from controller
+
+    
+
         // Get address information for clicked point
         const address = await reverseGeocode(latlng.lat, latlng.lng);
         
@@ -226,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkoutBtn.disabled = false;
             } catch (error) {
                 console.error('Error getting route:', error);
-                alert('Failed to calculate route. Please try again.');
+//                alert('Failed to calculate route. Please try again.');
             }
         } else {
             // Reset and start over with new pickup point
@@ -366,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Example: redirect to checkout page with coordinates
             // window.location.href = `/checkout?pickup=${pickupLatLng.lat},${pickupLatLng.lng}&destination=${destLatLng.lat},${destLatLng.lng}`;
-            alert('Proceeding to checkout with selected route');
+           // alert('Proceeding to checkout with selected route');
         }
     });
     
