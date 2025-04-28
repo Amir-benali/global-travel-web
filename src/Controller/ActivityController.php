@@ -145,6 +145,43 @@ class ActivityController extends AbstractController
         return $this->json($results);
     }
 
-
-
+    #[Route('/travel/activity', name: 'front_activity')]
+    public function travelActivityIndex(Request $request, EntityManagerInterface $em): Response
+    {
+        $searchQuery = $request->query->get('search', '');
+        $activities = [];
+        
+        if (!empty($searchQuery)) {
+            $activities = $em->getRepository(Activity::class)->searchByName($searchQuery);
+        } else {
+            $activities = $em->getRepository(Activity::class)->findAll();
+        }
+        
+        return $this->render('front/activity/index.html.twig', [
+            'activities' => $activities,
+            'searchQuery' => $searchQuery,
+        ]);
+    }
+    #[Route('travel/activity/details/{id}', name: 'front_activity_details')]
+    public function travelDetails(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $activity = $entityManager->getRepository(Activity::class)->find($id);
+        
+        if (!$activity) {
+            throw $this->createNotFoundException('The requested activity does not exist.');
+        }
+        
+        return $this->render('front/activity/details.html.twig', [
+            'activity' => $activity,
+        ]);
+    }   
+    #[Route('travel/activity/list', name: 'front_list_activity')]
+    public function travelListActivityIndex(EntityManagerInterface $entityManager): Response
+    {
+        $activities = $entityManager->getRepository(Activity::class)->findAll();
+        
+        return $this->render('front/activity/list.html.twig', [
+            'activities' => $activities,
+        ]);
+    }
 }

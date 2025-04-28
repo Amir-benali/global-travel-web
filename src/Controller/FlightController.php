@@ -145,4 +145,31 @@ final class FlightController extends AbstractController
 
         return $this->redirectToRoute('app_flight');
     }
+
+    #[Route('/travel/flight', name: 'front_flight')]
+    public function travelIndex(FlightsRepository $flightsRepository): Response
+    {
+        $flights = $flightsRepository->findAll();
+
+        return $this->render('front/flight/index.html.twig', [
+            'flights' => $flights,
+        ]);
+    }
+
+    #[Route('/travel/airlines', name: 'front_flight_airline', methods: ['GET'])]
+    public function travelAirlinesIndex(AirlinesRepository $airlinesRepository): Response
+    {
+        return $this->render('front/flight/airline_index.html.twig', [
+            'airlines' => $airlinesRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/travel/flight/book', name: 'front_book_flight')]
+    public function travelBookFlightIndex(FlightsRepository $flightsRepository): Response
+    {
+        return $this->render('front/flight/book.html.twig', [
+            'flights' => $flightsRepository->findAll(),
+        ]);
+    }
+
 }

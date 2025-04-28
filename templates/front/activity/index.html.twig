@@ -1,0 +1,277 @@
+{# templates/activity/index.html.twig #}
+
+{% extends 'front.html.twig' %}
+
+{% block title %}Activity List{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .search-container {
+            position: relative;
+            display: inline-block;
+        }
+        #searchResults {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+            margin-top: -1px;
+        }
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        .no-results {
+            padding: 10px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        .loading-icon {
+            display: none;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center p-6">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="ri-calendar-event-line text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Activity List</h1>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
+
+                    
+                    <div class="flex space-x-3 w-full md:w-auto">
+                        <a href="{{ path('front_review') }}" class="flex items-center justify-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition duration-200 whitespace-nowrap">
+                            <i class="ri-star-line mr-2"></i>
+                            Reviews
+                        </a>
+                        
+     
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="activityGrid">
+            {% for activity in activities %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-200">
+                    <div class="p-5 border-b border-gray-200">
+                        <div class="flex items-center">
+                            <i class="ri-calendar-event-line text-blue-600 text-xl mr-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">{{ activity.nomactivity }}</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5">
+                        <div class="space-y-3 mb-5">
+                            <div class="flex items-start">
+                                <i class="ri-information-line text-blue-600 mt-1 mr-3"></i>
+                                <p class="text-sm text-gray-700">{{ activity.description|length > 100 ? activity.description|slice(0, 100) ~ '...' : activity.description }}</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-map-pin-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.localisation }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-calendar-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.datedebut|date('M d, Y H:i') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-calendar-check-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.datefin|date('M d, Y H:i') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-money-dollar-circle-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">${{ activity.prixtotal|number_format(2, '.', ',') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-price-tag-3-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.typeactivity.value }}</span>
+                            </div>
+                            {% if activity.joinhotel %}
+                            <div class="flex items-center">
+                                <i class="ri-hotel-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.joinhotel.nomH }}</span>
+                            </div>
+                            {% endif %}
+                            {% if activity.joinvoiture %}
+                            <div class="flex items-center">
+                                <i class="ri-car-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.joinvoiture.model }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-3">
+                            <a href="{{ path('front_activity_details', {id: activity.id}) }}" 
+                               class="flex items-center justify-center py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md text-sm transition duration-200">
+                                <i class="ri-eye-line mr-1"></i>
+                                Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-span-3 py-10 text-center">
+                    <div class="bg-white p-8 rounded-lg shadow-sm">
+                        <i class="ri-emotion-sad-line text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">
+                            {% if app.request.query.get('search') %}
+                                No activities found for "{{ app.request.query.get('search') }}"
+                            {% else %}
+                                No activities available
+                            {% endif %}
+                        </h3>
+                        <p class="text-gray-500 mb-4">Try adjusting your search or create a new activity</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = document.querySelector('form');
+            const searchResults = document.getElementById('searchResults');
+            const loadingIcon = document.querySelector('.loading-icon');
+            const searchIcon = document.querySelector('.search-icon');
+            let searchTimeout;
+            let currentSearch = '{{ app.request.query.get('search', '') }}';
+
+            // Initialize with current search value
+            if (currentSearch) {
+                searchInput.value = currentSearch;
+            }
+
+            // Search input event listener for live results
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                // Show loading icon
+                searchIcon.style.display = 'none';
+                loadingIcon.style.display = 'block';
+                searchResults.style.display = 'none';
+
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => {
+                        fetch(`/activity/search?query=${encodeURIComponent(query)}`)
+                            .then(response => {
+                                if (!response.ok) throw new Error('Network response was not ok');
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Hide loading icon, show search icon
+                                loadingIcon.style.display = 'none';
+                                searchIcon.style.display = 'block';
+
+                                if (data.length > 0) {
+                                    searchResults.innerHTML = '';
+                                    data.forEach(activity => {
+                                        const resultItem = document.createElement('div');
+                                        resultItem.className = 'search-result-item';
+                                        resultItem.innerHTML = `
+                                            <div class="font-medium text-gray-800">${activity.name}</div>
+                                            <div class="text-sm text-gray-600">${activity.location}</div>
+                                            <div class="text-xs text-gray-500 mt-1">${activity.startDate}</div>
+                                        `;
+                                        resultItem.addEventListener('click', () => {
+                                            window.location.href = `/activity/details/${activity.id}`;
+                                        });
+                                        searchResults.appendChild(resultItem);
+                                    });
+                                    searchResults.style.display = 'block';
+                                } else {
+                                    searchResults.innerHTML = '<div class="no-results">No matching activities found</div>';
+                                    searchResults.style.display = 'block';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                loadingIcon.style.display = 'none';
+                                searchIcon.style.display = 'block';
+                            });
+                    }, 500); // 500ms delay after typing stops
+                } else if (query.length === 0) {
+                    // Hide loading immediately if query is empty
+                    loadingIcon.style.display = 'none';
+                    searchIcon.style.display = 'block';
+                    searchResults.style.display = 'none';
+                } else {
+                    // Hide loading after short delay for very short queries
+                    setTimeout(() => {
+                        loadingIcon.style.display = 'none';
+                        searchIcon.style.display = 'block';
+                    }, 200);
+                }
+            });
+
+            // Hide results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            // Prevent form submission if empty
+            searchForm.addEventListener('submit', function(e) {
+                if (searchInput.value.trim().length === 0) {
+                    e.preventDefault();
+                }
+            });
+
+            // Show results on focus if there's a current search
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 2 && searchResults.children.length > 0) {
+                    searchResults.style.display = 'block';
+                }
+            });
+
+            // Initialize search if page was loaded with a search query
+            if (currentSearch && currentSearch.length >= 2) {
+                const event = new Event('input', { bubbles: true });
+                searchInput.dispatchEvent(event);
+            }
+        });
+    </script>
+{% endblock %}

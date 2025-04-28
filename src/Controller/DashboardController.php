@@ -11,9 +11,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashboardController extends AbstractController
 {
 
+
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(ActivityRepository $activityRepository): Response
     {
+
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         // Get current date and calculate previous month
         $now = new \DateTime();
         $lastMonth = (clone $now)->modify('-1 month');
@@ -93,8 +96,16 @@ final class DashboardController extends AbstractController
             'recent_activities' => $recentActivities,
         ]);
 
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+       
         
         return $this->render('dashboard/index.html.twig');
     }
+
+    #[Route('/travel', name: 'front_dashboard')]
+    public function travelIndex(): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        return $this->render('front/index.html.twig');
+    }
+
 }
