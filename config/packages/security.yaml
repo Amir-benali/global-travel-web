@@ -16,21 +16,37 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+
+
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 semaine (en secondes)
+                path: /
+                name: REMEMBERME
+                always_remember_me: false
+
             lazy: true
             provider: app_user_provider
             form_login:
                 login_path: app_signin
                 check_path: app_signin
+                username_parameter: auth[email]
+                password_parameter: auth[password]
+                csrf_parameter: _csrf_token
                 default_target_path: app_dashboard
                 enable_csrf: true
-                username_parameter: email  # Spécifie explicitement le paramètre email
-                password_parameter: password  # Spécifie explicitement le paramètre password
+                use_forward: false
+                remember_me: true
             logout:
                 path: app_logout
                 target: app_signin
                 invalidate_session: true
+                delete_cookies: ['PHPSESSID']
 
     access_control:
+        - { path: ^/test-email, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/signin, roles: PUBLIC_ACCESS }
         - { path: ^/signup, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: [ROLE_EMPLOYEE, ROLE_ADMIN, ROLE_RESPONSABLE] }

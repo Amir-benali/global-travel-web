@@ -2,111 +2,161 @@
 
 namespace App\Form;
 
+
 use App\Entity\Airlines;
 use App\Entity\Enum\Flight\FlightStatus;
 use App\Entity\Flights;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class FlightType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
+
+        $airportService = $options['airport_service'];
+        $airports=$airportService->fetchAirportNames();
+        $airportChoices=array_combine($airports, $airports);
+
         $builder
             ->add('flightNumber', null, [
+                'label' => 'Flight number',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le numéro de vol est obligatoire.']),
-                    new Assert\Length([
-                        'max' => 10,
-                        'maxMessage' => 'Le numéro de vol ne peut pas dépasser {{ limit }} caractères.',
+                    new Assert\NotBlank([
+                        'message' => 'Flight number is required.',
                     ]),
                 ],
+                'empty_data' =>"", // Valeur par défaut
             ])
-            ->add('departureAirportName', null, [
+            ->add('departureAirportName', ChoiceType::class, [
+                'label' => 'Departure Airport',
+                'choices' => $airportChoices,
+                'placeholder'=>'Select Departure Airport',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le nom de l\'aéroport de départ est obligatoire.']),
+                    new Assert\NotBlank([
+                        'message' => 'Departure airport is required.',
+                    ]),
                 ],
+                'empty_data' =>-1, // Valeur par défaut
             ])
-            ->add('arrivalAirportName', null, [
+            ->add('arrivalAirportName', ChoiceType::class, [
+                'label' => 'Arrival Airport',
+                'choices' => $airportChoices,
+                'placeholder'=>'Select Arrival Airport',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le nom de l\'aéroport d\'arrivée est obligatoire.']),
+                    new Assert\NotBlank([
+                        'message' => 'Arrival airport is required.',
+                    ]),
                 ],
+                'empty_data' =>-1, // Valeur par défaut
             ])
-
             ->add('departureTime', DateTimeType::class, [
-                'widget' => 'single_text' ,
-        'attr' => ['id' => 'departureTime'],
-        'constraints' => [
-            new Assert\NotBlank(['message' => 'L\'heure de départ est obligatoire.']),
-        ],
-    ])
-    ->add('arrivalTime', DateTimeType::class, [
-        'widget' => 'single_text',
-        'attr' => ['id' => 'arrivalTime'],
-        'constraints' => [
-            new Assert\NotBlank(['message' => 'L\'heure d\'arrivée est obligatoire.']),
-            new Assert\Callback(function ($arrivalTime, ExecutionContextInterface $context) {
-                $form = $context->getRoot();
-                $departureTime = $form->get('departureTime')->getData();
-
-                if ($departureTime && $arrivalTime && $departureTime >= $arrivalTime) {
-                    $context->buildViolation('La date de départ doit être antérieure à la date d\'arrivée.')
-                        ->atPath('arrivalTime')
-                        ->addViolation();
-                }
-            }),
-        ],
-    ])
-            ->add('availableSeats', null, [
+                'widget' => 'single_text',
+                'label' => 'Departure date',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le nombre de sièges disponibles est obligatoire.']),
-                    new Assert\GreaterThanOrEqual([
-                        'value' => 0,
-                        'message' => 'Le nombre de sièges disponibles doit être supérieur ou égal à 0.',
+                    new Assert\NotBlank([
+                        'message' => 'Departure date is required.',
                     ]),
                 ],
+                'empty_data' =>null, // Valeur par défaut
+            ])
+            ->add('arrivalTime', DateTimeType::class, [
+                'widget' => 'single_text',
+                'label' => 'Arrival date',
+            ])
+            ->add('availableSeats',null, [
+                'label' => 'Number of Seats',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Number of seats is required.',
+                    ]),
+                ],
+                'empty_data' =>-1, // Valeur par défaut
             ])
             ->add('flightBasePrice', null, [
+                'label' => 'Base price',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le prix de base du vol est obligatoire.']),
-                    new Assert\GreaterThan([
-                        'value' => 0,
-                        'message' => 'Le prix de base doit être supérieur à 0.',
+                    new Assert\NotBlank([
+                        'message' => 'Base price is required.',
                     ]),
                 ],
+                'empty_data' =>-1, // Valeur par défaut
             ])
             ->add('flightStatus', ChoiceType::class, [
-                'choices' => FlightStatus::cases(),
-                'choice_label' => fn(FlightStatus $status) => $status->value,
-                'choice_value' => fn(?FlightStatus $status) => $status?->value,
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le statut du vol est obligatoire.']),
+                'choices' => [
+                    'SCHEDULED' => FlightStatus::SCHEDULED,
+                    'DELAYED' => FlightStatus::DELAYED,
+                    'CANCELLED' => FlightStatus::CANCELLED,
+                    'COMPLETED' => FlightStatus::COMPLETED,
                 ],
+                'choice_label' => function ($choice, $key, $value) {
+                    return $key; // Utilise les clés comme labels
+                },
+                'expanded' => false, // Affiche des boutons radio
+                'multiple' => false, // Une seule option sélectionnable
+                'placeholder'=>'Select Flight Status',
+                'label' => 'Flight status',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Flight status is required.',
+                    ]),
+                ],
+                'empty_data' =>-1, // Valeur par défaut
             ])
             ->add('departureCountry', null, [
+                'label' => 'Departure country',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le pays de départ est obligatoire.']),
+                    new Assert\NotBlank([
+                        'message' => 'Departure country is required.',
+                    ]),
+                    new Assert\Regex([
+                        'pattern' => '/^[a-zA-Z\s]+$/',
+                        'message' => 'The Departure country must contain only letters.',
+                    ]),
                 ],
+                'empty_data' =>"", // Valeur par défaut
             ])
-            ->add('arrivalCountry', null, [
+           ->add('arrivalCountry', null, [
+                'label' => 'Arrival country',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le pays d\'arrivée est obligatoire.']),
+                    new Assert\NotBlank([
+                        'message' => 'Arrival country is required.',
+                    ]),
+                    new Assert\Regex([
+                        'pattern' => '/^[a-zA-Z\s]+$/',
+                        'message' => 'The arrival country must contain only letters.',
+                    ]),
                 ],
+                'empty_data' =>"", // Valeur par défaut
             ])
             ->add('airlineId', EntityType::class, [
                 'class' => Airlines::class,
-                'choice_label' => 'airlineName',
-                'choice_value' => 'airlineId',
-                'placeholder' => 'Sélectionnez une compagnie aérienne',
+                'choice_label' => 'airlineName', // Affiche le nom de la compagnie
+                'label' => 'Airline company',
+                'placeholder'=>'Select Airline',
+                'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [
-                    new Assert\NotNull(['message' => 'Veuillez sélectionner une compagnie aérienne.']),
+                    new Assert\NotBlank([
+                        'message' => 'Airline company is required.',
+                    ]),
                 ],
+                'empty_data' =>-1, // Valeur par défaut
             ]);
     }
 
@@ -114,6 +164,7 @@ class FlightType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Flights::class,
+            'airport_service' => null, // Ajoutez cette ligne pour définir le service d'aéroport
         ]);
     }
 }

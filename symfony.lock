@@ -26,8 +26,17 @@
             "./migrations/.gitignore"
         ]
     },
-    "jms/translation-bundle": {
-        "version": "2.6.0"
+    "google/apiclient": {
+        "version": "2.18",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "2.10",
+            "ref": "07a97ec434d43b7903c78069a04c92adb6442e52"
+        },
+        "files": [
+            "./config/packages/google_apiclient.yaml"
+        ]
     },
     "knplabs/knp-snappy-bundle": {
         "version": "1.10",
@@ -36,7 +45,10 @@
             "branch": "main",
             "version": "1.5",
             "ref": "c81bdcf4a9d4e7b1959071457f9608631865d381"
-        }
+        },
+        "files": [
+            "./config/packages/knp_snappy.yaml"
+        ]
     },
     "knplabs/knp-time-bundle": {
         "version": "v2.4.0"
@@ -262,6 +274,18 @@
         "files": [
             "./config/packages/twig.yaml",
             "./templates/base.html.twig"
+        ]
+    },
+    "symfony/uid": {
+        "version": "6.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.2",
+            "ref": "d294ad4add3e15d7eb1bae0221588ca89b38e558"
+        },
+        "files": [
+            "./config/packages/uid.yaml"
         ]
     },
     "symfony/ux-turbo": {

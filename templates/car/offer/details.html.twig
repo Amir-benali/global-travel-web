@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'front.html.twig' %}
 {% block title %}{{ offer.description }} - Car Offer Details{% endblock %}
 {% block body %}
     <!-- Main Content -->   
@@ -16,7 +16,7 @@
                 </div>
             </div>
             
-            <div class="flex space-x-3">
+            {# <div class="flex space-x-3">
                 <a href="{{ path('app_car_offer_update', {'id': offer.id}) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
                     <i class="ri-edit-line mr-1"></i>
                     Edit Offer
@@ -25,7 +25,7 @@
                     <i class="ri-delete-bin-line mr-1"></i>
                     Delete
                 </button>
-            </div>
+            </div> #}
         </div>
         
         <!-- Offer Details -->
@@ -62,7 +62,7 @@
                     </div>
                     
                     <div class="flex space-x-3">
-                        <a href="#" class="px-6 py-3 bg-green-600 text-white rounded-lg flex-1 font-medium hover:bg-green-700 text-center">
+                        <a href="{{path('app_car_book_seats', {id:offer.getId()})}}" class="px-6 py-3 bg-green-600 text-white rounded-lg flex-1 font-medium hover:bg-green-700 text-center">
                             Book Now
                         </a>
                 

@@ -1,0 +1,167 @@
+{# templates/components/front_navbar.html.twig #}
+<nav class="w-full bg-white shadow-md">
+    <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-4">
+                <a href="{{ path('front_dashboard') }}" class="flex items-center">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Global Travel Logo" class="h-16 w-16">
+                </a>
+                {% set currentRoute = app.request.get('_route') %}
+
+                <!-- Navigation Buttons -->
+                <div class="hidden md:flex items-center space-x-2">
+                    <a href="{{ path('front_dashboard') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute == 'front_dashboard' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-dashboard-line mr-2"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_flight') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_flight' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-plane-line mr-2"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_car') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_car' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-car-line mr-2"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_hotel') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_hotel' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-hotel-line mr-2"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_activity') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_activity' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-list-check mr-2"></i>
+                    </a>
+                    
+                    <div class="h-6 w-px bg-gray-300 mx-2"></div>
+                    
+                    <a href="{{ path('front_book_flight') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_book_flight' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-ticket-line mr-2"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_book_car') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_book_car' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-road-map-line mr-2"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_book_hotel') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_book_hotel' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-hotel-bed-line mr-2"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_list_activity') }}" 
+                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_list_activity' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-calendar-todo-line mr-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Right Side - User & Actions -->
+            <div class="flex items-center space-x-4">
+                <button class="p-2 rounded-full hover:bg-gray-100 relative">
+                    <i class="ri-information-line text-gray-600 text-xl"></i>
+                    <span class="sr-only">Payments</span>
+                </button>
+                
+                <!-- User Profile Dropdown -->
+                <div class="relative dropdown-container">
+                    <button id="userDropdownButton" 
+                            class="flex items-center space-x-2 focus:outline-none">
+                        <img src="{{ app.user ? 'https://ui-avatars.com/api/?name=' ~ app.user.firstName ~ '+' ~ app.user.lastName ~ '&background=2563eb&color=ffffff' : asset('images/user-icon.png') }}" 
+                             alt="User Profile" 
+                             class="h-8 w-8 rounded-full">
+                        <span class="hidden md:inline text-sm font-medium">
+                            {{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Guest' }}
+                        </span>
+                        <i class="ri-arrow-down-s-line text-gray-600"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdownMenu" 
+                         class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
+                        <a href="{{ path('front_settings') }}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="ri-settings-line mr-2"></i> Settings
+                        </a>
+                        <a href="{{ path('app_logout') }}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="ri-logout-box-line mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden flex justify-center mt-2">
+            <button id="mobile-menu-button" class="p-2 rounded-lg hover:bg-gray-100">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden mt-2 pb-4">
+            <div class="grid grid-cols-2 gap-2">
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Dashboard</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Flights</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Cars</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Hotels</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Activities</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Tickets</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Routes</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Reservations</a>
+                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Tracking</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .mobile-nav-item {
+        @apply px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors;
+    }
+</style>
+
+<script>
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+    });
+        document.addEventListener('DOMContentLoaded', function() {
+        const dropdownButton = document.getElementById('userDropdownButton');
+        const dropdownMenu = document.getElementById('userDropdownMenu');
+        
+        dropdownButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('hidden');
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!dropdownMenu.contains(e.target) && !dropdownButton.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    });
+</script>
