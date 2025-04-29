@@ -54,8 +54,6 @@ class Chambre
     #[Assert\NotNull(message: "You must select a hotel.")]
     private Hotel $hotel;
 
-    // Getters and Setters
-
     public function getIdChambreH(): ?int
     {
         return $this->idChambreH;
@@ -69,7 +67,6 @@ class Chambre
     public function setTypeChambreH(string $typeChambreH): static
     {
         $this->typeChambreH = $typeChambreH;
-
         return $this;
     }
 
@@ -81,7 +78,6 @@ class Chambre
     public function setPrixNuitH(int $prixNuitH): static
     {
         $this->prixNuitH = $prixNuitH;
-
         return $this;
     }
 
@@ -93,7 +89,6 @@ class Chambre
     public function setDispoH(\DateTimeInterface $dispoH): static
     {
         $this->dispoH = $dispoH;
-
         return $this;
     }
 
@@ -105,7 +100,6 @@ class Chambre
     public function setOptionH(string $optionH): static
     {
         $this->optionH = $optionH;
-
         return $this;
     }
 
@@ -117,7 +111,6 @@ class Chambre
     public function setHotel(Hotel $hotel): static
     {
         $this->hotel = $hotel;
-
         return $this;
     }
 }

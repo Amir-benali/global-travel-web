@@ -8,6 +8,7 @@ parameters:
     azure.blob.container_name: 'globaltravelstorage'
     azure.blob.disable_ssl_verification: true
     env(NOMINATIM_USER_AGENT): 'GlobalTravelApp/1.0'
+    huggingface_api_token: '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'
 
 services:
     # default configuration for services in *this* file
@@ -35,4 +36,10 @@ services:
             $cache: '@cache.app'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Controller\HotelController:
+        arguments:
+            $logger: '@monolog.logger'
+            $csrfTokenManager: '@security.csrf.token_manager'
+            $httpClient: '@http_client'
+            $huggingfaceApiToken: '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'
     

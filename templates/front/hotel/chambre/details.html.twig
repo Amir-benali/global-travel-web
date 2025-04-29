@@ -1,3 +1,4 @@
+
 {% extends 'front.html.twig' %}
 
 {% block title %}{{ hotel.nomH }}{% endblock %}
@@ -8,26 +9,22 @@
         <div class="bg-white rounded-lg shadow mb-6">
             <div class="flex items-center justify-between p-4">
                 <div class="flex space-x-4">
-                    <a href="{{ path('front_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
-                    {# <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a> #}
+                    <a href="{{ path('front_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600 flex items-center">
+                        <i class="ri-hotel-line mr-1" title="All Hotels"></i> All Hotels
+                    </a>
                 </div>
+                <a href="{{ path('app_hotel_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="ri-add-line mr-1" title="Add Hotel"></i> ADD HOTEL
+                </a>
             </div>
         </div>
         
         <!-- Hotel Details -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <!-- Hotel Gallery -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0 relative">
                 <div class="lg:col-span-2">
                     <img src="https://via.placeholder.com/800x400" alt="{{ hotel.nomH }}" class="w-full h-full object-cover">
-                </div>
-                <div class="grid grid-cols-2 gap-0">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Room" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Pool" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Restaurant" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Lobby" class="w-full h-full object-cover">
                 </div>
             </div>
             
@@ -36,56 +33,120 @@
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between">
                     <div class="mb-6 md:mb-0">
                         <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ hotel.nomH }}</h1>
-                        
                         <div class="flex items-center mb-4">
                             <div class="flex">
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-half-fill text-yellow-500"></i>
+                                {% for i in 1..hotel.categorieH %}
+                                    <i class="ri-star-fill text-yellow-500" title="Star Rating"></i>
+                                {% endfor %}
                             </div>
-                            <span class="ml-2 text-sm text-gray-600">4.8 (120 reviews)</span>
+                            <span class="ml-2 text-sm text-gray-600">{{ hotel.categorieH }}</span>
                         </div>
-                        
                         <div class="flex items-center text-gray-600 mb-2">
-                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
+                            <i class="ri-map-pin-line text-blue-600 mr-2" title="Location"></i>
                             <span>{{ hotel.adresseH }}, {{ hotel.villeH }}, {{ hotel.paysH }}</span>
                         </div>
-                        
                         <div class="flex items-center text-gray-600 mb-2">
-                            <i class="ri-phone-line text-blue-600 mr-2"></i>
+                            <i class="ri-phone-line text-blue-600 mr-2" title="Phone"></i>
                             <span>{{ hotel.coordonneesH }}</span>
                         </div>
                     </div>
-                    
-                    <div class="bg-blue-50 p-4 rounded-lg md:w-64">
-                        <div class="text-lg font-semibold text-blue-800 mb-2">Starting from</div>
-                        <div class="text-3xl font-bold text-gray-900 mb-4">$299<span class="text-sm font-normal text-gray-600">/night</span></div>
-                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
-                            Book Now
-                        </button>
+                </div>
+                
+                <!-- Services -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Services:</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {% set serviceIcons = {
+                            'Wi-Fi': 'wifi',
+                            'Pool': 'swimming-pool',
+                            'Parking': 'parking',
+                            'Spa': 'spa'
+                        } %}
+                        {% for service in hotel.servicesH|split(',') %}
+                            <div class="flex items-center">
+                                <i class="ri-{{ serviceIcons[service]|default(service|lower|replace({' ': '-'}) ~ '-line') }} text-blue-600 mr-2" title="{{ service }}"></i>
+                                <span class="text-gray-600">{{ service }}</span>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
                 
-                <!-- Hotel Description -->
+                <!-- Rooms -->
                 <div class="border-t border-gray-200 pt-6 mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
-                    <div class="flex items-start mb-4">
-                        <i class="ri-tools-line text-blue-600 mr-2"></i>
-                        <p class="text-gray-600">
-                            {{ hotel.servicesH }}
-                        </p>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="ri-chat-3-line text-blue-600 mr-2"></i>
-                        <p class="text-gray-600">
-                            {{ hotel.avisH }}
-                        </p>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rooms</h2>
+                    <div class="space-y-4">
+                        {% set chambres = hotel.getChambres() %}
+                        {% if chambres|length > 0 %}
+                            {% for chambre in chambres %}
+                                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                                        <img src="https://via.placeholder.com/400x300" alt="{{ chambre.typeChambreH }}" class="w-full h-full object-cover">
+                                        <div class="p-4 md:col-span-2">
+                                            <h3 class="text-lg font-medium text-gray-900 mb-2 flex items-center">
+                                                <i class="ri-hotel-bed-line text-blue-600 mr-2" title="Room Type"></i> {{ chambre.typeChambreH }}
+                                            </h3>
+                                            <p class="text-gray-600 mb-4 flex items-center">
+                                                <i class="ri-information-line text-blue-600 mr-2" title="Room Details"></i>
+                                                {{ chambre.optionH }}. Available from {{ chambre.dispoH|date('Y-m-d') }}.
+                                            </p>
+                                            <div class="flex items-center justify-between">
+                                                <div class="text-gray-600">
+                                                    {% set originalPrice = chambre.prixNuitH %}
+                                                    {% set discountedPrice = app.session.get('quiz_discount_' ~ chambre.idChambreH) ? (originalPrice * 0.95)|round(2) : originalPrice %}
+                                                    {% if app.session.get('quiz_discount_' ~ chambre.idChambreH) %}
+                                                        <span class="line-through text-red-500">${{ originalPrice }}</span>
+                                                        <span class="font-semibold text-green-600">${{ discountedPrice }}</span> / night (5% off)
+                                                    {% else %}
+                                                        <span class="font-semibold">${{ originalPrice }}</span> / night
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm flex items-center" disabled>
+                                                        <i class="ri-bookmark-line mr-1" title="Book Now"></i> Book Now
+                                                    </button>
+                                                    <a href="{{ path('play_quiz', {'id': chambre.idChambreH}) }}" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm flex items-center">
+                                                        <i class="ri-gamepad-line mr-1" title="Play Quiz"></i> Play Quiz for 5% Off
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-gray-600 flex items-center">
+                                <i class="ri-alert-line text-blue-600 mr-2" title="No Rooms"></i> No rooms available for this hotel.
+                            </p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-                   
         </div>
     </div>
+
+    <!-- CSS for Icon Styling -->
+    <style>
+        i[class^="ri-"] {
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+        button i, a i {
+            transition: transform 0.2s;
+        }
+        button:hover i, a:hover i {
+            transform: scale(1.1);
+        }
+        i[class^="ri-"]:hover {
+            animation: pulse 0.5s;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        button[disabled] {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
 {% endblock %}

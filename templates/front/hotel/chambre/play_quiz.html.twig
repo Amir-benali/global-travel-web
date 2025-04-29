@@ -1,0 +1,47 @@
+
+{% extends 'front.html.twig' %}
+
+{% block title %}Play Quiz for Discount{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl py-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Play Quiz for 5% Off Room Price</h1>
+        <div class="bg-white rounded-lg shadow p-6">
+            {% if question is not null %}
+                <form action="{{ path('play_quiz', {'id': chambre.idChambreH}) }}" method="post">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Question: {{ question.question }}</h2>
+                    <div class="space-y-4">
+                        {% for option in question.options %}
+                            <label class="flex items-center">
+                                <input type="radio" name="answer" value="{{ option }}" class="mr-2" required>
+                                {{ option }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+                        <i class="ri-send-plane-line mr-1" title="Submit"></i> Submit Answer
+                    </button>
+                </form>
+                {% if result is defined %}
+                    <div class="mt-4 p-4 rounded-md {% if result.success %}bg-green-100{% else %}bg-red-100{% endif %}">
+                        <p class="text-gray-800">
+                            {% if result.success %}
+                                Congratulations! You won a 5% discount on room #{{ chambre.idChambreH }}.
+                                <a href="{{ path('front_hotel_details', {'id': chambre.hotel.idHotelH}) }}" class="underline">Return to hotel details</a>.
+                            {% else %}
+                                Sorry, that's incorrect. Try again!
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="p-4 bg-red-100 rounded-md">
+                    <p class="text-gray-800">
+                        Sorry, we couldn't fetch a quiz question at this time.
+                        <a href="{{ path('front_hotel_details', {'id': chambre.hotel.idHotelH}) }}" class="underline">Return to hotel details</a>.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
