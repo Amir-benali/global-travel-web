@@ -242,11 +242,20 @@
             
             <div>
                 <input type="hidden" name="total_price" id="total-price" value="{{ totalPrice|default(0) }}">
-                <button id="checkout-btn" disabled
-                    class="w-full py-3 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition"
-                    onclick="window.location.href = '/travel/car/offer/checkout?total_price=' + document.getElementById('total-price').value">
+                <button id="checkout-btn" disabled class="w-full py-3 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition">
                     Proceed to Checkout
                 </button>
+                
+                <!-- Hidden form for storing trip data -->
+                <form id="checkout-form" action="/travel/car/offer/checkout" method="POST" style="display: none;">
+                    <input type="hidden" id="form-total-price" name="total_price">
+                    <input type="hidden" id="form-start-coords" name="start_coords">
+                    <input type="hidden" id="form-dest-coords" name="destinations">
+                    <input type="hidden" id="form-assigned-employees" name="assigned_employees">
+                    <input type="hidden" id="form-assigned-seats" name="assigned_seats">
+                    <input type="hidden" id="form-selected-offer" name="selected_offer" value="{{ offerId}}">
+
+                </form>
             </div>
         </div>
     </div>
@@ -511,9 +520,58 @@ document.addEventListener('DOMContentLoaded', function() {
             const pickupLatLng = pickupMarker.getLatLng();
             const destLatLng = destinationMarker.getLatLng();
             
-            // Example: redirect to checkout page with coordinates
-            // window.location.href = `/checkout?pickup=${pickupLatLng.lat},${pickupLatLng.lng}&destination=${destLatLng.lat},${destLatLng.lng}`;
-           // alert('Proceeding to checkout with selected route');
+            // Prepare data for checkout
+            const startCoords = [pickupLatLng.lat, pickupLatLng.lng];
+            const destCoords = [destLatLng.lat, destLatLng.lng];
+            
+            // Get assigned employees data
+            const assignedEmployees = {{ assignedEmployees|default([])|map(e => e.id)|json_encode|raw }};
+            
+            // Get assigned seats data
+            const assignedSeats = {{ selectedSeats|default([])|json_encode|raw }};
+            
+            // Get car data
+            const privateCar = {{ car|default({})|json_encode|raw }};
+
+            // Get the offer ID
+            const offer = {{ offer|default({})|json_encode|raw }};
+            const offer_id = offer && offer.id ? offer.id : null;
+            
+            // Format data for submission
+            const checkoutData = {
+                assigned_employees: assignedEmployees,
+                start_coords: startCoords,
+                destinations: destCoords,
+                assigned_seats: assignedSeats,
+                private_car: privateCar,
+                offer_id: offer_id
+            };
+            
+            // Display alert with data
+            const alertMessage = `
+Booking Data Summary:
+--------------------
+List of assigned employees: ${JSON.stringify(assignedEmployees)}
+Coordinates - start: [${startCoords}]
+Destinations: [${destCoords}]
+Assigned seats: ${JSON.stringify(assignedSeats)}
+Assigned private car: ${JSON.stringify(privateCar)}
+Offer : ${offer}
+            `;
+            
+            alert(alertMessage);
+            
+            // Fill form fields
+            document.getElementById('form-total-price').value = document.getElementById('total-price').value;
+            document.getElementById('form-start-coords').value = JSON.stringify(startCoords);
+            document.getElementById('form-dest-coords').value = JSON.stringify(destCoords);
+            document.getElementById('form-assigned-employees').value = JSON.stringify(assignedEmployees);
+            document.getElementById('form-assigned-seats').value = JSON.stringify(assignedSeats);
+            //document.getElementById('form-selected-offer').value = JSON.stringify(offer);
+
+            
+            // Submit form
+            document.getElementById('checkout-form').submit();
         }
     });
     

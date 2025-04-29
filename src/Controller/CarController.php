@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\CarDriver;
 use App\Entity\CarOffer;
+use App\Entity\CarReservation;
+use App\Entity\CarRoute;
 use App\Entity\PrivateCar;
 use App\Form\CarFormType;
 use App\Form\DataTransformer\StringToFileTransformer;
@@ -11,6 +13,7 @@ use App\Form\DriverFormType;
 use App\Form\OfferFormType;
 use App\Repository\CarDriverRepository;
 use App\Repository\CarOfferRepository;
+use App\Repository\CarReservationRepository;
 use App\Repository\CarRouteRepository;
 use App\Repository\PrivateCarRepository;
 use App\Repository\UserRepository;
@@ -404,7 +407,8 @@ final class CarController extends AbstractController
             'car' => $offer->find($id)->getCar(),
             'employees' => $employees,
             'assignedEmployees' => $assignedEmployees,
-            'seatPositions' => $seatPositions
+            'seatPositions' => $seatPositions,
+            'offerId' => $id
         ]);
     }
 
@@ -432,14 +436,15 @@ final class CarController extends AbstractController
         ]);
     }
     #[Route('travel/car/book', name: 'front_book_car')]
-    public function travelOfferBookPage(CarOfferRepository $offers): Response
+    public function travelOfferBookPage(CarReservationRepository $reservation, UserRepository $userRepository): Response
     {
+        $currentUser = $this->getUser();
         return $this->render('front/car/book.html.twig', [
-            'offers' => $offers->findAll(),
+            'reservations' => $currentUser->getCarReservations()
         ]);
     }
     #[Route('travel/car/offer/checkout', name: 'front_car_offer_checkout')]
-    public function checkout(Request $req): Response
+    public function checkout(Request $req,UserRepository $user,ManagerRegistry $doctrine): Response
     {
         // Check if total_price exists in request parameters, try both POST and GET
         $price = 0;
@@ -452,12 +457,62 @@ final class CarController extends AbstractController
             $this->addFlash('error', 'Total price was not provided');
             return $this->redirectToRoute('front_book_car');
         }
+        // Retrieve form data
+        $startCoords = $req->request->get('start_coords');
+        $destinations = $req->request->get('destinations');
+        $assignedEmployees = $req->request->get('assigned_employees');
+        $assignedSeats = $req->request->get('assigned_seats');
+        $offerId = $req->request->get('selected_offer');
+
+        $offer = new CarOffer();
+        // Handle JSON values if needed
+        if (is_string($assignedEmployees) && !empty($assignedEmployees)) {
+            $assignedEmployees = json_decode($assignedEmployees, true);
+        }
+        if (is_string($assignedSeats) && !empty($assignedSeats)) {
+            $assignedSeats = json_decode($assignedSeats, true);
+        }
+
+        if (is_string($offerId) && !empty($offerId)) {
+            $offerId = json_decode($offerId, true);
+            $offer = $doctrine->getRepository(CarOffer::class)->find($offerId);
+        }
+        $entityManager = $doctrine->getManager();
+
     
+        $route = new CarRoute();
+        $route->setLocationStart($startCoords);
+        $route->setLocationDestination($destinations);
+        $route->setDateStart($offer->getdate());
+    
+
+        $reservation = new CarReservation();
+        $reservation->setDate(new \DateTime());
+        $reservation->setRoute($route);
+        $reservation->setOffer($offer);
+        $reservation->setStatus('PENDING');
+
+        foreach ($assignedEmployees as $seatId => $employeeId) {
+            if ($employeeId) {
+
+                $employee = $user->find($employeeId);
+
+                if ($employee) {
+                    $reservation->addUser($employee);
+
+                }
+            }
+        }
+        
+        $entityManager->persist($route);
+        $entityManager->persist($reservation);
+        $entityManager->flush();
+
         Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
         
         // Generate absolute URLs
-        $successUrl = $this->generateUrl('car_payment_success', ['amount' => $price], UrlGeneratorInterface::ABSOLUTE_URL);
-        $cancelUrl = $this->generateUrl('car_payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $successUrl = $this->generateUrl('car_payment_success', ['amount' => $price , 'offer_id'=>$offer->getId(),'seats'=> json_encode(array_keys($assignedEmployees)),'reservation'=> $reservation->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $cancelUrl = $this->generateUrl('car_payment_cancel', [ 'reservation'=> $reservation->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         
         $session = Session::create([
             'payment_method_types' => ['card'],
@@ -480,7 +535,7 @@ final class CarController extends AbstractController
         return $this->redirect($session->url, 303);
     }
     #[Route('travel/car/offer/success', name: 'car_payment_success')]
-    public function success(Request $req): Response
+    public function success(Request $req,ManagerRegistry $doctrine): Response
     {
         $amount = 0;
         if ($req->request->has('amount')) {
@@ -488,14 +543,76 @@ final class CarController extends AbstractController
         } elseif ($req->query->has('amount')) {
             $amount = floatval($req->query->get('amount'));
         }
+        // Get offer ID from request
+        $offerId = null;
+        if ($req->request->has('offer_id')) {
+            $offerId = $req->request->get('offer_id');
+        } elseif ($req->query->has('offer_id')) {
+            $offerId = $req->query->get('offer_id');
+        }
+        
+        // Get reservation ID from request
+        $reservationId = null;
+        if ($req->request->has('reservation')) {
+            $reservationId = $req->request->get('reservation');
+        } elseif ($req->query->has('reservation')) {
+            $reservationId = $req->query->get('reservation');
+        }
+        
+        // Get seats from request
+        $seats = null;
+        if ($req->request->has('seats')) {
+            $seats = $req->request->get('seats');
+        } elseif ($req->query->has('seats')) {
+            $seats = $req->query->get('seats');
+        }
+
+        // Parse the seats data to ensure it's an array
+        if (is_string($seats)) {
+            if (strpos($seats, '[') === 0) {
+                // It's a JSON string, decode it to array
+                $seats = json_decode($seats, true);
+            } else {
+                // Try to unserialize if it's not a JSON string
+                $decodedSeats = unserialize($seats);
+                if ($decodedSeats !== false) {
+                    $seats = $decodedSeats;
+                } else {
+                    // If all else fails, convert to array with one item
+                    $seats = [$seats];
+                }
+            }
+        }
+        
+        $entityManager = $doctrine->getManager();
+        $offer = $entityManager->getRepository(CarOffer::class)->find($offerId);
+        $offer->setReservedSeats($seats);
+        $reservation = $entityManager->getRepository(CarReservation::class)->find($reservationId);
+        $reservation->setStatus('CONFIRMED');
+        $entityManager->persist($offer);
+        $entityManager->persist($reservation);
+        $entityManager->flush();
+
         return $this->render('payment/success.html.twig', [
             'amount' => $amount,
         ]);
     }
 
     #[Route('travel/car/offer/cancel', name: 'car_payment_cancel')]
-    public function cancel(): Response
+    public function cancel(Request $req,ManagerRegistry $doctrine): Response
     {
+        $reservationId = null;
+        if ($req->request->has('reservation')) {
+            $reservationId = $req->request->get('reservation');
+        } elseif ($req->query->has('reservation')) {
+            $reservationId = $req->query->get('reservation');
+        }
+        $entityManager = $doctrine->getManager();
+        $reservation = $entityManager->getRepository(CarReservation::class)->find($reservationId);
+        $reservation->setStatus('CANCELED');
+        $entityManager->persist($reservation);
+        $entityManager->flush();
+
         return $this->render('payment/cancel.html.twig');
     }
 }
