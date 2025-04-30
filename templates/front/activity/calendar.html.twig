@@ -1,0 +1,223 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Calendrier des Activités{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <style>
+        #calendar-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            border: 1px solid #eef2f6;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+        .calendar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a365d;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .calendar-icon {
+            color: #3B82F6;
+            font-size: 1.8rem;
+        }
+
+        .back-button {
+            background: #3B82F6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-button:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+        }
+
+        .fc-event {
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 8px 12px !important;
+            font-size: 0.9rem !important;
+            background: #3B82F6 !important;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .fc-event:hover {
+            background: #2563EB !important;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .fc-toolbar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .fc-button-primary {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #64748b !important;
+            text-transform: capitalize !important;
+            border-radius: 6px !important;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .fc-button-primary:hover {
+            background: #f1f5f9 !important;
+            color: #3B82F6 !important;
+        }
+
+        .fc-button-active {
+            background: #3B82F6 !important;
+            color: white !important;
+            border-color: #3B82F6 !important;
+        }
+
+        .event-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 300px;
+            backdrop-filter: blur(4px);
+            transform: translateY(5px);
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            line-height: 1.5;
+        }
+
+        .event-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fc-daygrid-event-dot {
+            display: none !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div id="calendar-container">
+        <div class="calendar-header">
+            <h1 class="calendar-title">
+                <i class="ri-calendar-2-line calendar-icon"></i>
+                Calendrier des Activités
+            </h1>
+            <a href="{{ path('front_list_activity') }}" class="back-button">
+                <i class="ri-arrow-left-line"></i>
+                Retour à la liste
+            </a>
+        </div>
+
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<div id="custom-tooltip" class="event-tooltip"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calendarEl = document.getElementById('calendar');
+            const tooltip = document.getElementById('custom-tooltip');
+            
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                firstDay: 1,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: {
+                    url: '{{ path('employee_calendar_events') }}',
+                    method: 'GET',
+                    failure: function() {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'p-4 text-red-600 bg-red-50 rounded-lg';
+                        errorMsg.textContent = 'Erreur lors du chargement des événements';
+                        calendarEl.appendChild(errorMsg);
+                    }
+                },
+                eventDidMount: function(info) {
+                    const eventEl = info.el;
+                    
+                    // Tooltip personnalisé
+                    eventEl.addEventListener('mouseenter', (e) => {
+                        const rect = eventEl.getBoundingClientRect();
+                        tooltip.innerHTML = `
+                            <div class="font-medium mb-2">${info.event.title}</div>
+                            <div class="text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i class="ri-map-pin-line text-sm"></i>
+                                    ${info.event.extendedProps.location}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="ri-time-line text-sm"></i>
+                                    ${info.event.start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                    ${info.event.end ? `- ${info.event.end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                                </div>
+                                ${info.event.extendedProps.description ? `
+                                <div class="mt-2 pt-2 border-t border-white/10">
+                                    ${info.event.extendedProps.description}
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        tooltip.style.left = `${rect.left + window.scrollX}px`;
+                        tooltip.style.top = `${rect.top + window.scrollY - 45}px`;
+                        tooltip.classList.add('visible');
+                    });
+
+                    eventEl.addEventListener('mouseleave', () => {
+                        tooltip.classList.remove('visible');
+                    });
+                },
+                eventClick: function(info) {
+                    window.location.href = info.event.extendedProps.detailsUrl;
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+{% endblock %}

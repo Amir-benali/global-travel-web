@@ -5,8 +5,11 @@ namespace App\Controller;
 
 use App\Entity\Activity;
 use App\Entity\User;
+use App\Entity\Review;
 use App\Entity\UserActivity;
+
 use App\Form\ActivityFormType;
+use App\Form\ReviewFormType;
 use App\Service\GoogleCalendarService;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
@@ -20,6 +23,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use GuzzleHttp\Client;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+
 
 use Symfony\Component\Security\Core\Security;
 
@@ -378,13 +383,149 @@ public function employeeActivities(EntityManagerInterface $em): Response
         ->join('ua.activity', 'a')
         ->where('ua.user = :user')
         ->setParameter('user', $user)
+        
         ->orderBy('a.datedebut', 'DESC')
         ->getQuery()
         ->getResult();
 
     return $this->render('front/activity/list.html.twig', [
         'assignments' => $assignments,
+   
     ]);
 }
+
+
+#[Route('/employee/calendar/events', name: 'employee_calendar_events')]
+public function getEmployeeCalendarEvents(EntityManagerInterface $em, Security $security): JsonResponse
+{
+    $user = $security->getUser();
+    $events = [];
+
+    if ($user && $this->isGranted('ROLE_EMPLOYEE')) {
+        $assignments = $em->getRepository(UserActivity::class)
+            ->createQueryBuilder('ua')
+            ->join('ua.activity', 'a')
+            ->where('ua.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+
+        foreach ($assignments as $assignment) {
+            $activity = $assignment->getActivity();
+            $events[] = [
+                'title' => $activity->getNomactivity(),
+                'start' => $activity->getDatedebut()->format('Y-m-d\TH:i:s'),
+                'end' => $activity->getDatefin() ? $activity->getDatefin()->format('Y-m-d\TH:i:s') : null,
+                'color' => '#3B82F6',
+                'extendedProps' => [
+                    'location' => $activity->getLocalisation(),
+                    'description' => $activity->getDescription()
+                ]
+            ];
+        }
+    }
+
+    return new JsonResponse($events);
+}
+#[Route('/employee/calendar/events', name: 'employee_calendar_events')]
+public function getCalendarEvents(EntityManagerInterface $em, Security $security): JsonResponse
+{
+    $user = $security->getUser();
+    $events = [];
+
+    if ($user && $this->isGranted('ROLE_EMPLOYEE')) {
+        $assignments = $em->getRepository(UserActivity::class)
+            ->createQueryBuilder('ua')
+            ->join('ua.activity', 'a')
+            ->where('ua.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+
+        foreach ($assignments as $assignment) {
+            $activity = $assignment->getActivity();
+            $events[] = [
+                'title' => $activity->getNomactivity(),
+                'start' => $activity->getDatedebut()->format('Y-m-d\TH:i:s'),
+                'end' => $activity->getDatefin() ? $activity->getDatefin()->format('Y-m-d\TH:i:s') : null,
+                'color' => '#3B82F6',
+                'extendedProps' => [
+                    'location' => $activity->getLocalisation(),
+                    'description' => $activity->getDescription(),
+                    'detailsUrl' => $this->generateUrl('front_activity_detailsEMPLOYEES', [
+                        'id' => $activity->getId()
+                    ], UrlGeneratorInterface::ABSOLUTE_URL)
+                ]
+            ];
+        }
+    }
+
+    return new JsonResponse($events);
+}
+#[Route('/employee/calendar', name: 'employee_calendar')]
+public function employeeCalendar(Request $request, EntityManagerInterface $em): Response
+{
+    $user = $this->getUser();
+    
+    // Create review form
+    $review = new Review();
+    $review->setUserid($user);
+    $review->setDatereview(new \DateTime());
+    
+    $reviewForm = $this->createForm(ReviewFormType::class, $review);
+    $reviewForm->handleRequest($request);
+    
+    if ($reviewForm->isSubmitted() && $reviewForm->isValid()) {
+        $activityId = $request->request->get('activityId');
+        $activity = $em->getRepository(Activity::class)->find($activityId);
+        
+        if ($activity) {
+            $review->setActivityid($activity);
+            $em->persist($review);
+            $em->flush();
+            
+            $this->addFlash('success', 'Review submitted successfully!');
+            return $this->redirectToRoute('employee_calendar');
+        }
+    }
+    
+    return $this->render('front/activity/calendar.html.twig', [
+        'reviewForm' => $reviewForm->createView()
+    ]);
+}
+
+#[Route('/review/create', name: 'app_review_create', methods: ['POST'])]
+public function createReview(Request $request, EntityManagerInterface $em): Response
+{
+    $review = new Review();
+    $form = $this->createForm(ReviewFormType::class, $review);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Associer l'utilisateur courant
+        $user = $this->getUser();
+        if ($user instanceof User) {
+            $review->setUserid($user);
+        }
+
+        // Associer l'activité
+        $activityId = $request->request->get('activityId');
+        $activity = $em->getRepository(Activity::class)->find($activityId);
+        if ($activity) {
+            $review->setActivityid($activity);
+        }
+
+        $em->persist($review);
+        $em->flush();
+
+        $this->addFlash('success', 'Votre commentaire a été enregistré avec succès!');
+        return $this->redirectToRoute('front_list_activity');
+    }
+
+    $this->addFlash('error', 'Il y a eu un problème avec votre commentaire.');
+    return $this->redirectToRoute('front_list_activity');
+}
+
+
     }
 

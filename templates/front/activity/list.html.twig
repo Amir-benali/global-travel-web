@@ -1,9 +1,6 @@
-
 {% extends 'front.html.twig' %}
 
-{% block title %}
-    {% if is_granted('ROLE_EMPLOYEE') %}Mes Activités{% else %}Gestion des Activités{% endif %}
-{% endblock %}
+{% block title %}Mes Activités Assignées{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -17,46 +14,26 @@
             overflow: hidden;
         }
 
-        .assignment-badge {
-            position: absolute;
-            top: -0.5rem;
-            right: -0.5rem;
+        .activity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .calendar-button {
             background: #3B82F6;
             color: white;
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            z-index: 10;
-        }
-
-        .employee-selector {
-            display: none;
-            position: absolute;
-            z-index: 20;
-            right: 0;
-            top: 100%;
-            background: white;
-            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 18rem;
-            padding: 1rem;
-            margin-top: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s;
+            text-decoration: none;
         }
 
-        .employee-item {
-            padding: 0.5rem;
-            border-bottom: 1px solid #f1f5f9;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .employee-item:hover {
-            background: #f8fafc;
+        .calendar-button:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+            color: white;
         }
 
         .empty-state {
@@ -67,25 +44,57 @@
             padding: 2rem;
             color: #64748b;
         }
+
+        .activity-dates {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+        }
+
+        .status-upcoming { background: #3B82F6; }
+        .status-in-progress { background: #10B981; }
+        .status-completed { background: #64748b; }
     </style>
 {% endblock %}
 
 {% block body %}
 <div class="container mx-auto px-4 py-8">
     {% if is_granted('ROLE_EMPLOYEE') %}
-        <div class="mb-8 flex items-center justify-between">
+        <div class="mb-8 flex items-center justify-between flex-wrap gap-4">
             <h1 class="text-2xl font-bold flex items-center">
                 <i class="ri-task-line text-blue-500 mr-2"></i>
                 Mes Activités Assignées
             </h1>
+            
+            <div class="flex gap-4">
+                <a href="{{ path('employee_calendar') }}" class="calendar-button">
+                    <i class="ri-calendar-2-line mr-2"></i>
+                    Voir le Calendrier
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% if assignments is defined and assignments is not empty %}
                 {% for assignment in assignments %}
                     {% set activity = assignment.activity %}
-                    <div class="activity-card hover:shadow-md transition-shadow">
-                        <div class="p-6">
+                    {% set status = activity.datedebut > date() ? 'upcoming' : (activity.datefin < date() ? 'completed' : 'in-progress') %}
+                    
+                    <div class="activity-card">
+                        <div class="p-6 relative">
+                            <div class="status-indicator status-{{ status }}"></div>
+
                             <div class="flex items-center mb-4">
                                 <i class="ri-calendar-event-line text-blue-500 text-xl mr-2"></i>
                                 <h3 class="text-lg font-semibold">{{ activity.nomactivity }}</h3>
@@ -102,15 +111,32 @@
                                 </div>
                                 <div class="flex items-center">
                                     <i class="ri-information-line mr-2"></i>
-                                    {{ activity.description|slice(0, 50) ~ '...' }}
+                                    {{ activity.description|slice(0, 80) ~ (activity.description|length > 80 ? '...' : '') }}
                                 </div>
                             </div>
 
-                            <div class="mt-6">
-                                <a href="{{ path('front_activity_detailsEMPLOYEES', {'id': activity.id}) }}"
-                                   class="w-full text-center bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg block transition-colors">
-                                    <i class="ri-eye-line mr-2"></i>Voir détails
-                                </a>
+                            <div class="activity-dates">
+                                <div class="text-xs text-gray-500">
+                                    <div class="font-medium">Début</div>
+                                    {{ activity.datedebut|date('d/m/Y') }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    <div class="font-medium">Fin</div>
+                                    {{ activity.datefin ? activity.datefin|date('d/m/Y') : '--' }}
+                                </div>
+                            </div>
+
+
+                            <div class="mt-6 space-y-3">
+                               <a href="{{ path('front_activity_detailsEMPLOYEES', {'id': activity.id}) }}"
+       class="w-full inline-flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white py-2.5 px-4 rounded-lg shadow transition duration-200">
+        <i class="ri-eye-line mr-2 text-lg"></i>Détails complets
+    </a>
+ <!-- Bouton Ajouter un commentaire -->
+    <a href="{{ path('app_review_create_for_activity', {'activityId': activity.id}) }}"
+       class="w-full inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg shadow transition duration-200">
+        <i class="ri-chat-3-line mr-2 text-lg"></i>Ajouter un commentaire
+    </a>
                             </div>
                         </div>
                     </div>
@@ -120,174 +146,11 @@
                     <div class="empty-state">
                         <i class="ri-inbox-line text-4xl mb-4"></i>
                         <p class="text-lg">Aucune activité assignée</p>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-
-    {% elseif is_granted('ROLE_RESPONSABLE') %}
-        <div class="mb-8 flex items-center justify-between">
-            <h1 class="text-2xl font-bold flex items-center">
-                <i class="ri-calendar-2-line text-blue-500 mr-2"></i>
-                Gestion des Activités
-            </h1>
-            <a href="{{ path('app_activity_create') }}"
-               class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
-                <i class="ri-add-line mr-2"></i>Nouvelle Activité
-            </a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% if activities is defined and activities is not empty %}
-                {% for activity in activities %}
-                    {% set assignmentCount = 0 %}
-                    {% if assignments is defined %}
-                        {% for assignment in assignments %}
-                            {% if assignment.activityId == activity.id %}
-                                {% set assignmentCount = assignmentCount + 1 %}
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-
-                    <div class="activity-card hover:shadow-md transition-shadow">
-                        <div class="p-6 relative">
-                            {% if assignmentCount > 0 %}
-                                <div class="assignment-badge">{{ assignmentCount }}</div>
-                            {% endif %}
-
-                            <div class="flex items-center mb-4">
-                                <i class="ri-calendar-event-line text-blue-500 text-xl mr-2"></i>
-                                <h3 class="text-lg font-semibold">{{ activity.nomactivity }}</h3>
-                            </div>
-
-                            <div class="space-y-2 text-sm text-gray-600">
-                                <div class="flex items-center">
-                                    <i class="ri-map-pin-line mr-2"></i>
-                                    {{ activity.localisation }}
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="ri-time-line mr-2"></i>
-                                    {{ activity.datedebut|date('d/m/Y H:i') }}
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="ri-money-euro-circle-line mr-2"></i>
-                                    {{ activity.prixtotal|number_format(2, ',', ' ') }} €
-                                </div>
-                            </div>
-
-                            <div class="mt-6 relative">
-                                <button class="btn-assign w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors"
-                                        data-activity-id="{{ activity.id }}">
-                                    <i class="ri-user-add-line mr-2"></i>Assigner
-                                </button>
-
-                                <div class="employee-selector" id="selector-{{ activity.id }}">
-                                    <div class="max-h-48 overflow-y-auto mb-3">
-                                        {% if employees is defined and employees is not empty %}
-                                            {% for employee in employees %}
-                                                <label class="employee-item flex items-center">
-                                                    <input type="checkbox" value="{{ employee.id }}" class="mr-2 rounded text-blue-500">
-                                                    <div>
-                                                        <div class="font-medium">{{ employee.firstname }} {{ employee.lastname }}</div>
-                                                        <div class="text-xs text-gray-500">{{ employee.poste }}</div>
-                                                    </div>
-                                                </label>
-                                            {% endfor %}
-                                        {% else %}
-                                            <div class="empty-state py-4">
-                                                <i class="ri-user-search-line text-2xl mb-2"></i>
-                                                <p class="text-sm">Aucun employé disponible</p>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <button class="submit-assignments w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition-colors"
-                                            data-activity-id="{{ activity.id }}">
-                                        Confirmer l'assignation
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-span-3">
-                    <div class="empty-state">
-                        <i class="ri-calendar-line text-4xl mb-4"></i>
-                        <p class="text-lg">Aucune activité créée</p>
+                        <p class="text-sm text-gray-500 mt-2">Vous serez notifié dès qu'une nouvelle activité vous sera attribuée</p>
                     </div>
                 </div>
             {% endif %}
         </div>
     {% endif %}
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.btn-assign').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const activityId = this.dataset.activityId;
-            const selector = document.getElementById(`selector-${activityId}`);
-            document.querySelectorAll('.employee-selector').forEach(el => {
-                if (el !== selector) el.style.display = 'none';
-            });
-            selector.style.display = selector.style.display === 'block' ? 'none' : 'block';
-        });
-    });
-
-    document.querySelectorAll('.submit-assignments').forEach(button => {
-        button.addEventListener('click', async function() {
-            const activityId = this.dataset.activityId;
-            const checkboxes = document.querySelectorAll(`#selector-${activityId} input[type="checkbox"]:checked`);
-            const employeeIds = Array.from(checkboxes).map(cb => cb.value);
-
-            if (employeeIds.length === 0) {
-                alert('Veuillez sélectionner au moins un employé');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/activity/${activityId}/assign-employees`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                        // 'X-CSRF-TOKEN': '...'
-                    },
-                    body: JSON.stringify({ employeeIds })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    const card = document.querySelector(`[data-activity-id="${activityId}"]`).closest('.activity-card');
-                    let badge = card.querySelector('.assignment-badge');
-                    if (badge) {
-                        badge.textContent = data.assignedCount;
-                    } else {
-                        badge = document.createElement('div');
-                        badge.className = 'assignment-badge';
-                        badge.textContent = data.assignedCount;
-                        card.querySelector('.p-6.relative').prepend(badge);
-                    }
-
-                    document.getElementById(`selector-${activityId}`).style.display = 'none';
-                    checkboxes.forEach(cb => cb.checked = false);
-                }
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Une erreur est survenue lors de l\'assignation');
-            }
-        });
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.employee-selector') && !e.target.closest('.btn-assign')) {
-            document.querySelectorAll('.employee-selector').forEach(el => {
-                el.style.display = 'none';
-            });
-        }
-    });
-});
-</script>
 {% endblock %}
