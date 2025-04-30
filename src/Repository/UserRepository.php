@@ -68,12 +68,12 @@ class UserRepository extends ServiceEntityRepository
      * Trouve les utilisateurs par rôle
      */
     public function findByRole(string $role): array
-    {
-        return $this->createQueryBuilder('u')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%' . $role . '%')
-            ->orderBy('u.lastname', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
+{
+    return $this->createQueryBuilder('u')
+        ->where('JSON_CONTAINS(u.roles, :role) = 1')
+        ->setParameter('role', json_encode($role))
+        ->getQuery()
+        ->getResult();
+}
+
 }
