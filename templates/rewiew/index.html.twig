@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des Avis{% endblock %}
+{% block title %}List of Reviews{% endblock %}
 
 {% block body %}
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -9,7 +9,7 @@
                 <div class="flex items-center">
                     <div class="flex items-center text-2xl font-semibold text-gray-800">
                         <i class="ri-star-line text-blue-600 mr-2"></i>
-                        Liste des Avis
+                       List of Reviews
                     </div>
                 </div>
                 
@@ -18,11 +18,11 @@
                      
                     <a href="{{ path('app_activity') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center">
                         <i class="ri-list-check mr-1"></i>
-                        Liste des Activités
+                  List of Reviews
                     </a>
                     <a href="{{ path('app_review_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center">
                         <i class="ri-add-line mr-1"></i>
-                        Nouvel Avis
+                      New Notice
                     </a>
                 </div>
             </div>
@@ -70,12 +70,12 @@
                         <div class="flex justify-end space-x-4 mt-4">
                             <a href="{{ path('app_review_update', { id: review.id }) }}" 
                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm flex items-center">
-                                <i class="ri-edit-line mr-2"></i> Modifier
+                                <i class="ri-edit-line mr-2"></i> Modify
                             </a>
                             <form method="post" action="{{ path('app_review_delete', { id: review.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet avis ?');">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ review.id) }}">
                                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm flex items-center">
-                                    <i class="ri-delete-bin-line mr-2"></i> Supprimer
+                                    <i class="ri-delete-bin-line mr-2"></i> Delete
                                 </button>
                             </form>
                         </div>

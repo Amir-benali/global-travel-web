@@ -5,162 +5,333 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        #location-autocomplete-results {
+        /* Styles généraux */
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            color: #1a365d;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* Styles des champs de formulaire */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #4a5568;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+            background-color: white;
+        }
+
+        .form-input::placeholder {
+            color: #a0aec0;
+        }
+
+        /* Styles pour l'autocomplétion */
+        #location-autocomplete-results,
+        #activity-name-autocomplete-results {
             position: absolute;
             z-index: 1000;
             width: calc(100% - 2px);
             max-height: 200px;
             overflow-y: auto;
             background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-top: 0.25rem;
             display: none;
         }
-        #location-autocomplete-results div {
-            padding: 0.5rem 1rem;
+
+        #location-autocomplete-results div,
+        #activity-name-autocomplete-results div {
+            padding: 0.75rem 1rem;
             cursor: pointer;
             border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s;
         }
-        #location-autocomplete-results div:last-child {
+
+        #location-autocomplete-results div:last-child,
+        #activity-name-autocomplete-results div:last-child {
             border-bottom: none;
         }
-        #location-autocomplete-results div:hover {
-            background-color: #f8fafc;
+
+        #location-autocomplete-results div:hover,
+        #activity-name-autocomplete-results div:hover {
+            background-color: #f7fafc;
+            color: #4299e1;
         }
+
         .search-loading {
-            color: #6b7280;
+            color: #718096;
             font-style: italic;
+            padding: 0.75rem 1rem;
         }
+
         .search-error {
-            color: #ef4444;
+            color: #e53e3e;
+            padding: 0.75rem 1rem;
+        }
+
+        /* Styles pour les boutons */
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #3182ce;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        /* Styles pour les messages d'erreur */
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Styles pour la grille */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Styles pour la section Google Calendar */
+        .google-section {
+            background-color: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .google-section.connected {
+            background-color: #f0fff4;
+            border-color: #c6f6d5;
+        }
+
+        .google-section h3 {
+            color: #2b6cb0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .google-section.connected h3 {
+            color: #2f855a;
+        }
+
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #4299e1;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .google-btn:hover {
+            background-color: #3182ce;
+        }
+
+        .google-icon {
+            width: 1.25rem;
+            height: 1.25rem;
         }
     </style>
 {% endblock %}
 
 {% block body %}
-    <div class="mx-auto max-w-3xl py-8">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800">Add New Activity</h2>
-                    <a href="{{ path('app_activity') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="ri-arrow-left-line mr-1"></i>
-                        Back to List
-                    </a>
-                </div>
-            </div>
-            <div class="p-6">
-                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
-                
-                <div class="mb-6">
-                    {{ form_label(form.nomactivity, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.nomactivity, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                    <div class="text-red-500 text-sm">{{ form_errors(form.nomactivity) }}</div>
-                </div>
-                
-                <div class="mb-6">
-                    {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.description, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500', 'rows': 3}}) }}
-                    <div class="text-red-500 text-sm">{{ form_errors(form.description) }}</div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        {{ form_label(form.typeactivity, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.typeactivity, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                        <div class="text-red-500 text-sm">{{ form_errors(form.typeactivity) }}</div>
-
-                    </div>
-                  </div>   
-                  
-                  
-                  <div class="relative mb-6">
-    {{ form_label(form.localisation) }}
-    {{ form_widget(form.localisation, {
-        'attr': {
-            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 location-autocomplete-input',
-            'id': 'activity_localisation',  
-            'autocomplete': 'off',
-            'data-exclude-country': 'true'
-        }
-    }) }}
-    <div id="location-autocomplete-results" class="absolute z-10 bg-white border border-gray-300 rounded-md shadow-lg w-full"></div>
-   <div class="text-red-500 text-sm">  {{ form_errors(form.localisation) }}</div>
-</div>
-                    <div >
-                        {{ form_label(form.datedebut, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.datedebut, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                        <div class="text-red-500 text-sm">{{ form_errors(form.datedebut) }}</div>
-                    </div>
-                    
-                    <div>
-                        {{ form_label(form.datefin, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.datefin, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                        <div class="text-red-500 text-sm">{{ form_errors(form.datefin) }}</div>
-                    </div>
-                    
-                    <div>
-                        {{ form_label(form.prixtotal, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.prixtotal, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                        <div class="text-red-500 text-sm">{{ form_errors(form.prixtotal) }}</div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mx-6">
-                    <div>
-                        {{ form_label(form.joinhotel, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.joinhotel, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}, 'choice_label': 'id'}) }}
-                        <div class="text-red-500 text-sm">{{ form_errors(form.joinhotel) }}</div>
-                    </div>
-                    
-                    <div >
-                        {{ form_label(form.joinvoiture, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.joinvoiture, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                        <div class="text-red-500 text-sm">{{ form_errors(form.joinvoiture) }}</div>
-                    </div>
-                </div>
-                
-                <div class="flex items-center justify-end space-x-3">
-                    {{ form_widget(form.cancel, {'attr': {'class': 'px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50'}}) }}
-                    {{ form_widget(form.save, {'attr': {'class': 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'}}) }}
-                </div>
-                {% if not app.session.get('google_access_token') %}
-             <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 shadow-sm mb-6 flex items-center justify-between">
-    <div class="text-blue-800 font-semibold text-lg">
-        Connecte ton calendrier Google pour synchroniser tes activités.
-    </div mx-6>
-    <a href="{{ path('google_connect') }}"
-       class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl shadow hover:bg-blue-700 transition-all duration-200">
-        <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-            <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1 7.4 2.7l5.7-5.7C33.1 6.1 28.8 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8 20-20 0-1.3-.1-2.6-.4-3.8z"/>
-            <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.3 16.2 18.8 13 24 13c2.8 0 5.4 1 7.4 2.7l5.7-5.7C33.1 6.1 28.8 4 24 4 16 4 9.1 9.5 6.3 14.7z"/>
-            <path fill="#4CAF50" d="M24 44c5.2 0 10-1.9 13.7-5.1l-6.3-5.3C29.2 35.3 26.7 36 24 36c-5.3 0-9.8-3.5-11.3-8.2l-6.6 5.1C9 39.3 15.9 44 24 44z"/>
-            <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3C33.7 32 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1 7.4 2.7l5.7-5.7C33.1 6.1 28.8 4 24 4c-9.5 0-17.5 6.6-19.4 15.5l6.6 5.1C12.2 18.5 17.6 14 24 14c5.3 0 9.8 3.5 11.3 8.2l6.6-5.1C42.6 17.1 43.6 18.7 43.6 20.5z"/>
-        </svg>
-        Connecter Google Calendar
-    </a>
-</div>
-{% else %}
-    <div class="flex items-center justify-between bg-green-50 border border-green-200 text-green-800 text-sm rounded-2xl px-4 py-3 mb-6 shadow-sm">
-    <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 111.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd" />
-        </svg>
-        <span class="font-medium">Connecté à Google Calendar</span>
-    </div>
-</div>
-{% endif %}
-                
-                {{ form_end(form) }}
+    <div class="form-container">
+        <div class="form-title">
+            <div class="flex items-center justify-between">
+                <h2>Add New Activity</h2>
+                <a href="{{ path('app_activity') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="ri-arrow-left-line mr-1"></i>
+                    Back to List
+                </a>
             </div>
         </div>
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
+        
+        <div class="form-group relative">
+            {{ form_label(form.nomactivity, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nomactivity, {'attr': {
+                'class': 'form-input activity-name-autocomplete-input',
+                'id': 'activity_nomactivity',
+                'autocomplete': 'off',
+                'placeholder': 'Enter activity name'
+            }}) }}
+            <div id="activity-name-autocomplete-results"></div>
+            <div class="error-message">{{ form_errors(form.nomactivity) }}</div>
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.description, {'attr': {
+                'class': 'form-input',
+                'rows': 4,
+                'placeholder': 'Enter activity description'
+            }}) }}
+            <div class="error-message">{{ form_errors(form.description) }}</div>
+        </div>
+        
+        <div class="grid grid-cols-2">
+            <div class="form-group">
+                {{ form_label(form.typeactivity, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.typeactivity, {'attr': {'class': 'form-input'}}) }}
+                <div class="error-message">{{ form_errors(form.typeactivity) }}</div>
+            </div>
+            
+            <div class="form-group relative">
+                {{ form_label(form.localisation, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.localisation, {'attr': {
+                    'class': 'form-input location-autocomplete-input',
+                    'id': 'activity_localisation',
+                    'autocomplete': 'off',
+                    'placeholder': 'Enter location'
+                }}) }}
+                <div id="location-autocomplete-results"></div>
+                <div class="error-message">{{ form_errors(form.localisation) }}</div>
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.datedebut, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.datedebut, {'attr': {'class': 'form-input'}}) }}
+                <div class="error-message">{{ form_errors(form.datedebut) }}</div>
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.datefin, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.datefin, {'attr': {'class': 'form-input'}}) }}
+                <div class="error-message">{{ form_errors(form.datefin) }}</div>
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.prixtotal, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.prixtotal, {'attr': {'class': 'form-input'}}) }}
+                <div class="error-message">{{ form_errors(form.prixtotal) }}</div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-2">
+            <div class="form-group">
+                {{ form_label(form.joinhotel, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.joinhotel, {'attr': {'class': 'form-input'}}) }}
+                <div class="error-message">{{ form_errors(form.joinhotel) }}</div>
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.joinvoiture, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.joinvoiture, {'attr': {'class': 'form-input'}}) }}
+                <div class="error-message">{{ form_errors(form.joinvoiture) }}</div>
+            </div>
+        </div>
+
+        {% if not app.session.get('google_access_token') %}
+            <div class="google-section">
+                <h3>Connect your Google Calendar to sync your activities</h3>
+                <a href="{{ path('google_connect') }}" class="google-btn">
+                    <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1 7.4 2.7l5.7-5.7C33.1 6.1 28.8 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8 20-20 0-1.3-.1-2.6-.4-3.8z"/>
+                        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.3 16.2 18.8 13 24 13c2.8 0 5.4 1 7.4 2.7l5.7-5.7C33.1 6.1 28.8 4 24 4 16 4 9.1 9.5 6.3 14.7z"/>
+                        <path fill="#4CAF50" d="M24 44c5.2 0 10-1.9 13.7-5.1l-6.3-5.3C29.2 35.3 26.7 36 24 36c-5.3 0-9.8-3.5-11.3-8.2l-6.6 5.1C9 39.3 15.9 44 24 44z"/>
+                        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3C33.7 32 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1 7.4 2.7l5.7-5.7C33.1 6.1 28.8 4 24 4c-9.5 0-17.5 6.6-19.4 15.5l6.6 5.1C12.2 18.5 17.6 14 24 14c5.3 0 9.8 3.5 11.3 8.2l6.6-5.1C42.6 17.1 43.6 18.7 43.6 20.5z"/>
+                    </svg>
+                    Connect Google Calendar
+                </a>
+            </div>
+        {% else %}
+            <div class="google-section connected">
+                <h3>Connected to Google Calendar</h3>
+                <div class="flex items-center gap-2 text-green-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 111.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Your activities will be synced automatically</span>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="button-group">
+            {{ form_widget(form.cancel, {'attr': {'class': 'btn btn-secondary'}}) }}
+            {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary'}}) }}
+        </div>
+        
+        {{ form_end(form) }}
     </div>
 
-   {% for message in app.flashes('error') %}
+    {% for message in app.flashes('error') %}
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {{ message|raw }}
         </div>
@@ -169,41 +340,63 @@
 
 {% block javascripts %}
     {{ parent() }}
-     <script>
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Sélection robuste du champ
-        const input = document.getElementById('activity_localisation') || 
+        // Autocomplétion pour la localisation
+        const locationInput = document.getElementById('activity_localisation') || 
                      document.querySelector('input[name="activity[localisation]"]') ||
                      document.querySelector('.location-autocomplete-input');
         
-        const resultsContainer = document.getElementById('location-autocomplete-results');
+        const locationResultsContainer = document.getElementById('location-autocomplete-results');
 
-        if (!input) {
+        if (!locationInput) {
             console.error('Erreur: Champ localisation introuvable');
             return;
         }
 
-        if (!resultsContainer) {
-            console.error('Erreur: Container des résultats introuvable');
+        if (!locationResultsContainer) {
+            console.error('Erreur: Container des résultats de localisation introuvable');
             return;
         }
 
-        // 2. Configuration API
-        const apiKey = 'b6ae308ab9e242b382916cd2bf04da70';
-        let currentController = null;
+        // Autocomplétion pour le nom d'activité
+        const activityNameInput = document.getElementById('activity_nomactivity') || 
+                                document.querySelector('input[name="activity[nomactivity]"]') ||
+                                document.querySelector('.activity-name-autocomplete-input');
+        
+        const activityNameResultsContainer = document.getElementById('activity-name-autocomplete-results');
 
-        // 3. Fonctions d'affichage
-        function showLoading() {
-            resultsContainer.innerHTML = '<div class="search-loading px-4 py-2">Recherche...</div>';
-            resultsContainer.style.display = 'block';
+        if (!activityNameInput) {
+            console.error('Erreur: Champ nom d\'activité introuvable');
+            return;
         }
 
-        function showResults(results) {
-            resultsContainer.innerHTML = '';
+        if (!activityNameResultsContainer) {
+            console.error('Erreur: Container des résultats du nom d\'activité introuvable');
+            return;
+        }
+
+        // Configuration API pour la localisation
+        const locationApiKey = 'b6ae308ab9e242b382916cd2bf04da70';
+        let locationCurrentController = null;
+
+        // Configuration pour le nom d'activité avec Cohere
+        let activityNameCurrentController = null;
+        const COHERE_API_URL = 'https://api.cohere.ai/v1/generate';
+        const COHERE_API_KEY = 'hI1uB2w3ERvP2CaCWI1kLqG3h43H2Rh2xu0LerHg';
+
+        // Fonctions d'affichage pour la localisation
+        function showLocationLoading() {
+            locationResultsContainer.innerHTML = '<div class="search-loading px-4 py-2">Recherche...</div>';
+            locationResultsContainer.style.display = 'block';
+        }
+
+        function showLocationResults(results) {
+            locationResultsContainer.innerHTML = '';
             
             if (!results || results.length === 0) {
-                resultsContainer.innerHTML = '<div class="px-4 py-2 text-gray-500">Aucun résultat</div>';
-                resultsContainer.style.display = 'block';
+                locationResultsContainer.innerHTML = '<div class="px-4 py-2 text-gray-500">Aucun résultat</div>';
+                locationResultsContainer.style.display = 'block';
                 return;
             }
 
@@ -212,65 +405,178 @@
                 div.textContent = result.formatted;
                 div.classList.add('result-item');
                 div.addEventListener('click', () => {
-                    input.value = result.formatted;
-                    resultsContainer.style.display = 'none';
+                    locationInput.value = result.formatted;
+                    locationResultsContainer.style.display = 'none';
                 });
-                resultsContainer.appendChild(div);
+                locationResultsContainer.appendChild(div);
             });
-            resultsContainer.style.display = 'block';
+            locationResultsContainer.style.display = 'block';
         }
 
-        // 4. Fonction de recherche
-        function fetchAutocomplete(query) {
-            if (query.length < 2) {
-                resultsContainer.style.display = 'none';
+        // Fonctions d'affichage pour le nom d'activité
+        function showActivityNameLoading() {
+            activityNameResultsContainer.innerHTML = '<div class="search-loading px-4 py-2">Searching activities...</div>';
+            activityNameResultsContainer.style.display = 'block';
+        }
+
+        function showActivityNameResults(results) {
+            activityNameResultsContainer.innerHTML = '';
+            
+            if (!results || results.length === 0) {
+                activityNameResultsContainer.innerHTML = '<div class="px-4 py-2 text-gray-500">No activities found</div>';
+                activityNameResultsContainer.style.display = 'block';
                 return;
             }
 
-            if (currentController) {
-                currentController.abort();
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.textContent = result;
+                div.classList.add('result-item');
+                div.addEventListener('click', () => {
+                    activityNameInput.value = result;
+                    activityNameResultsContainer.style.display = 'none';
+                });
+                activityNameResultsContainer.appendChild(div);
+            });
+            activityNameResultsContainer.style.display = 'block';
+        }
+
+        // Fonction de recherche pour la localisation
+        function fetchLocationAutocomplete(query) {
+            if (query.length < 2) {
+                locationResultsContainer.style.display = 'none';
+                return;
             }
 
-            showLoading();
+            if (locationCurrentController) {
+                locationCurrentController.abort();
+            }
 
-            currentController = new AbortController();
+            showLocationLoading();
 
-            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(query)}&key=${apiKey}&limit=5&no_annotations=1&language=fr`, {
-                signal: currentController.signal
+            locationCurrentController = new AbortController();
+
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(query)}&key=${locationApiKey}&limit=5&no_annotations=1&language=fr`, {
+                signal: locationCurrentController.signal
             })
             .then(response => {
                 if (!response.ok) throw new Error('Erreur réseau');
                 return response.json();
             })
             .then(data => {
-                showResults(data.results || []);
+                showLocationResults(data.results || []);
             })
             .catch(err => {
                 if (err.name !== 'AbortError') {
-                    resultsContainer.innerHTML = '<div class="search-error px-4 py-2">Erreur de recherche</div>';
+                    locationResultsContainer.innerHTML = '<div class="search-error px-4 py-2">Erreur de recherche</div>';
                 }
             });
         }
 
-        // 5. Gestion des événements avec debounce
-        let debounceTimer;
-        input.addEventListener('input', function(e) {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                fetchAutocomplete(e.target.value.trim());
+        // Fonction de recherche pour le nom d'activité avec Cohere
+        async function fetchActivityNameAutocomplete(query) {
+            if (query.length < 1) {
+                activityNameResultsContainer.style.display = 'none';
+                return;
+            }
+
+            if (activityNameCurrentController) {
+                activityNameCurrentController.abort();
+            }
+
+            showActivityNameLoading();
+
+            activityNameCurrentController = new AbortController();
+
+            try {
+                const response = await fetch(COHERE_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${COHERE_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        prompt: `Generate 10 tourist activity names that start with "${query}". Only return the activity names, one per line, no numbers or bullet points. Examples:
+Hiking
+City Tour
+Safari
+Scuba Diving
+Cooking Class
+
+Activities starting with "${query}":
+`,
+                        max_tokens: 100,
+                        temperature: 0.7,
+                        k: 0,
+                        p: 0.75,
+                        frequency_penalty: 0.5,
+                        presence_penalty: 0.5,
+                        stop_sequences: ["\n\n"],
+                        return_likelihoods: 'NONE'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Cohere API Error');
+                }
+
+                const data = await response.json();
+                
+                // Traitement des résultats
+                let suggestions = [];
+                if (data.generations && data.generations.length > 0) {
+                    const text = data.generations[0].text;
+                    suggestions = text.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0)
+                        .filter(line => line.toLowerCase().includes(query.toLowerCase()));
+                }
+
+                showActivityNameResults(suggestions.slice(0, 10));
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    activityNameResultsContainer.innerHTML = '<div class="search-error px-4 py-2">Error generating activities</div>';
+                }
+            }
+        }
+
+        // Gestion des événements pour la localisation
+        let locationDebounceTimer;
+        locationInput.addEventListener('input', function(e) {
+            clearTimeout(locationDebounceTimer);
+            locationDebounceTimer = setTimeout(() => {
+                fetchLocationAutocomplete(e.target.value.trim());
             }, 300);
         });
 
-        input.addEventListener('focus', function() {
-            if (input.value.trim().length >= 2) {
-                fetchAutocomplete(input.value.trim());
+        locationInput.addEventListener('focus', function() {
+            if (locationInput.value.trim().length >= 2) {
+                fetchLocationAutocomplete(locationInput.value.trim());
             }
         });
 
-        // 6. Fermeture des résultats
+        // Gestion des événements pour le nom d'activité
+        let activityNameDebounceTimer;
+        activityNameInput.addEventListener('input', function(e) {
+            clearTimeout(activityNameDebounceTimer);
+            activityNameDebounceTimer = setTimeout(() => {
+                fetchActivityNameAutocomplete(e.target.value.trim());
+            }, 500);
+        });
+
+        activityNameInput.addEventListener('focus', function() {
+            if (activityNameInput.value.trim().length >= 1) {
+                fetchActivityNameAutocomplete(activityNameInput.value.trim());
+            }
+        });
+
+        // Fermeture des résultats
         document.addEventListener('click', function(e) {
-            if (!input.contains(e.target) && !resultsContainer.contains(e.target)) {
-                resultsContainer.style.display = 'none';
+            if (!locationInput.contains(e.target) && !locationResultsContainer.contains(e.target)) {
+                locationResultsContainer.style.display = 'none';
+            }
+            if (!activityNameInput.contains(e.target) && !activityNameResultsContainer.contains(e.target)) {
+                activityNameResultsContainer.style.display = 'none';
             }
         });
     });

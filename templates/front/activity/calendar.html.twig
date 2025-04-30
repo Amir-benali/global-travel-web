@@ -1,6 +1,6 @@
 {% extends 'front.html.twig' %}
 
-{% block title %}Calendrier des Activités{% endblock %}
+{% block title %}Activity Calendar{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -134,11 +134,11 @@
         <div class="calendar-header">
             <h1 class="calendar-title">
                 <i class="ri-calendar-2-line calendar-icon"></i>
-                Calendrier des Activités
+                Activity Calendar
             </h1>
             <a href="{{ path('front_list_activity') }}" class="back-button">
                 <i class="ri-arrow-left-line"></i>
-                Retour à la liste
+                Back to List
             </a>
         </div>
 
@@ -173,14 +173,14 @@
                     failure: function() {
                         const errorMsg = document.createElement('div');
                         errorMsg.className = 'p-4 text-red-600 bg-red-50 rounded-lg';
-                        errorMsg.textContent = 'Erreur lors du chargement des événements';
+                        errorMsg.textContent = 'Error loading events';
                         calendarEl.appendChild(errorMsg);
                     }
                 },
                 eventDidMount: function(info) {
                     const eventEl = info.el;
                     
-                    // Tooltip personnalisé
+                    // Custom tooltip
                     eventEl.addEventListener('mouseenter', (e) => {
                         const rect = eventEl.getBoundingClientRect();
                         tooltip.innerHTML = `
@@ -192,8 +192,8 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <i class="ri-time-line text-sm"></i>
-                                    ${info.event.start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                                    ${info.event.end ? `- ${info.event.end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                                    ${info.event.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                    ${info.event.end ? `- ${info.event.end.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}` : ''}
                                 </div>
                                 ${info.event.extendedProps.description ? `
                                 <div class="mt-2 pt-2 border-t border-white/10">

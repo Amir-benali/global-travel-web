@@ -1,6 +1,6 @@
 {% extends 'front.html.twig' %}
 
-{% block title %}Mes Activités Assignées{% endblock %}
+{% block title %}My Assigned Activities{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -74,13 +74,13 @@
         <div class="mb-8 flex items-center justify-between flex-wrap gap-4">
             <h1 class="text-2xl font-bold flex items-center">
                 <i class="ri-task-line text-blue-500 mr-2"></i>
-                Mes Activités Assignées
+               My Assigned Activities
             </h1>
             
             <div class="flex gap-4">
                 <a href="{{ path('employee_calendar') }}" class="calendar-button">
                     <i class="ri-calendar-2-line mr-2"></i>
-                    Voir le Calendrier
+                 See the Calendar
                 </a>
             </div>
         </div>
@@ -117,11 +117,11 @@
 
                             <div class="activity-dates">
                                 <div class="text-xs text-gray-500">
-                                    <div class="font-medium">Début</div>
+                                    <div class="font-medium">Beginning</div>
                                     {{ activity.datedebut|date('d/m/Y') }}
                                 </div>
                                 <div class="text-xs text-gray-500">
-                                    <div class="font-medium">Fin</div>
+                                    <div class="font-medium">End</div>
                                     {{ activity.datefin ? activity.datefin|date('d/m/Y') : '--' }}
                                 </div>
                             </div>
@@ -130,12 +130,12 @@
                             <div class="mt-6 space-y-3">
                                <a href="{{ path('front_activity_detailsEMPLOYEES', {'id': activity.id}) }}"
        class="w-full inline-flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white py-2.5 px-4 rounded-lg shadow transition duration-200">
-        <i class="ri-eye-line mr-2 text-lg"></i>Détails complets
+        <i class="ri-eye-line mr-2 text-lg"></i>Full details
     </a>
  <!-- Bouton Ajouter un commentaire -->
     <a href="{{ path('app_review_create_for_activity', {'activityId': activity.id}) }}"
        class="w-full inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg shadow transition duration-200">
-        <i class="ri-chat-3-line mr-2 text-lg"></i>Ajouter un commentaire
+        <i class="ri-chat-3-line mr-2 text-lg"></i> Add a comment
     </a>
                             </div>
                         </div>
