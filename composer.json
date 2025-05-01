@@ -17,6 +17,7 @@
         "google/apiclient-services": "^0.396.0",
         "knplabs/knp-time-bundle": "^2.4",
         "microsoft/azure-storage-blob": "^1.5",
+        "nelmio/cors-bundle": "^2.5",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.1",
         "stripe/stripe-php": "^17.1",

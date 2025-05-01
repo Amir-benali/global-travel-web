@@ -199,7 +199,7 @@
             <script>
                 // Price calculation parameters
                 const BASE_PRICE = {{ totalPrice|default(0)|json_encode|raw }};
-                const PRICE_PER_KM = 5; // price per km in dollars
+                const PRICE_PER_KM = 0.5;
                 
                 // Function to update price based on distance
                 function updatePrice(distanceKm) {

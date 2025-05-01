@@ -213,7 +213,7 @@ final class CarController extends AbstractController
         ]);
     }
     #[Route('/car/offer/create', name: 'app_car_offer_create')]
-    public function createOfferPage(ManagerRegistry $doctrine, Request $request): Response
+    public function createOfferPage(ManagerRegistry $doctrine, Request $request,CarOfferRepository $fetchOffers): Response
     {
         $offer = new CarOffer();
         $form = $this->createForm(OfferFormType::class, $offer);
@@ -229,7 +229,7 @@ final class CarController extends AbstractController
         }
 
         return $this->render('car/offer/create.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
     #[Route('/car/offer/edit/{id}', name: 'app_car_offer_update')]
@@ -300,6 +300,7 @@ final class CarController extends AbstractController
             'id' => $offer->find($id)->getId(),
             'offer'=> $offer->find($id),
             'employees' => $employees,
+            'reservedSeats' => $offer->find($id)->getReservedSeats(),
         ]);
     }
 
@@ -570,23 +571,34 @@ final class CarController extends AbstractController
         // Parse the seats data to ensure it's an array
         if (is_string($seats)) {
             if (strpos($seats, '[') === 0) {
-                // It's a JSON string, decode it to array
-                $seats = json_decode($seats, true);
+            // It's a JSON string, decode it to array
+            $seats = json_decode($seats, true);
             } else {
-                // Try to unserialize if it's not a JSON string
-                $decodedSeats = unserialize($seats);
-                if ($decodedSeats !== false) {
-                    $seats = $decodedSeats;
-                } else {
-                    // If all else fails, convert to array with one item
-                    $seats = [$seats];
-                }
+            // Try to unserialize if it's not a JSON string
+            $decodedSeats = unserialize($seats);
+            if ($decodedSeats !== false) {
+                $seats = $decodedSeats;
+            } else {
+                // If all else fails, convert to array with one item
+                $seats = [$seats];
+            }
             }
         }
         
         $entityManager = $doctrine->getManager();
         $offer = $entityManager->getRepository(CarOffer::class)->find($offerId);
-        $offer->setReservedSeats($seats);
+        
+        // Get existing reserved seats
+        $currentReservedSeats = $offer->getReservedSeats() ?: [];
+        
+        // Combine existing seats with new seats
+        $allReservedSeats = array_merge($currentReservedSeats, $seats);
+        
+        // Remove any duplicates
+        $allReservedSeats = array_unique($allReservedSeats);
+        
+        // Update the offer with the combined seats
+        $offer->setReservedSeats($allReservedSeats);
         $reservation = $entityManager->getRepository(CarReservation::class)->find($reservationId);
         $reservation->setStatus('CONFIRMED');
         $entityManager->persist($offer);
@@ -614,5 +626,79 @@ final class CarController extends AbstractController
         $entityManager->flush();
 
         return $this->render('payment/cancel.html.twig');
+    }
+
+    #[Route('travel/car/book/{id}', name: 'front_book_car_details')]
+    public function travelOfferBookDetailsPage(CarReservationRepository $reservation, CarOfferRepository $offer, int $id): Response
+    {
+
+        // Get offer and calculate base price
+        $reservationData = $reservation->find($id);
+        $offerData = $reservationData->getOffer();
+        $basePrice = $offerData->getPrice();
+        $totalPrice = 0;
+
+        // Get the reserved seats
+        $selectedSeats = $offerData->getReservedSeats();
+
+        // Process selected seats with their prices and positions
+        $processedSeats = [];
+        $seatPositions = [
+            'A2' => 'Front passenger seat',
+            'B1' => 'Back left seat',
+            'B2' => 'Back right seat',
+            'B3' => 'Back middle seat',
+            'C1' => 'Third row left seat',
+            'C2' => 'Third row right seat',
+            'C3' => 'Third row middle seat',
+            'D1' => 'Fourth row left seat',
+            'D2' => 'Fourth row middle seat',
+            'D3' => 'Fourth row right seat'
+        ];
+
+        // Process each seat with price calculation
+        if (is_array($selectedSeats)) {
+            foreach ($selectedSeats as $seatId) {
+                $price = 0;
+                switch ($seatId) {
+                    case 'A2':
+                    case 'B1':
+                    case 'B2':
+                        $price = 0.15 * $basePrice;
+                        break;
+                    case 'B3':
+                    case 'C1':
+                        $price = 0.12 * $basePrice;
+                        break;
+                    case 'C2':
+                    case 'C3':
+                        $price = 0.10 * $basePrice;
+                        break;
+                    case 'D1':
+                    case 'D2':
+                    case 'D3':
+                        $price = 0.08 * $basePrice;
+                        break;
+                }
+                
+                $totalPrice += $price;
+                $processedSeats[] = [
+                    'id' => $seatId,
+                    'price' => $price,
+                    'position' => $seatPositions[$seatId] ?? 'Passenger seat',
+                ];
+            }
+        }
+        return $this->render('front/car/book_details.html.twig', [
+            'reservation' => $reservation->find($id),
+            'offer' => $offer->find($reservation->find($id)->getOffer()),
+            'car' => $reservation->find($id)->getOffer()->getCar(),
+            'assignedEmployees' => $reservation->find($id)->getUser(0),
+            'start' => $reservation->find($id)->getRoute()->getLocationStart(),
+            'destinations' => $reservation->find($id)->getRoute()->getLocationDestination(),
+            'totalPrice' => $totalPrice,
+            'selectedSeats' => $processedSeats,
+            'seatPositions' => $seatPositions,
+        ]);
     }
 }

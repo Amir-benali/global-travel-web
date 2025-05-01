@@ -3,7 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Activity;
+use App\Entity\Flights;
+use App\Entity\Hotel;
+use App\Entity\PrivateCar;
 use App\Repository\ActivityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -102,10 +106,32 @@ final class DashboardController extends AbstractController
     }
 
     #[Route('/travel', name: 'front_dashboard')]
-    public function travelIndex(): Response
+    public function travelIndex(ManagerRegistry $doctrine): Response
     {
+
+        $flights = $doctrine->getRepository(Flights::class)->findAll();
+        $hotels = $doctrine->getRepository(Hotel::class)->findAll();
+        $cars = $doctrine->getRepository(PrivateCar::class)->findAll();
+        $activites = $doctrine->getRepository(Activity::class)->findAll();
+        $carReservations = $doctrine->getRepository(PrivateCar::class)->findAll();
+        $hotelReservations = $doctrine->getRepository(Hotel::class)->findAll();
+        $flightReservations = $doctrine->getRepository(Flights::class)->findAll();
+        $activityReservations = $doctrine->getRepository(Activity::class)->findAll();
+
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        return $this->render('front/index.html.twig');
+        return $this->render('front/index.html.twig',
+            [
+                'flights' => $flights,
+                'hotels' => $hotels,
+                'cars' => $cars,
+                'activites' => $activites,
+                'carReservations' => $carReservations,
+                'hotelReservations' => $hotelReservations,
+                'flightReservations' => $flightReservations,
+                'activityReservations' => $activityReservations,
+                
+            ]
+        );
     }
 
 }
