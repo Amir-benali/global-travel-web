@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -126,10 +128,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "reset_token_expiry", type: "datetime", nullable: true)]
     private ?\DateTime $resetTokenExpiry = null;
 
+    /**
+     * @var Collection<int, CarReservation>
+     */
+    #[ORM\ManyToMany(targetEntity: CarReservation::class, mappedBy: 'user')]
+    private Collection $carReservations;
+
     public function __construct()
     {
         $this->statut = 'actif';
         $this->roles = 'EMPLOYEE';
+        $this->carReservations = new ArrayCollection();
     }
 
     public function eraseCredentials(): void
@@ -339,6 +348,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setResetTokenExpiry(?\DateTimeInterface $resetTokenExpiry): static
     {
         $this->resetTokenExpiry = $resetTokenExpiry;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CarReservation>
+     */
+    public function getCarReservations(): Collection
+    {
+        return $this->carReservations;
+    }
+
+    public function addCarReservation(CarReservation $carReservation): static
+    {
+        if (!$this->carReservations->contains($carReservation)) {
+            $this->carReservations->add($carReservation);
+            $carReservation->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCarReservation(CarReservation $carReservation): static
+    {
+        if ($this->carReservations->removeElement($carReservation)) {
+            $carReservation->removeUser($this);
+        }
+
         return $this;
     }
 }

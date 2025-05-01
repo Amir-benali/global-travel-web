@@ -2,47 +2,102 @@
 // src/Controller/ActivityController.php
 
 namespace App\Controller;
-use App\Form\ActivityFormType;
-use App\Form\ActivityType;
+
 use App\Entity\Activity;
-use App\Entity\Enum\Type\ActivityTypeType;
-use App\Repository\FlightsRepository;
-use App\Repository\ActivityRepository;
+use App\Form\ActivityFormType;
+use App\Service\GoogleCalendarService;
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
-
-
-
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use GuzzleHttp\Client;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ActivityController extends AbstractController
 {
+    private RequestStack $requestStack;
+
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+    }
+
     #[Route('/activity', name: 'app_activity')]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $searchQuery = $request->query->get('search', '');
-        $activities = [];
         
+        $queryBuilder = $em->getRepository(Activity::class)
+            ->createQueryBuilder('a')
+            ->orderBy('a.datedebut', 'DESC');
+
         if (!empty($searchQuery)) {
-            $activities = $em->getRepository(Activity::class)->searchByName($searchQuery);
-        } else {
-            $activities = $em->getRepository(Activity::class)->findAll();
+            $queryBuilder
+                ->andWhere('a.nomactivity LIKE :search')
+                ->setParameter('search', '%'.$searchQuery.'%');
         }
-        
+
+        $adapter = new QueryAdapter($queryBuilder);
+        $pager = new Pagerfanta($adapter);
+        $pager->setMaxPerPage(10);
+        $pager->setCurrentPage($request->query->getInt('page', 1));
+
         return $this->render('activity/index.html.twig', [
-            'activities' => $activities,
+            'pager' => $pager,
             'searchQuery' => $searchQuery,
         ]);
     }
-    #[Route('/activity/details/{id}', name: 'app_activity_details')]
-    public function details(EntityManagerInterface $entityManager, int $id): Response
+
+    #[Route('/activity/search', name: 'app_activity_search', methods: ['GET'])]
+    public function search(Request $request, EntityManagerInterface $em): JsonResponse
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
+        $query = $request->query->get('query', '');
+        $page = $request->query->getInt('page', 1);
+        
+        $queryBuilder = $em->getRepository(Activity::class)
+            ->createQueryBuilder('a')
+            ->where('a.nomactivity LIKE :query')
+            ->setParameter('query', '%'.$query.'%');
+
+        $adapter = new QueryAdapter($queryBuilder);
+        $pager = new Pagerfanta($adapter);
+        $pager->setMaxPerPage(5);
+        $pager->setCurrentPage($page);
+
+        $results = [];
+        foreach ($pager->getCurrentPageResults() as $activity) {
+            $results[] = [
+                'id' => $activity->getId(),
+                'name' => $activity->getNomactivity(),
+                'location' => $activity->getLocalisation(),
+                'startDate' => $activity->getDatedebut()->format('M d, Y H:i'),
+                'type' => $activity->getTypeactivity()->value,
+            ];
+        }
+
+        return $this->json([
+            'results' => $results,
+            'pagination' => [
+                'currentPage' => $pager->getCurrentPage(),
+                'hasNextPage' => $pager->hasNextPage(),
+                'totalPages' => $pager->getNbPages()
+            ]
+        ]);
+    }
+
+    #[Route('/activity/details/{id}', name: 'app_activity_details')]
+    public function details(EntityManagerInterface $em, int $id): Response
+    {
+        $activity = $em->getRepository(Activity::class)->find($id);
         
         if (!$activity) {
-            throw $this->createNotFoundException('The requested activity does not exist.');
+            throw $this->createNotFoundException('Activity not found');
         }
         
         return $this->render('activity/details.html.twig', [
@@ -51,36 +106,43 @@ class ActivityController extends AbstractController
     }
 
     #[Route('/activity/create', name: 'app_activity_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function create(
+        Request $request, 
+        EntityManagerInterface $em,
+        GoogleCalendarService $calendarService
+    ): Response {
         $activity = new Activity();
         $form = $this->createForm(ActivityFormType::class, $activity);
-        
         $form->handleRequest($request);
-    
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                try {
-                    $entityManager->persist($activity);
-                    $entityManager->flush();
-                    
-                    $this->addFlash('success', 'Activity created successfully!');
-                    return $this->redirectToRoute('app_activity');
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Error creating activity: '.$e->getMessage());
-                }
-            } else {
-                $this->addFlash('error', 'Please correct the errors in the form');
+             
+        $session = $this->requestStack->getSession();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $eventId = $calendarService->createEvent($activity);
+                $session->set('google_event_id', $eventId);
+
+                $em->persist($activity);
+                $em->flush();
+
+                $this->addFlash('success', 'Activity created successfully!');
+                return $this->redirectToRoute('app_activity');
+
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Error: ' . $e->getMessage());
             }
         }
-    
+
         return $this->render('activity/create.html.twig', [
             'form' => $form->createView(),
+            'google_connected' => $this->isGoogleConnected()
         ]);
-    }    #[Route('/activity/update/{id}', name: 'app_activity_update')]
-    public function update(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    }
+
+    #[Route('/activity/update/{id}', name: 'app_activity_update')]
+    public function update(Request $request, EntityManagerInterface $em, int $id): Response
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
+        $activity = $em->getRepository(Activity::class)->find($id);
         
         if (!$activity) {
             throw $this->createNotFoundException('Activity not found');
@@ -90,10 +152,9 @@ class ActivityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
+            $em->flush();
             $this->addFlash('success', 'Activity updated successfully!');
-            return $this->redirectToRoute('app_activity_details', ['id' => $activity->getId()]);
+            return $this->redirectToRoute('app_activity_details', ['id' => $id]);
         }
 
         return $this->render('activity/update.html.twig', [
@@ -103,18 +164,17 @@ class ActivityController extends AbstractController
     }
 
     #[Route('/activity/delete/{id}', name: 'app_activity_delete', methods: ['POST'])]
-    public function delete(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    public function delete(Request $request, EntityManagerInterface $em, int $id): Response
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
+        $activity = $em->getRepository(Activity::class)->find($id);
 
         if (!$activity) {
             throw $this->createNotFoundException('Activity not found');
         }
 
         if ($this->isCsrfTokenValid('delete'.$activity->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($activity);
-            $entityManager->flush();
-
+            $em->remove($activity);
+            $em->flush();
             $this->addFlash('success', 'Activity deleted successfully!');
         }
 

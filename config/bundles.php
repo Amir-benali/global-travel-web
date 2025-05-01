@@ -16,4 +16,6 @@ return [
     Symfonycasts\TailwindBundle\SymfonycastsTailwindBundle::class => ['all' => true],
     Knp\Bundle\TimeBundle\KnpTimeBundle::class => ['all' => true],
     KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
+    Nelmio\CorsBundle\NelmioCorsBundle::class => ['all' => true],
+    HWI\Bundle\OAuthBundle\HWIOAuthBundle::class => ['all' => true],
 ];

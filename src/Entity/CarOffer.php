@@ -58,6 +58,9 @@ class CarOffer
     )]
     private float $price = 0;
 
+    #[ORM\Column(type: 'json')]
+    private array $reservedSeats = [];
+
     #[ORM\ManyToOne(targetEntity: "PrivateCar")]
     #[ORM\JoinColumn(name: "car_id", referencedColumnName: "id")]
     #[Assert\NotBlank(message: 'Car is required')]
@@ -128,6 +131,18 @@ class CarOffer
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getReservedSeats(): array
+    {
+        return $this->reservedSeats;
+    }
+
+    public function setReservedSeats(array $reservedSeats): static
+    {
+        $this->reservedSeats = $reservedSeats;
 
         return $this;
     }
