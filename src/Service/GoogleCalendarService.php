@@ -29,7 +29,7 @@ class GoogleCalendarService
         $this->client = new Client();
         $this->client->setAuthConfig($googleClientSecretPath);
         $this->client->addScope(Calendar::CALENDAR_EVENTS);
-        $this->client->setRedirectUri('https://127.0.0.1:8000/google/auth-callback');
+        $this->client->setRedirectUri('http://localhost:8000/google/auth-callback');
         $this->client->setAccessType('offline');
     }
 
