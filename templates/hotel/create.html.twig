@@ -1,76 +1,193 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create New Hotel{% endblock %}
+{% block title %}Create Hotel{% endblock %}
 
 {% block body %}
-    <div class="mx-auto max-w-3xl py-8">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800">Create New Hotel</h2>
-                    <a href="{{ path('app_hotel') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="ri-arrow-left-line mr-1"></i>
-                        Back to Hotels
-                    </a>
+<div class="mx-auto max-w-3xl py-8">
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-800">Create New Hotel</h2>
+                <a href="{{ path('app_hotel') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="ri-arrow-left-line mr-1"></i>
+                    Back to Hotels
+                </a>
+            </div>
+        </div>
+
+        {{ form_start(form, { 
+            'attr': { 
+                'novalidate': 'novalidate',
+                'data-turbo': 'false',
+                'data-propagation': 'false',
+                'class': 'p-6'
+            } 
+        }) }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Hotel Name -->
+                <div>
+                    {{ form_label(form.nomH, 'Hotel Name', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.nomH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.nomH) }}</div>
+                </div>
+
+                <!-- Address -->
+                <div>
+                    {{ form_label(form.adresseH, 'Address', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.adresseH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.adresseH) }}</div>
+                </div>
+
+                <!-- Country Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Country</label>
+                    <select class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 country-select" 
+                            id="country-select">
+                        <option value="">Choose a country</option>
+                        {% for code, name in countries %}
+                            <option value="{{ code }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                    {{ form_widget(form.paysH, {
+                        'attr': {
+                            'class': 'hidden',
+                            'readonly': true
+                        }
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.paysH) }}</div>
+                </div>
+
+                <!-- City Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select City</label>
+                    <select class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 city-select" 
+                            id="city-select" 
+                            disabled>
+                        <option value="">Choose country first</option>
+                    </select>
+                    {{ form_widget(form.villeH, {
+                        'attr': {
+                            'class': 'hidden',
+                            'readonly': true
+                        }
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.villeH) }}</div>
+                </div>
+
+                <!-- Category -->
+                <div>
+                    {{ form_label(form.categorieH, 'Category', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.categorieH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.categorieH) }}</div>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    {{ form_label(form.servicesH, 'Services', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.servicesH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.servicesH) }}</div>
+                </div>
+
+                <!-- Coordinates -->
+                <div>
+                    {{ form_label(form.coordonneesH, 'Coordinates', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.coordonneesH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.coordonneesH) }}</div>
+                </div>
+
+                <!-- Reviews -->
+                <div>
+                    {{ form_label(form.avisH, 'Reviews', {
+                        'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
+                    }) }}
+                    {{ form_widget(form.avisH, {
+                        'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
+                    }) }}
+                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.avisH) }}</div>
                 </div>
             </div>
-            
-            <!-- Updated Form Start -->
-            {{ form_start(form, { 
-                'attr': { 
-                    'class': 'p-6',
-                    'novalidate': 'novalidate',
-                    'data-turbo': 'false',
-                    'data-propagation': 'false'
-                } 
-            }) }}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <!-- NomH Field -->
-                    <div>
-                        {{ form_label(form.nomH, 'Hotel Name', {
-                            'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
-                        }) }}
-                        {{ form_widget(form.nomH, {
-                            'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
-                        }) }}
-                        <div class="text-red-500 text-sm mt-1">{{ form_errors(form.nomH) }}</div>
-                    </div>
 
-                    <!-- AdresseH Field -->
-                    <div>
-                        {{ form_label(form.adresseH, 'Address', {
-                            'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
-                        }) }}
-                        {{ form_widget(form.adresseH, {
-                            'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
-                        }) }}
-                        <div class="text-red-500 text-sm mt-1">{{ form_errors(form.adresseH) }}</div>
-                    </div>
-
-                    <!-- Repeat the same structure for other fields -->
-                    {% for field in [form.villeH, form.paysH, form.categorieH, form.servicesH, form.coordonneesH, form.avisH] %}
-                        <div>
-                            {{ form_label(field, null, {
-                                'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}
-                            }) }}
-                            {{ form_widget(field, {
-                                'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}
-                            }) }}
-                            <div class="text-red-500 text-sm mt-1">{{ form_errors(field) }}</div>
-                        </div>
-                    {% endfor %}
-                </div>
-                
-                <!-- Buttons -->
-                <div class="flex items-center justify-end space-x-3">
-                    <a href="{{ path('app_hotel') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                        Cancel
-                    </a>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Save Hotel
-                    </button>
-                </div>
-            {{ form_end(form) }}
-        </div>
+            <!-- Form Buttons -->
+            <div class="flex items-center justify-end space-x-3 mt-6">
+                <a href="{{ path('app_hotel') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Create Hotel
+                </button>
+            </div>
+        {{ form_end(form) }}
     </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const countrySelect = document.getElementById('country-select');
+    const citySelect = document.getElementById('city-select');
+    const countryInput = document.getElementById('{{ form.paysH.vars.id }}');
+    const cityInput = document.getElementById('{{ form.villeH.vars.id }}');
+
+    // Country change handler
+    countrySelect.addEventListener('change', async function() {
+        const countryCode = this.value;
+        const countryName = this.options[this.selectedIndex]?.text;
+        
+        if (countryCode && countryName) {
+            countryInput.value = countryName;
+            citySelect.disabled = false;
+            
+            // Show loading
+            citySelect.innerHTML = '<option value="">Loading cities...</option>';
+
+            try {
+                const response = await fetch(`/get-cities/${encodeURIComponent(countryCode)}`);
+                const data = await response.json();
+
+                citySelect.innerHTML = '';
+                if (data.success && data.cities.length > 0) {
+                    data.cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                } else {
+                    citySelect.innerHTML = '<option value="">No cities found</option>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                citySelect.innerHTML = '<option value="">Error loading cities</option>';
+            }
+        } else {
+            citySelect.disabled = true;
+            cityInput.value = '';
+        }
+    });
+
+    // City selection handler
+    citySelect.addEventListener('change', function() {
+        cityInput.value = this.value;
+    });
+});
+</script>
 {% endblock %}

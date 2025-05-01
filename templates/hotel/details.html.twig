@@ -8,15 +8,13 @@
         <div class="bg-white rounded-lg shadow mb-6">
             <div class="flex items-center justify-between p-4">
                 <div class="flex space-x-4">
-                    <a href="{{ path('app_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a>
+                    <a href="{{ path('app_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600 flex items-center">
+                        <i class="ri-hotel-line mr-1" title="All Hotels"></i> All Hotels
+                    </a>
                 </div>
                 
                 <a href="{{ path('app_hotel_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="ri-add-line mr-1"></i>
-                    ADD HOTEL
+                    <i class="ri-add-line mr-1" title="Add Hotel"></i> ADD HOTEL
                 </a>
             </div>
         </div>
@@ -24,15 +22,12 @@
         <!-- Hotel Details -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <!-- Hotel Gallery -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0 relative">
                 <div class="lg:col-span-2">
                     <img src="https://via.placeholder.com/800x400" alt="{{ hotel.nomH }}" class="w-full h-full object-cover">
-                </div>
-                <div class="grid grid-cols-2 gap-0">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Room" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Pool" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Restaurant" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Lobby" class="w-full h-full object-cover">
+                    <!-- Gallery Navigation -->
+                    <div class="absolute top-1/2 left-0 right-0 flex justify-between px-4">
+                    </div>
                 </div>
             </div>
             
@@ -44,65 +39,190 @@
                         
                         <div class="flex items-center mb-4">
                             <div class="flex">
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-half-fill text-yellow-500"></i>
+                                {% for i in 1..hotel.categorieH %}
+                                    <i class="ri-star-fill text-yellow-500" title="Star Rating"></i>
+                                {% endfor %}
                             </div>
-                            <span class="ml-2 text-sm text-gray-600">4.8 (120 reviews)</span>
+                            <span class="ml-2 text-sm text-gray-600">{{ hotel.categorieH }}</span>
                         </div>
                         
                         <div class="flex items-center text-gray-600 mb-2">
-                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
+                            <i class="ri-map-pin-line text-blue-600 mr-2" title="Location"></i>
                             <span>{{ hotel.adresseH }}, {{ hotel.villeH }}, {{ hotel.paysH }}</span>
                         </div>
                         
                         <div class="flex items-center text-gray-600 mb-2">
-                            <i class="ri-phone-line text-blue-600 mr-2"></i>
+                            <i class="ri-phone-line text-blue-600 mr-2" title="Phone"></i>
                             <span>{{ hotel.coordonneesH }}</span>
                         </div>
                     </div>
-                    
-                    <div class="bg-blue-50 p-4 rounded-lg md:w-64">
-                        <div class="text-lg font-semibold text-blue-800 mb-2">Starting from</div>
-                        <div class="text-3xl font-bold text-gray-900 mb-4">$299<span class="text-sm font-normal text-gray-600">/night</span></div>
-                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
-                            Book Now
-                        </button>
+                </div>
+                
+                <!-- Services -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Services:</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {% set serviceIcons = {
+                            'Wi-Fi': 'wifi',
+                            'Pool': 'swimming-pool',
+                            'Parking': 'parking',
+                            'Spa': 'spa'
+                        } %}
+                        {% for service in hotel.servicesH|split(',') %}
+                            <div class="flex items-center">
+                                <i class="ri-{{ serviceIcons[service]|default(service|lower|replace({' ': '-'}) ~ '-line') }} text-blue-600 mr-2 fallback-icon" title="{{ service }}"></i>
+                                <span class="text-gray-600">{{ service }}</span>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
                 
-                <!-- Hotel Description -->
+                <!-- Rooms -->
                 <div class="border-t border-gray-200 pt-6 mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
-                    <div class="flex items-start mb-4">
-                        <i class="ri-tools-line text-blue-600 mr-2"></i>
-                        <p class="text-gray-600">
-                            {{ hotel.servicesH }}
-                        </p>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rooms</h2>
+                    <div class="space-y-4">
+                        {% for chambre in chambres %}
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                                    <img src="https://via.placeholder.com/400x300" alt="{{ chambre.typeChambreH }}" class="w-full h-full object-cover">
+                                    <div class="p-4 md:col-span-2">
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2 flex items-center">
+                                            <i class="ri-hotel-bed-line text-blue-600 mr-2" title="Room Type"></i> {{ chambre.typeChambreH }}
+                                        </h3>
+                                        <p class="text-gray-600 mb-4 flex items-center">
+                                            <i class="ri-information-line text-blue-600 mr-2" title="Room Details"></i>
+                                            {{ chambre.optionH }}. Available from {{ chambre.dispoH|date('Y-m-d') }}.
+                                        </p>
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-gray-600">
+                                                <span class="font-semibold">${{ chambre.prixNuitH }}</span> / night
+                                            </div>
+                                            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm flex items-center" disabled>
+                                                <i class="ri-bookmark-line mr-1" title="Book Now"></i> Book Now
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="text-gray-600 flex items-center">
+                                <i class="ri-alert-line text-blue-600 mr-2" title="No Rooms"></i> No rooms available for this hotel.
+                            </p>
+                        {% endfor %}
                     </div>
-                    <div class="flex items-start">
-                        <i class="ri-chat-3-line text-blue-600 mr-2"></i>
-                        <p class="text-gray-600">
-                            {{ hotel.avisH }}
-                        </p>
+                </div>
+                
+                <!-- Reviews -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ 'review.label'|trans }}</h2>
+                    
+                    <!-- Original Review -->
+                    <div class="flex items-start mb-4">
+                        <i class="ri-chat-3-line text-blue-600 mr-2" title="Review"></i>
+                        <p id="original-review" class="text-gray-600">{{ hotel.avisH }}</p>
+                    </div>
+
+                    <!-- Translation Controls -->
+                    <div class="mt-4 space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <i class="ri-translate-line text-blue-600" title="Translate"></i>
+                            <select id="translation-language" class="px-4 py-2 border rounded-md">
+                                <option value="en">English</option>
+                                <option value="fr">Français</option>
+                                <option value="es">Español</option>
+                                <option value="ar">العربية</option>
+                            </select>
+                        </div>
+                        
+                        <button id="show-translation" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
+                                data-hotel-id="{{ hotel.idHotelH }}">
+                            <i class="ri-eye-line mr-1" title="Show Translation"></i> {{ 'show_translation'|trans }}
+                        </button>
+                        
+                        <!-- Translation Result Container -->
+                        <div id="translation-result" class="mt-4 p-4 bg-gray-50 rounded-md hidden">
+                            <p class="text-gray-700"></p>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Action Buttons -->
-            <div class="border-t border-gray-200 p-4 bg-gray-50 flex justify-end space-x-3">
-                <a href="{{ path('app_hotel_update', { id: hotel.idHotelH }) }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100">
-                    <i class="ri-edit-line mr-1"></i> Edit
-                </a>
-                <form action="{{ path('app_hotel_delete', { id: hotel.idHotelH }) }}" method="post">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ hotel.idHotelH) }}">
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                        <i class="ri-delete-bin-line mr-1"></i> Delete
-                    </button>
-                </form>
-            </div>
         </div>
     </div>
+
+    <!-- CSS for Icon Styling -->
+    <style>
+        /* Ensure icons align vertically and have consistent sizing */
+        i[class^="ri-"] {
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+
+        /* Fallback icon styling */
+        .fallback-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Hover effect for buttons with icons */
+        button i, a i {
+            transition: transform 0.2s;
+        }
+        button:hover i, a:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Optional: Pulse animation on hover */
+        i[class^="ri-"]:hover {
+            animation: pulse 0.5s;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Style for disabled Book Now button */
+        button[disabled] {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+
+    <!-- JavaScript for Translation and Icon Fallback -->
+    <script>
+        // Translation Handling
+        document.getElementById('show-translation').addEventListener('click', function() {
+            const lang = document.getElementById('translation-language').value;
+            const hotelId = this.dataset.hotelId;
+            const reviewElement = document.getElementById('translation-result').querySelector('p');
+            const translationContainer = document.getElementById('translation-result');
+            const originalReview = document.getElementById('original-review').textContent;
+
+            fetch(`https://lingva.ml/api/v1/en/${lang}/${encodeURIComponent(originalReview)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.translation) {
+                        reviewElement.textContent = data.translation;
+                        translationContainer.classList.remove('hidden');
+                    } else {
+                        reviewElement.textContent = "{{ 'translation_error'|trans }}";
+                        translationContainer.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    reviewElement.textContent = "{{ 'translation_error'|trans }}";
+                    translationContainer.classList.remove('hidden');
+                });
+        });
+
+        // Fallback for Invalid Icons
+        document.querySelectorAll('.fallback-icon').forEach(icon => {
+            const className = icon.className.split(' ').find(cls => cls.startsWith('ri-'));
+            const iconExists = window.getComputedStyle(icon, '::before').content !== 'none';
+            if (!iconExists) {
+                icon.className = 'ri-checkbox-circle-line text-blue-600 mr-2';
+            }
+        });
+    </script>
 {% endblock %}

@@ -3,101 +3,333 @@
 {% block title %}Hotel{% endblock %}
 
 {% block body %}
-    <div class="mx-auto max-w-7xl">
-        <!-- Sub Navigation -->
-        <div class="bg-white rounded-lg shadow mb-6">
-            <div class="flex items-center justify-between p-4">
-                <div class="flex space-x-4">
-                    <a href="#" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a>
-                </div>
-                
-                <a href="{{ path('app_hotel_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="ri-add-line mr-1"></i>
-                    ADD HOTEL
-                </a>
+    <div class="min-h-screen bg-gray-50">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-900 to-blue-600 text-white py-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold tracking-tight">Explore Our Hotels</h1>
+                <p class="mt-2 text-lg opacity-80">Discover the perfect stay for your next adventure.</p>
             </div>
         </div>
-        
-        <!-- Hotel Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for hotel in hotels %}
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <img src="https://haystack-dryers.com/admin/resources/hotel-placeholder-1-w1920.jpg" alt="{{ hotel.nomH }}" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <!-- Hotel Name with Icon -->
-                    <h3 class="text-lg font-medium text-gray-900 mb-2 flex items-center">
-                        <i class="ri-hotel-line text-blue-600 mr-2"></i>
-                        {{ hotel.nomH }}
-                    </h3>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">{{ hotel.adresseH }}</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-earth-line text-blue-600 mr-2"></i>
-                            <span class="text-sm text-gray-600">{{ hotel.villeH }}, {{ hotel.paysH }}</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-star-fill text-yellow-500 mr-2"></i>
-                            <span class="text-sm text-gray-600">{{ hotel.categorieH }} stars</span>
-                        </div>
+
+        <!-- Main Content -->
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Search and Actions -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-8 sticky top-4 z-10">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="relative w-full sm:w-1/2">
+                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-600"></i>
+                        <input 
+                            type="text" 
+                            id="hotelSearch" 
+                            placeholder="Search by hotel name..." 
+                            value="{{ search }}" 
+                            class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                            aria-label="Search hotels"
+                        />
                     </div>
-                    
-                    <!-- Services with Icon -->
-                    <div class="mb-4 flex items-start">
-                        <i class="ri-tools-line text-blue-600 mr-2"></i>
-                        <p class="text-sm text-gray-600 line-clamp-2">{{ hotel.servicesH }}</p>
+                    <div class="flex items-center gap-4">
+                        <a href="{{ path('app_hotel_create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
+                            <i class="ri-add-line mr-2"></i> Add Hotel
+                        </a>
+                        <a href="{{ path('app_hotel_list_pdf') }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-200">
+                            <i class="ri-file-pdf-line mr-2"></i> Download PDF
+                        </a>
+                        <a href="{{ path('app_hotel_list_csv') }}" class="inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition duration-200">
+                            <i class="ri-file-excel-line mr-2"></i> Download CSV
+                        </a>
                     </div>
-                    
-                    <div class="flex space-x-2">
-                        <!-- View Details -->
-                        <a href="{{ path('app_hotel_details', { id: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-                            <i class="ri-eye-line"></i>
-                        </a>
-                        
-                        <!-- Update -->
-                        <a href="{{ path('app_hotel_update', { id: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full">
-                            <i class="ri-edit-line"></i>
-                        </a>
-                        
-                        <!-- Delete -->
-                        <form action="{{ path('app_hotel_delete', { id: hotel.idHotelH }) }}" method="post" class="flex items-center justify-center">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ hotel.idHotelH) }}">
-                            <button type="submit" class="flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full" onclick="return confirm('Are you sure you want to delete this hotel?');">
-                                <i class="ri-delete-bin-line"></i>
+                </div>
+            </div>
+
+            <!-- Hotel Grid -->
+            <div id="hotelGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% if hotels|length > 0 %}
+                    {% for hotel in hotels %}
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg">
+                            <img 
+                                src="https://haystack-dryers.com/admin/resources/hotel-placeholder-1-w1920.jpg" 
+                                alt="{{ hotel.nomH|e }}" 
+                                class="w-full h-48 object-cover"
+                            >
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="ri-hotel-line text-blue-600 mr-2"></i>
+                                    {{ hotel.nomH|e }}
+                                </h3>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="ri-map-pin-line text-blue-600 mr-2"></i>
+                                        <span>{{ hotel.adresseH|e }}</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="ri-earth-line text-blue-600 mr-2"></i>
+                                        <span>{{ hotel.villeH|e }}, {{ hotel.paysH|e }}</span>
+                                    </div>
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="ri-star-fill text-yellow-500 mr-2"></i>
+                                        <span>{{ hotel.categorieH }} stars</span>
+                                    </div>
+                                    <div class="flex items-start text-gray-600">
+                                        <i class="ri-tools-line text-blue-600 mr-2"></i>
+                                        <p class="line-clamp-2">{{ hotel.servicesH|e }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a 
+                                        href="{{ path('app_hotel_details', { id: hotel.idHotelH }) }}" 
+                                        class="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-200"
+                                        aria-label="View hotel details"
+                                    >
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a 
+                                        href="{{ path('app_hotel_update', { id: hotel.idHotelH }) }}" 
+                                        class="flex items-center justify-center w-10 h-10 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full transition duration-200"
+                                        aria-label="Edit hotel"
+                                    >
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <form 
+                                        action="{{ path('app_hotel_delete', { id: hotel.idHotelH }) }}" 
+                                        method="post" 
+                                        class="flex items-center justify-center"
+                                    >
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ hotel.idHotelH) }}">
+                                        <button 
+                                            type="submit" 
+                                            class="flex items-center justify-center w-10 h-10 bg-red-600 hover:bg-red-700 text-white rounded-full transition duration-200"
+                                            onclick="return confirm('Are you sure you want to delete this hotel?');"
+                                            aria-label="Delete hotel"
+                                        >
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </form>
+                                    <a 
+                                        href="{{ path('app_chambre', { hotelId: hotel.idHotelH }) }}" 
+                                        class="flex items-center justify-center w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full transition duration-200"
+                                        aria-label="View rooms"
+                                    >
+                                        <i class="ri-door-line"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-span-full text-center py-6">
+                        <p class="text-gray-600 text-lg">No hotels found.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="mt-8 flex justify-center">
+                <div class="flex items-center gap-2 bg-white rounded-lg shadow-sm p-2">
+                    {% if totalPages > 0 %}
+                        {% if hasPreviousPage %}
+                            <a 
+                                href="#" 
+                                data-page="{{ previousPage }}" 
+                                class="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-200"
+                                aria-label="Previous page"
+                            >
+                                <i class="ri-arrow-left-line"></i>
+                            </a>
+                        {% else %}
+                            <button 
+                                class="w-10 h-10 flex items-center justify-center bg-gray-200 text-gray-400 rounded-full opacity-50" 
+                                disabled 
+                                aria-disabled="true"
+                            >
+                                <i class="ri-arrow-left-line"></i>
                             </button>
-                        </form>
-                        
-                        <!-- Open Chambre -->
-                        <a href="{{ path('app_chambre', { hotelId: hotel.idHotelH }) }}" class="flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-full">
-                            <i class="ri-door-line"></i>
-                        </a>
-                    </div>
+                        {% endif %}
+
+                        {% for page in 1..totalPages %}
+                            <a 
+                                href="#" 
+                                data-page="{{ page }}"
+                                class="w-10 h-10 flex items-center justify-center rounded-full transition duration-200 {{ currentPage == page ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300' }}"
+                                aria-label="Page {{ page }}"
+                            >
+                                {{ page }}
+                            </a>
+                        {% endfor %}
+
+                        {% if hasNextPage %}
+                            <a 
+                                href="#" 
+                                data-page="{{ nextPage }}" 
+                                class="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-200"
+                                aria-label="Next page"
+                            >
+                                <i class="ri-arrow-right-line"></i>
+                            </a>
+                        {% else %}
+                            <button 
+                                class="w-10 h-10 flex items-center justify-center bg-gray-200 text-gray-400 rounded-full opacity-50" 
+                                disabled 
+                                aria-disabled="true"
+                            >
+                                <i class="ri-arrow-right-line"></i>
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-gray-600 px-4 py-2">No pages available</span>
+                    {% endif %}
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <!-- Pagination -->
-        <div class="mt-6 flex items-center justify-center">
-            <div class="flex items-center space-x-2">
-                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
-                    <i class="ri-arrow-left-s-line"></i>
-                </button>
-                
-                <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">2</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">3</button>
-                
-                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">
-                    <i class="ri-arrow-right-s-line"></i>
-                </button>
             </div>
         </div>
     </div>
+
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        .sticky {
+            transition: all 0.3s ease;
+        }
+        .hover\:scale-105:hover {
+            transform: scale(1.05);
+        }
+        [aria-label] {
+            cursor: pointer;
+        }
+        button:disabled {
+            cursor: not-allowed;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+
+    {% block javascripts %}
+        {{ parent() }}
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                function loadHotels(searchTerm, page = {{ currentPage }}) {
+                    console.log('Loading hotels:', { search: searchTerm, page: page });
+                    $.ajax({
+                        url: '{{ path('app_hotel') }}',
+                        method: 'GET',
+                        data: { search: searchTerm, page: page },
+                        success: function(response) {
+                            console.log('AJAX response:', response);
+                            var hotels = response.hotels || [];
+                            var $grid = $('#hotelGrid');
+                            $grid.empty();
+
+                            if (hotels.length > 0) {
+                                hotels.forEach(function(hotel) {
+                                    var hotelHtml = `
+                                        <div class="bg-white rounded-xl shadow-sm overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-lg">
+                                            <img src="https://haystack-dryers.com/admin/resources/hotel-placeholder-1-w1920.jpg" alt="${hotel.nomH}" class="w-full h-48 object-cover">
+                                            <div class="p-6">
+                                                <h3 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+                                                    <i class="ri-hotel-line text-blue-600 mr-2"></i>
+                                                    ${hotel.nomH}
+                                                </h3>
+                                                <div class="space-y-2 mb-4">
+                                                    <div class="flex items-center text-gray-600">
+                                                        <i class="ri-map-pin-line text-blue-600 mr-2"></i>
+                                                        <span>${hotel.adresseH}</span>
+                                                    </div>
+                                                    <div class="flex items-center text-gray-600">
+                                                        <i class="ri-earth-line text-blue-600 mr-2"></i>
+                                                        <span>${hotel.villeH}, ${hotel.paysH}</span>
+                                                    </div>
+                                                    <div class="flex items-center text-gray-600">
+                                                        <i class="ri-star-fill text-yellow-500 mr-2"></i>
+                                                        <span>${hotel.categorieH} stars</span>
+                                                    </div>
+                                                    <div class="flex items-start text-gray-600">
+                                                        <i class="ri-tools-line text-blue-600 mr-2"></i>
+                                                        <p class="line-clamp-2">${hotel.servicesH}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-2">
+                                                    <a href="/hotel/details/${hotel.idHotelH}" class="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-200" aria-label="View hotel details">
+                                                        <i class="ri-eye-line"></i>
+                                                    </a>
+                                                    <a href="/hotel/update/${hotel.idHotelH}" class="flex items-center justify-center w-10 h-10 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full transition duration-200" aria-label="Edit hotel">
+                                                        <i class="ri-edit-line"></i>
+                                                    </a>
+                                                    <form action="/hotel/delete/${hotel.idHotelH}" method="post" class="flex items-center justify-center">
+                                                        <input type="hidden" name="_token" value="${hotel.csrf_token || ''}">
+                                                        <button type="submit" class="flex items-center justify-center w-10 h-10 bg-red-600 hover:bg-red-700 text-white rounded-full transition duration-200" onclick="return confirm('Are you sure you want to delete this hotel?');" aria-label="Delete hotel">
+                                                            <i class="ri-delete-bin-line"></i>
+                                                        </button>
+                                                    </form>
+                                                    <a href="/chambre/${hotel.idHotelH}" class="flex items-center justify-center w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full transition duration-200" aria-label="View rooms">
+                                                        <i class="ri-door-line"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    $grid.append(hotelHtml);
+                                });
+                            } else {
+                                $grid.html('<div class="col-span-full text-center py-6"><p class="text-gray-600 text-lg">No hotels found.</p></div>');
+                            }
+
+                            // Update Pagination
+                            var $pagination = $('#pagination .flex');
+                            $pagination.empty();
+                            console.log('Updating pagination:', { totalPages: response.totalPages, currentPage: response.currentPage });
+                            if (response.totalPages > 0) {
+                                if (response.currentPage > 1) {
+                                    $pagination.append(`<a href="#" data-page="${response.currentPage - 1}" class="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-200" aria-label="Previous page"><i class="ri-arrow-left-line"></i></a>`);
+                                } else {
+                                    $pagination.append(`<button class="w-10 h-10 flex items-center justify-center bg-gray-200 text-gray-400 rounded-full opacity-50" disabled aria-disabled="true"><i class="ri-arrow-left-line"></i></button>`);
+                                }
+
+                                for (var i = 1; i <= response.totalPages; i++) {
+                                    $pagination.append(`<a href="#" data-page="${i}" class="w-10 h-10 flex items-center justify-center rounded-full transition duration-200 ${i === response.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}" aria-label="Page ${i}">${i}</a>`);
+                                }
+
+                                if (response.currentPage < response.totalPages) {
+                                    $pagination.append(`<a href="#" data-page="${response.currentPage + 1}" class="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-200" aria-label="Next page"><i class="ri-arrow-right-line"></i></a>`);
+                                } else {
+                                    $pagination.append(`<button class="w-10 h-10 flex items-center justify-center bg-gray-200 text-gray-400 rounded-full opacity-50" disabled aria-disabled="true"><i class="ri-arrow-right-line"></i></button>`);
+                                }
+                            } else {
+                                $pagination.append(`<span class="text-gray-600 px-4 py-2">No pages available</span>`);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX error:', { status: status, error: error, response: xhr.responseText });
+                            $('#hotelGrid').html('<div class="col-span-full text-center py-6"><p class="text-red-600 text-lg">Error loading hotels. Please try again.</p></div>');
+                        }
+                    });
+                }
+
+                // Real-time search
+                let timeout;
+                $('#hotelSearch').on('input', function() {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => loadHotels($(this).val(), 1), 300);
+                });
+
+                // Pagination click handler
+                $(document).on('click', '#pagination a[data-page]', function(e) {
+                    e.preventDefault();
+                    var page = $(this).data('page');
+                    console.log('Pagination clicked:', page);
+                    loadHotels($('#hotelSearch').val(), page);
+                });
+
+                // Only trigger AJAX if search or page is changed
+                {% if search %}
+                    loadHotels('{{ search }}', {{ currentPage }});
+                {% endif %}
+            });
+        </script>
+    {% endblock %}
 {% endblock %}
