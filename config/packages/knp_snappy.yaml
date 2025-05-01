@@ -1,7 +1,10 @@
 knp_snappy:
     pdf:
         enabled: true
-        binary: '"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"'
-        options: []
+        options:
+            enable-local-file-access: true
+        binary: '"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"'
     image:
-        enabled: false
+        enabled: true
+        binary: '"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltoimage.exe"'
+        options: []

@@ -5,52 +5,54 @@ namespace App\Entity;
 use App\Repository\TicketsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: TicketsRepository::class)]
-#[ORM\Table(name: "tickets")]
-#[ORM\Index(columns: ["id_flight"], name: "flight_id")]
-#[ORM\Index(columns: ["passenger_id"], name: "passenger_id")]
-#[ORM\Index(columns: ["selected_user"], name: "selected_user")]
-class Tickets
-{
-    public function __construct()
+    #[ORM\Entity(repositoryClass: TicketsRepository::class)]
+    #[ORM\Table(name: "tickets")]
+    #[ORM\Index(columns: ["id_flight"], name: "flight_id")]
+    #[ORM\Index(columns: ["passenger_id"], name: "passenger_id")]
+    #[ORM\Index(columns: ["selected_user"], name: "selected_user")]
+    class Tickets
     {
-        $this->ticketBookingDate = new \DateTime();
-    }
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "ticket_id", type: "integer")]
-    private int $ticketId;
+        public function __construct()
+        {
+            $this->ticketBookingDate = new \DateTime();
+        }
 
-    #[ORM\Column(name: "seat_number", type: "string", length: 15)]
-    private string $seatNumber;
+        #[ORM\Id]
+        #[ORM\GeneratedValue(strategy: "IDENTITY")]
+        #[ORM\Column(name: "ticket_id", type: "integer")]
+        private int $ticketId;
 
-    #[ORM\Column(name: "ticket_class", type: "string", length: 0)]
-    private string $ticketClass;
+        #[ORM\Column(name: "seat_number", type: "string", length: 15)]
+        private string $seatNumber;
 
-    #[ORM\Column(name: "ticket_price", type: "float", precision: 10, scale: 0, nullable: true)]
-    private ?float $ticketPrice = null;
+        #[ORM\Column(name: "ticket_class", type: "string", length: 0)]
+        private string $ticketClass;
 
-    #[ORM\Column(name: "ticket_status", type: "string", length: 0)]
-    private string $ticketStatus;
+        #[ORM\Column(name: "ticket_price", type: "float", precision: 10, scale: 0, nullable: true)]
+        private ?float $ticketPrice = null;
 
-    #[ORM\Column(name: "ticket_booking_date", type: "datetime", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?\DateTime $ticketBookingDate;
+        #[ORM\Column(name: "ticket_status", type: "string", length: 0)]
+        private string $ticketStatus;
 
-    #[ORM\Column(name: "passenger_email", type: "string", length: 100)]
-    private string $passengerEmail;
+        #[ORM\Column(name: "ticket_booking_date", type: "datetime", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+        private ?\DateTime $ticketBookingDate;
 
-    #[ORM\ManyToOne(targetEntity: "Flights")]
-    #[ORM\JoinColumn(name: "id_flight", referencedColumnName: "id_flight")]
-    private Flights $idFlight;
+        #[ORM\Column(name: "passenger_email", type: "string", length: 100)]
+        private string $passengerEmail;
 
-    #[ORM\ManyToOne(targetEntity: "User")]
-    #[ORM\JoinColumn(name: "passenger_id", referencedColumnName: "id")]
-    private User $passenger;
+        #[ORM\ManyToOne(targetEntity: "Flights")]
+        #[ORM\JoinColumn(name: "id_flight", referencedColumnName: "id_flight")]
+        private Flights $idFlight;
 
-    #[ORM\ManyToOne(targetEntity: "User")]
-    #[ORM\JoinColumn(name: "selected_user", referencedColumnName: "id")]
-    private User $selectedUser;
+        #[ORM\ManyToOne(targetEntity: "User")]
+        #[ORM\JoinColumn(name: "passenger_id", referencedColumnName: "id")]
+        private User $passenger;
+
+        #[ORM\ManyToOne(targetEntity: "User")]
+        #[ORM\JoinColumn(name: "selected_user", referencedColumnName: "id")]
+        private User $selectedUser;
 
     public function getTicketId(): ?int
     {

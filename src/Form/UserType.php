@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\File;
 
 class UserType extends AbstractType
 {
@@ -84,52 +85,58 @@ class UserType extends AbstractType
                         'message' => 'The address should contain only letters, numbers, spaces, and basic punctuation',
                     ]),
                 ],
-            ])
-            ->add('roles', ChoiceType::class, [
+            ]);
+
+            if (!empty($options['is_settings']) && $options['is_settings'] === true) {
+                $builder->add('profilePicture', FileType::class, [
+                    'label' => 'Photo de profil',
+                    'mapped' => false,
+                    'required' => false,
+                    'attr' => [
+                        'accept' => 'image/*',
+                        'class' => 'form-control',
+                    ],
+                    'constraints' => [
+                        new File([
+                            'maxSize' => '2M',
+                            'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
+                            'mimeTypesMessage' => 'Please upload a valid image (jpeg, png, webp)',
+                        ]),
+                    ],
+                ]);
+            }
+
+        if (!$options['is_settings']) {
+            $builder->add('roles', ChoiceType::class, [
                 'choices' => [
-                
                     'Admin' => 'ROLE_ADMIN',
                     'Responsable' => 'ROLE_RESPONSABLE',
                     'Employé' => 'ROLE_EMPLOYEE'
                 ],
                 'placeholder' => 'Choose a role',
                 'required' => false,
-                'multiple' =>true,
+                'multiple' => true,
                 'label' => 'Role',
                 'attr' => ['class' => 'form-select']
-            ])
-            // ->add('roles'
-            // , ChoiceType::class, [
-            //     'choices' => [
-            //         'Admin' => 'ADMIN',
-            //         'Responsable' => 'RESPONSABLE',
-            //         'Employee' => 'EMPLOYEE'
-            //     ],
-            //     'label' => 'Rôle',
-            //     'attr' => ['class' => 'form-select'],
-            //     'multiple' => false,
-            //     'expanded' => false
-            // ]
-            // )
-            ->add('statut', ChoiceType::class, [
-                'choices' => [
-                    'Actif' => 'actif',
-                    'Inactif' => 'inactif'
-                ],
-                'label' => 'Statut',
-                'attr' => ['class' => 'form-select']
             ]);
+        }
 
-
+        $builder->add('statut', ChoiceType::class, [
+            'choices' => [
+                'Actif' => 'actif',
+                'Inactif' => 'inactif'
+            ],
+            'label' => 'Statut',
+            'attr' => ['class' => 'form-select']
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'is_new' => false, // Default to false (update form)
-
+            'is_new' => false,
+            'is_settings' => false,
         ]);
-
     }
 }

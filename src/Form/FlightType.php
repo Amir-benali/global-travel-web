@@ -75,7 +75,7 @@ class FlightType extends AbstractType
                 'widget' => 'single_text',
                 'label' => 'Arrival date',
             ])
-            ->add('availableSeats',null, [
+            ->add('seats_number',null, [
                 'label' => 'Number of Seats',
                 'required' => true, // Rend le champ obligatoire dans le formulaire
                 'constraints' => [

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CarReservationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "car_reservation")]
 #[ORM\Index(columns: ["route_id"], name: "fk_id_route_reservation")]
 #[ORM\Index(columns: ["offer_id"], name: "fk_id_offer_reservation")]
-#[ORM\Index(columns: ["user_id"], name: "fk_id_user_reservation")]
 class CarReservation
 {
     #[ORM\Id]
@@ -24,7 +25,7 @@ class CarReservation
     #[ORM\Column(name: "status", type: "string", length: 0)]
     private string $status;
 
-    #[ORM\ManyToOne(targetEntity: "CarOffer")]
+    #[ORM\ManyToOne(targetEntity: "CarOffer", cascade: ["persist"])]
     #[ORM\JoinColumn(name: "offer_id", referencedColumnName: "id")]
     private CarOffer $offer;
 
@@ -32,9 +33,23 @@ class CarReservation
     #[ORM\JoinColumn(name: "route_id", referencedColumnName: "id")]
     private CarRoute $route;
 
-    #[ORM\ManyToOne(targetEntity: "User")]
-    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
-    private User $user;
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'carReservations', cascade: ["persist"])]
+    #[ORM\JoinTable(
+        name: 'car_reservation_user',
+        joinColumns: [new ORM\JoinColumn(name: 'car_reservation_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    )]
+    private Collection $user;
+
+    public function __construct()
+    {
+        $this->user = new ArrayCollection();
+    }
+
+
 
     public function getId(): ?int
     {
@@ -89,15 +104,29 @@ class CarReservation
         return $this;
     }
 
-    public function getUser(): ?User
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUser(): Collection
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): static
+    public function addUser(User $user): static
     {
-        $this->user = $user;
+        if (!$this->user->contains($user)) {
+            $this->user->add($user);
+        }
 
         return $this;
     }
+
+    public function removeUser(User $user): static
+    {
+        $this->user->removeElement($user);
+
+        return $this;
+    }
+
+
 }

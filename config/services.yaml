@@ -8,6 +8,14 @@ parameters:
     azure.blob.container_name: 'globaltravelstorage'
     azure.blob.disable_ssl_verification: true
     env(NOMINATIM_USER_AGENT): 'GlobalTravelApp/1.0'
+    akismet.api_key: '8c085842ad83'
+    akismet.blog_url: 'http://127.0.0.1:8000'
+    google_client_secret_path: '%kernel.project_dir%/config/google_client_secret.json'
+    google_calendar_id: 'primary'
+    facebook_client_id: '%env(FB_ID)%'
+    facebook_client_secret: '%env(FB_SECRET)%'
+
+    
 
 services:
     # default configuration for services in *this* file
@@ -40,4 +48,23 @@ services:
             $logger: '@monolog.logger'
             $csrfTokenManager: '@security.csrf.token_manager'
             $httpClient: '@http_client'
+    
+
+    App\Service\AkismetSpamChecker:
+        arguments:
+            $akismetApiKey: '%akismet.api_key%'  # ← Nom corrigé
+            $akismetBlogUrl: '%akismet.blog_url%' # ← Nom corrigé
+            $httpClient: '@http_client'
+            $logger: '@logger' # Ajouter cette ligne
+
+    App\Service\GoogleCalendarService:  
+        arguments:
+            $requestStack: '@request_stack'
+            $googleClientSecretPath: '%kernel.project_dir%/config/google_client_secret.json'
+            
+
+    
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
     

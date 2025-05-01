@@ -1,0 +1,788 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Booking Details{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+{% endblock %}
+
+{% block body %}
+<div class="flex h-[90vh] flex-col md:flex-row">
+    <!-- Map Container - Takes 70% on larger screens, full width on mobile -->
+    <div class="relative w-full md:w-8/12 h-[60vh] md:h-[90vh]">
+        {# Map Container #}
+        <div id="map" class="absolute inset-0 z-0"></div>
+        
+        {# Map Controls #}
+        <div class="absolute top-4 right-4 z-10 flex flex-col space-y-2">
+            <button id="zoom-in" class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                <i class="ri-add-line text-gray-700"></i>
+            </button>
+            <button id="zoom-out" class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                <i class="ri-subtract-line text-gray-700"></i>
+            </button>
+            <button id="locate-me" class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                <i class="ri-user-location-line text-blue-600"></i>
+            </button>
+        </div>
+        
+        {# Map Legend #}
+        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gray-50 bg-opacity-90">
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-xs text-gray-700">Pickup Point</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
+                    <span class="text-xs text-gray-700">Destination</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
+                    <span class="text-xs text-gray-700">Route</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Container - Takes 30% on larger screens -->
+    <div class="w-full md:w-4/12 bg-white border-l border-gray-200 p-4 scrollbar-y-auto overflow-y-auto">
+        {# Booking Summary Section #}
+        <div class="h-full flex flex-col">
+            <div class="border-b pb-4 mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Booking Summary</h2>
+                
+                <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <!-- Car Details Section -->
+                    <div class="mb-3 pb-3 border-b border-blue-100">
+                        <h3 class="font-semibold text-gray-700 mb-2">Car Details</h3>
+                        <div class="flex items-center mb-2">
+                            <i class="ri-car-line text-blue-600 mr-2"></i>
+                            <span>{{ car.model|default('Standard Vehicle') }}</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <i class="ri-dashboard-3-line text-blue-600 mr-2"></i>
+                            <span>{{ car.brand|default('Economy') }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Seats Section -->
+                    <div class="flex items-center mb-2">
+                        <i class="ri-user-line text-blue-600 mr-2"></i>
+                        <span>{{ selectedSeats|length|default(1) }} seat(s)</span>
+                    </div>
+                    
+                    <!-- Combined Seats and Employees Section in 2 columns -->
+                    <div class="mb-3 pb-3 border-b border-blue-100">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Selected Seat IDs Column -->
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <i class="ri-checkbox-multiple-line text-blue-600 mr-2"></i>
+                                    <span class="font-semibold">Selected Seats:</span>
+                                </div>
+                                <div class="ml-1">
+                                    {% if selectedSeats|default([]) is not empty %}
+                                        {% for seat in selectedSeats %}
+                                            <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-1 mb-1 text-xs">{{ seat.id|default(seat) }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-sm text-gray-500">None selected</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Assigned Employees Column -->
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <i class="ri-user-star-line text-blue-600 mr-2"></i>
+                                    <span class="font-semibold">Assigned Employees:</span>
+                                </div>
+                                <div class="ml-1">
+                                    {% if assignedEmployees|default([]) is not empty %}
+                                        {% if assignedEmployees is iterable %}
+                                            {% for employee in assignedEmployees %}
+                                                <div class="flex items-center mb-1">
+                                                    <div class="w-6 h-6 rounded-full bg-gray-200 mr-1 overflow-hidden">
+                                                        <img src="https://ui-avatars.com/api/?name={{ employee.firstName }}+{{ employee.lastName }}&background=random" 
+                                                             alt="{{ employee.firstName }}" class="w-full h-full object-cover">
+                                                    </div>
+                                                    <span class="text-xs">{{ employee.firstName }} {{ employee.lastName }}</span>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="flex items-center mb-1">
+                                                <div class="w-6 h-6 rounded-full bg-gray-200 mr-1 overflow-hidden">
+                                                    <img src="https://ui-avatars.com/api/?name={{ assignedEmployees.firstName }}+{{ assignedEmployees.lastName }}&background=random" 
+                                                         alt="{{ assignedEmployees.firstName }}" class="w-full h-full object-cover">
+                                                </div>
+                                                <span class="text-xs">{{ assignedEmployees.firstName }} {{ assignedEmployees.lastName }}</span>
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-sm text-gray-500">None assigned</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                                        <div class="flex items-center justify-between mt-3 pt-3 border-t border-blue-100">
+                    <span class="font-bold">Total Price:</span>
+                    <span class="font-bold text-blue-700">{{ totalPrice|default('0.00') ~ ' $' }}</span>
+                </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="border-b pb-4 mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Trip Details</h2>
+            </div>
+            
+            <div class="flex-grow">
+                <div class="mb-6">
+                    <div class="flex items-center mb-2">
+                        <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+                        <h3 class="font-semibold text-gray-700">Pickup Location</h3>
+                    </div>
+                    <div id="pickup-location" class="text-sm text-gray-700 ml-6 p-2 bg-gray-50 rounded">
+                        {{ start|default('Loading...') }}
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex items-center mb-2">
+                        <div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
+                        <h3 class="font-semibold text-gray-700">Destination</h3>
+                    </div>
+                    <div id="destination-location" class="text-sm text-gray-700 ml-6 p-2 bg-gray-50 rounded">
+                        {{ destinations|default('Loading...') }}
+                    </div>
+                </div>
+                
+                <div id="trip-details" class="mb-6">
+                    <div class="flex items-center mb-2">
+                        <i class="ri-information-line text-blue-500 mr-2"></i>
+                        <h3 class="font-semibold text-gray-700">Trip Information</h3>
+                    </div>
+                    <div class="ml-6 p-3 bg-gray-50 rounded space-y-3">
+                        <div class="flex items-center">
+                            <i class="ri-route-line text-blue-600 mr-2"></i>
+                            <div>
+                                <span class="text-gray-700 text-sm">Distance:</span>
+                                <span id="distance-value" class="text-sm font-medium ml-2">{{ reservation.distance|default('Calculating...') }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-time-line text-blue-600 mr-2"></i>
+                            <div>
+                                <span class="text-gray-700 text-sm">Estimated Time:</span>
+                                <span id="time-value" class="text-sm font-medium ml-2">{{ reservation.estimatedTime|default('Calculating...') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Trip Delay Prediction Section -->
+                <div class="mb-6 transform transition duration-300 hover:translate-y-[-2px]">
+                    <div class="flex items-center mb-2">
+                        <i class="ri-cloud-line text-blue-500 mr-2 animate-bounce"></i>
+                        <h3 class="font-semibold text-gray-700">Trip Weather & Delay Prediction</h3>
+                    </div>
+                    <div id="delay-prediction" class="ml-6 p-3 bg-gray-50 rounded space-y-3 shadow-sm transition-all duration-300 hover:shadow-md">
+                        <div class="text-center py-2" id="prediction-loading">
+                            <div class="flex justify-center items-center">
+                                <i class="ri-loader-4-line animate-spin text-blue-500 text-xl"></i>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2 animate-pulse">Fetching prediction...</p>
+                        </div>
+                        <div id="prediction-content" class="hidden opacity-0 transition-all duration-500 transform" 
+                             x-show="!loading" x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform scale-95"
+                             x-transition:enter-end="opacity-100 transform scale-100">
+                            <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
+                                <div class="transform transition duration-300 hover:scale-105">
+                                    <span class="text-xs text-gray-500">Starting Point</span>
+                                    <div class="flex items-center">
+                                        <i id="start-weather-icon" class="text-lg mr-1 transition-all duration-500"></i>
+                                        <span id="start-weather" class="text-sm font-medium"></span>
+                                    </div>
+                                </div>
+                                <div class="transform transition duration-300 hover:scale-105">
+                                    <span class="text-xs text-gray-500">Destination</span>
+                                    <div class="flex items-center">
+                                        <i id="dest-weather-icon" class="text-lg mr-1 transition-all duration-500"></i>
+                                        <span id="dest-weather" class="text-sm font-medium"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="transition-all duration-300">
+                                <div class="flex items-center mb-1">
+                                    <i class="ri-time-line text-yellow-500 mr-2 animate-pulse"></i>
+                                    <span class="text-sm">Potential delay: <span id="delay-time" class="font-medium"></span></span>
+                                </div>
+                                <div id="delay-warning" class="mt-2 p-2 rounded text-xs transform transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <div id="prediction-error" class="hidden opacity-0 transition-all duration-300">
+                            <div class="flex items-center text-red-500 animate-pulse">
+                                <i class="ri-error-warning-line mr-1"></i>
+                                <span class="text-sm">Unable to fetch prediction data.</span>
+                            </div>
+                            <button id="retry-prediction" class="mt-2 text-xs text-blue-600 hover:text-blue-800 transition-colors duration-300 transform hover:scale-105 focus:outline-none focus:ring focus:ring-blue-300">
+                                <i class="ri-refresh-line mr-1 animate-spin-slow"></i>
+                                Try again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .animate-spin-slow {
+                        animation: spin 2s linear infinite;
+                    }
+                    @keyframes spin {
+                        from {
+                            transform: rotate(0deg);
+                        }
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+                    #prediction-content.opacity-0 {
+                        display: none;
+                    }
+                    #prediction-content:not(.hidden) {
+                        animation: fadeIn 0.5s ease-out forwards;
+                        display: block;
+                    }
+                    #prediction-error:not(.hidden) {
+                        animation: fadeIn 0.5s ease-out forwards;
+                        display: block;
+                    }
+                    @keyframes fadeIn {
+                        from {
+                            opacity: 0;
+                            transform: translateY(10px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                </style>
+                <script>
+                    // Add this to handle animations when switching states
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const showContentSection = () => {
+                            const contentEl = document.getElementById('prediction-content');
+                            contentEl.classList.remove('hidden');
+                            setTimeout(() => {
+                                contentEl.classList.remove('opacity-0');
+                            }, 10);
+                        };
+                        
+                        const showErrorSection = () => {
+                            const errorEl = document.getElementById('prediction-error');
+                            errorEl.classList.remove('hidden');
+                            setTimeout(() => {
+                                errorEl.classList.remove('opacity-0');
+                            }, 10);
+                        };
+                        
+                        // Override the existing functions to include animations
+                        window.updatePredictionUI = function(data) {
+                            const contentEl = document.getElementById('prediction-content');
+                            const loadingEl = document.getElementById('prediction-loading');
+                            const errorEl = document.getElementById('prediction-error');
+                            
+                            // Hide loading with fade out
+                            loadingEl.classList.add('animate-fadeOut');
+                            setTimeout(() => {
+                                loadingEl.classList.add('hidden');
+                                // Show content with animation
+                                showContentSection();
+                                
+                                // Continue with existing functionality
+                                document.getElementById('start-weather').textContent = data.start_weather_condition;
+                                document.getElementById('dest-weather').textContent = data.dest_weather_condition;
+                                setWeatherIcon('start-weather-icon', data.start_weather_condition);
+                                setWeatherIcon('dest-weather-icon', data.dest_weather_condition);
+                                
+                                const delayMinutes = Math.round(data.predicted_delay);
+                                const delayHours = Math.floor(delayMinutes / 60);
+                                const remainingMinutes = delayMinutes % 60;
+                                let delayText = '';
+                                
+                                if (delayHours > 0) {
+                                    delayText = `${delayHours}h ${remainingMinutes}m`;
+                                } else {
+                                    delayText = `${delayMinutes}m`;
+                                }
+                                
+                                document.getElementById('delay-time').textContent = delayText;
+                                
+                                const warningEl = document.getElementById('delay-warning');
+                                if (delayMinutes < 30) {
+                                    warningEl.className = 'mt-2 p-2 rounded text-xs bg-green-100 text-green-800 animate-fadeIn';
+                                    warningEl.innerHTML = '<i class="ri-check-line mr-1"></i> No significant delays expected.';
+                                } else if (delayMinutes < 90) {
+                                    warningEl.className = 'mt-2 p-2 rounded text-xs bg-yellow-100 text-yellow-800 animate-fadeIn';
+                                    warningEl.innerHTML = '<i class="ri-alert-line mr-1"></i> Minor delays possible. Plan accordingly.';
+                                } else {
+                                    warningEl.className = 'mt-2 p-2 rounded text-xs bg-red-100 text-red-800 animate-fadeIn';
+                                    warningEl.innerHTML = '<i class="ri-alarm-warning-line mr-1"></i> Significant delays expected! Consider rescheduling or allow extra time.';
+                                }
+                            }, 300);
+                        };
+                        
+                        window.showPredictionError = function() {
+                            const loadingEl = document.getElementById('prediction-loading');
+                            
+                            // Hide loading with animation
+                            loadingEl.classList.add('animate-fadeOut');
+                            setTimeout(() => {
+                                loadingEl.classList.add('hidden');
+                                showErrorSection();
+                            }, 300);
+                        };
+                    });
+                </script>
+
+                <script>
+                    // Add this to your existing script
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Get coordinates from the server
+                        const pickupCoords = {{ start|default('[0, 0]')|raw }};
+                        const destinationCoords = {{ destinations|default('[0, 0]')|raw }};
+                        
+                        // Previous code remains...
+                        
+                        // Trip delay prediction functionality
+                        async function getTripPrediction(startLat, startLon, destLat, destLon) {
+                            // Use local proxy endpoint instead of calling the external API directly
+                            const predictionUrl = '/proxy/predict';
+                            
+                            try {
+                                const response = await fetch(predictionUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        start_lat: startLat,
+                                        start_lon: startLon,
+                                        dest_lat: destLat,
+                                        dest_lon: destLon
+                                    })
+                                });
+                                
+                                if (!response.ok) {
+                                    throw new Error('Failed to fetch prediction data');
+                                }
+                                
+                                return await response.json();
+                            } catch (error) {
+                                console.error('Error fetching trip prediction:', error);
+                                throw error;
+                            }
+                        }
+                        
+                        function updatePredictionUI(data) {
+                            const contentEl = document.getElementById('prediction-content');
+                            const loadingEl = document.getElementById('prediction-loading');
+                            const errorEl = document.getElementById('prediction-error');
+                            
+                            // Hide loading, show content
+                            loadingEl.classList.add('hidden');
+                            errorEl.classList.add('hidden');
+                            contentEl.classList.remove('hidden');
+                            
+                            // Update weather conditions
+                            document.getElementById('start-weather').textContent = data.start_weather_condition;
+                            document.getElementById('dest-weather').textContent = data.dest_weather_condition;
+                            
+                            // Set appropriate weather icons
+                            setWeatherIcon('start-weather-icon', data.start_weather_condition);
+                            setWeatherIcon('dest-weather-icon', data.dest_weather_condition);
+                            
+                            // Format delay time
+                            const delayMinutes = Math.round(data.predicted_delay);
+                            const delayHours = Math.floor(delayMinutes / 60);
+                            const remainingMinutes = delayMinutes % 60;
+                            let delayText = '';
+                            
+                            if (delayHours > 0) {
+                                delayText = `${delayHours}h ${remainingMinutes}m`;
+                            } else {
+                                delayText = `${delayMinutes}m`;
+                            }
+                            
+                            document.getElementById('delay-time').textContent = delayText;
+                            
+                            // Set warning style based on delay severity
+                            const warningEl = document.getElementById('delay-warning');
+                            if (delayMinutes < 30) {
+                                warningEl.className = 'mt-2 p-2 rounded text-xs bg-green-100 text-green-800';
+                                warningEl.innerHTML = '<i class="ri-check-line mr-1"></i> No significant delays expected.';
+                            } else if (delayMinutes < 90) {
+                                warningEl.className = 'mt-2 p-2 rounded text-xs bg-yellow-100 text-yellow-800';
+                                warningEl.innerHTML = '<i class="ri-alert-line mr-1"></i> Minor delays possible. Plan accordingly.';
+                            } else {
+                                warningEl.className = 'mt-2 p-2 rounded text-xs bg-red-100 text-red-800';
+                                warningEl.innerHTML = '<i class="ri-alarm-warning-line mr-1"></i> Significant delays expected! Consider rescheduling or allow extra time.';
+                            }
+                        }
+                        
+                        function setWeatherIcon(elementId, condition) {
+                            const element = document.getElementById(elementId);
+                            
+                            // Clear classes except first one (ri-)
+                            const baseClass = element.className.split(' ')[0];
+                            element.className = baseClass;
+                            
+                            // Add appropriate weather icon
+                            switch (condition.toLowerCase()) {
+                                case 'clear':
+                                    element.classList.add('ri-sun-line', 'text-yellow-500');
+                                    break;
+                                case 'clouds':
+                                case 'cloudy':
+                                    element.classList.add('ri-cloudy-line', 'text-gray-500');
+                                    break;
+                                case 'rain':
+                                case 'rainy':
+                                    element.classList.add('ri-showers-line', 'text-blue-500');
+                                    break;
+                                case 'snow':
+                                case 'snowy':
+                                    element.classList.add('ri-snowy-line', 'text-blue-200');
+                                    break;
+                                case 'storm':
+                                case 'thunderstorm':
+                                    element.classList.add('ri-thunderstorms-line', 'text-purple-500');
+                                    break;
+                                default:
+                                    element.classList.add('ri-cloudy-line', 'text-gray-500');
+                            }
+                        }
+                        
+                        function showPredictionError() {
+                            document.getElementById('prediction-loading').classList.add('hidden');
+                            document.getElementById('prediction-content').classList.add('hidden');
+                            document.getElementById('prediction-error').classList.remove('hidden');
+                        }
+                        
+                        // Fetch prediction when coordinates are available
+                        if (pickupCoords && destinationCoords && 
+                            pickupCoords.length === 2 && destinationCoords.length === 2) {
+                            
+                            // Create retry function for error handling
+                            const fetchPrediction = () => {
+                                getTripPrediction(
+                                    pickupCoords[0],   // start_lat
+                                    pickupCoords[1],   // start_lon
+                                    destinationCoords[0], // dest_lat
+                                    destinationCoords[1]  // dest_lon
+                                ).then(data => {
+                                    updatePredictionUI(data);
+                                }).catch(error => {
+                                    console.error('Error in prediction:', error);
+                                    showPredictionError();
+                                });
+                            };
+                            
+                            // Initial fetch
+                            fetchPrediction();
+                            
+                            // Add retry button handler
+                            document.getElementById('retry-prediction').addEventListener('click', fetchPrediction);
+                        } else {
+                            // No coordinates available
+                            showPredictionError();
+                        }
+                    });
+                </script>
+                
+                         <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <i class="ri-money-dollar-circle-line text-blue-500 mr-2"></i>
+                    <h3 class="font-semibold text-gray-700">Price Calculation</h3>
+                </div>
+                <div class="text-sm text-gray-500 ml-6 p-2 bg-gray-50 rounded">
+                    <div class="flex justify-between mb-1">
+                        <span>Base price:</span>
+                        <span id="base-price">{{ totalPrice|default('0.00') }} $</span>
+                    </div>
+                    <div class="flex justify-between mb-1" id="distance-price-container">
+                        <span>Distance fee:</span>
+                        <span id="distance-price">0.00 $</span>
+                    </div>
+                    <div class="flex justify-between font-medium pt-1 border-t border-gray-200">
+                        <span>Final price:</span>
+                        <span id="final-price-display">{{ totalPrice|default('0.00') }} $</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // API key for OpenRouteService
+    const apiKey = "5b3ce3597851110001cf62482c7f9379af9f439789ddb44c6fe4debe";
+    
+    // Initialize the map
+    const map = L.map('map', {
+        scrollWheelZoom: true,
+        dragging: true,
+        zoomControl: false
+    }).setView([51.505, -0.09], 13);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+    
+    // Add zoom controls
+    const zoomIn = document.getElementById('zoom-in');
+    const zoomOut = document.getElementById('zoom-out');
+    
+    zoomIn.addEventListener('click', () => map.zoomIn());
+    zoomOut.addEventListener('click', () => map.zoomOut());
+    
+    // Add locate me button
+    const locateMe = document.getElementById('locate-me');
+    locateMe.addEventListener('click', () => {
+        map.locate({setView: true, maxZoom: 16});
+    });
+    
+    // Create custom icons
+    function createIcon(color) {
+        return L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div style="background-color: ${color};" class="marker-pin"></div>`,
+            iconSize: [20, 30],
+            iconAnchor: [10, 30]
+        });
+    }
+    
+    // Reverse geocoding function
+    async function reverseGeocode(lat, lon) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+            const data = await response.json();
+            return data.display_name;
+        } catch (error) {
+            console.error('Error in reverse geocoding:', error);
+            return 'Unknown location';
+        }
+    }
+    
+    // Get coordinates from the server
+    const pickupCoords = {{ start|default('[0, 0]')|raw }};
+    const destinationCoords = {{ destinations|default('[0, 0]')|raw }};
+    
+    // Display pickup and destination markers
+    if (pickupCoords && pickupCoords.length === 2) {
+        const pickupLatLng = [pickupCoords[0], pickupCoords[1]];
+        const pickupMarker = L.marker(pickupLatLng, {icon: createIcon('green')}).addTo(map)
+            .bindPopup(`Pickup: {{ start|default('Loading...') }}`);
+        
+        // Update pickup address with reverse geocoding
+        reverseGeocode(pickupCoords[0], pickupCoords[1]).then(address => {
+            document.getElementById('pickup-location').textContent = address;
+            pickupMarker.setPopupContent(`Pickup: ${address}`);
+        });
+    }
+    
+    if (destinationCoords && destinationCoords.length === 2) {
+        const destLatLng = [destinationCoords[0], destinationCoords[1]];
+        const destMarker = L.marker(destLatLng, {icon: createIcon('red')}).addTo(map)
+            .bindPopup(`Destination: {{ destinations|default('Loading...') }}`);
+        
+        // Update destination address with reverse geocoding
+        reverseGeocode(destinationCoords[0], destinationCoords[1]).then(address => {
+            document.getElementById('destination-location').textContent = address;
+            destMarker.setPopupContent(`Destination: ${address}`);
+        });
+    }
+    
+    // Get and display route if both pickup and destination are available
+    if (pickupCoords && destinationCoords && 
+        pickupCoords.length === 2 && destinationCoords.length === 2) {
+            
+        const startCoords = [pickupCoords[1], pickupCoords[0]]; // [lng, lat] format for API
+        const endCoords = [destinationCoords[1], destinationCoords[0]];
+        
+        // Get route between points
+        getRoute(startCoords, endCoords).then(route => {
+            // Draw the route on the map
+            const routeCoordinates = decodePolyline(route.geometry);
+            const routeLine = L.polyline(routeCoordinates, {color: 'blue', weight: 5}).addTo(map);
+            
+            // Fit map to show the entire route
+            if (routeCoordinates && routeCoordinates.length > 0) {
+                const bounds = routeLine.getBounds();
+                map.fitBounds(bounds, {padding: [50, 50]});
+            }
+            
+            // Update distance and time information
+            const distanceInKm = route.distance / 1000;
+            const timeInMinutes = route.duration / 60;
+            
+            document.getElementById('distance-value').textContent = `${distanceInKm.toFixed(2)} km`;
+            document.getElementById('time-value').textContent = formatTime(timeInMinutes);
+            
+            updatePriceCalculation(distanceInKm);
+            
+            
+        }).catch(error => {
+            console.error('Error getting route:', error);
+        });
+    }
+    
+    // Format time in minutes to hours and minutes
+    function formatTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = Math.round(minutes % 60);
+        
+        if (hours > 0) {
+            return `${hours} hr ${mins} min`;
+        } else {
+            return `${mins} min`;
+        }
+    }
+    
+    // Update price calculation based on distance
+    function updatePriceCalculation(distanceKm) {
+        const BASE_PRICE = {{ totalPrice|default(0)|json_encode|raw }};
+        const PRICE_PER_KM = 0.5
+        
+        const distanceFee = distanceKm * PRICE_PER_KM;
+        const finalPrice = BASE_PRICE + distanceFee;
+        
+
+        document.getElementById('base-price').textContent = BASE_PRICE.toFixed(2) + ' $';
+        document.getElementById('distance-price').textContent = distanceFee.toFixed(2) + ' $';
+        document.getElementById('final-price-display').textContent = finalPrice.toFixed(2) + ' $';
+    }
+    
+    // Get route from OpenRouteService API
+    async function getRoute(start, end) {
+        const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json, application/geo+json'
+            },
+            body: JSON.stringify({
+                coordinates: [start, end]
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        
+        if (!data.routes || !data.routes.length) {
+            throw new Error('Invalid response format from API');
+        }
+        
+        return {
+            geometry: data.routes[0].geometry,
+            distance: data.routes[0].summary.distance,
+            duration: data.routes[0].summary.duration
+        };
+    }
+    
+    // Function to decode polyline from OpenRouteService
+    function decodePolyline(geometry) {
+        // Handle string (encoded polyline)
+        if (typeof geometry === 'string') {
+            let index = 0,
+                lat = 0,
+                lng = 0,
+                coordinates = [],
+                shift = 0,
+                result = 0,
+                byte = null,
+                latitude_change,
+                longitude_change;
+
+            while (index < geometry.length) {
+                byte = null;
+                shift = 0;
+                result = 0;
+
+                do {
+                    byte = geometry.charCodeAt(index++) - 63;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+
+                latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                lat += latitude_change;
+
+                shift = 0;
+                result = 0;
+
+                do {
+                    byte = geometry.charCodeAt(index++) - 63;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+
+                longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                lng += longitude_change;
+
+                coordinates.push([lat * 1e-5, lng * 1e-5]);
+            }
+            
+            return coordinates;
+        }
+        
+        // Handle direct array of coordinates
+        if (Array.isArray(geometry)) {
+            return geometry.map(coord => [coord[1], coord[0]]);
+        }
+        
+        console.error('Unrecognized geometry format:', geometry);
+        return [];
+    }
+
+    
+});
+</script>
+
+<style>
+.leaflet-container {
+    background-color: #f8fafc !important;
+}
+.marker-pin {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: relative;
+}
+.marker-pin::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 8px;
+    border-width: 8px 2px 0;
+    border-style: solid;
+    border-color: currentColor transparent transparent;
+    transform: rotate(45deg);
+}
+</style>
+{% endblock %}
