@@ -254,8 +254,10 @@
                                     <span class="text-sm text-gray-700">Selected</span>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="w-5 h-5 rounded border-2 border-gray-400 bg-gray-300 mr-3 flex-shrink-0"></div>
-                                    <span class="text-sm text-gray-700">Unavailable (Driver)</span>
+                                    <div class="w-5 h-5 rounded border-2 border-gray-400 bg-gray-300 mr-3 flex-shrink-0 flex items-center justify-center">
+                                        <i class="ri-steering-fill text-gray-700 text-xs"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-700">Driver</span>
                                 </div>
                             </div>
                         </div>
@@ -276,7 +278,7 @@
                                 </div>
                                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg">
                                     <p class="text-xs text-gray-500">Available</p>
-                                    <p class="text-lg font-semibold text-blue-700">{{ seatCount - 1 }}</p> {# Assuming driver is always unavailable #}
+                                    <p class="text-lg font-semibold text-blue-700">{{ seatCount - 1 - (reservedSeats|default([])|length) }}</p> {# Subtracting driver seat and reserved seats #}
                                 </div>
                             </div>
                         </div>
@@ -594,6 +596,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const continueButton = document.getElementById('seat-continue');
     const selectedSeatsInput = document.getElementById('selected-seats-input');
     
+    // Get reserved seats from twig data (safely)
+    let reservedSeats = [];
+    try {
+        reservedSeats = {{ reservedSeats|default([])|json_encode|raw }};
+        // Ensure it's an array
+        if (!Array.isArray(reservedSeats)) {
+            reservedSeats = [];
+        }
+    } catch (e) {
+        console.error('Error parsing reserved seats:', e);
+        reservedSeats = [];
+    }
+    
     // Seat position descriptions
     const seatPositions = {
         'A2': 'Front passenger seat',
@@ -608,16 +623,52 @@ document.addEventListener('DOMContentLoaded', function() {
         'D3': 'Fourth row right seat'
     };
     
+    // Mark reserved seats as unavailable
+    function markReservedSeats() {
+        seats.forEach(seat => {
+            const seatId = seat.dataset.seatId;
+            if (reservedSeats.includes(seatId)) {
+                seat.classList.remove('seat-available', 'hover:bg-blue-100');
+                seat.classList.add('bg-gray-300', 'border-gray-400', 'cursor-not-allowed');
+                
+                // Add a lock icon to indicate it's reserved
+                const seatLabel = seat.querySelector('span:first-child');
+                if (seatLabel) {
+                    seatLabel.classList.remove('text-blue-900');
+                    seatLabel.classList.add('text-gray-700');
+                }
+                
+                // Change price label
+                const priceLabel = seat.querySelector('span:last-child');
+                if (priceLabel) {
+                    priceLabel.textContent = 'Reserved';
+                    priceLabel.classList.remove('text-blue-700');
+                    priceLabel.classList.add('text-gray-600');
+                }
+            }
+        });
+    }
+    
     // Add event listeners to seats
     seats.forEach(seat => {
-        seat.addEventListener('click', () => toggleSeatSelection(seat));
-        seat.addEventListener('mouseenter', () => highlightSeat(seat, true));
-        seat.addEventListener('mouseleave', () => highlightSeat(seat, false));
+        const seatId = seat.dataset.seatId;
+        // Only add listeners to available seats
+        if (!reservedSeats.includes(seatId)) {
+            seat.addEventListener('click', () => toggleSeatSelection(seat));
+            seat.addEventListener('mouseenter', () => highlightSeat(seat, true));
+            seat.addEventListener('mouseleave', () => highlightSeat(seat, false));
+        }
     });
     
     // Toggle seat selection
     function toggleSeatSelection(seat) {
         const seatId = seat.dataset.seatId;
+        
+        // Don't allow selection of reserved seats
+        if (reservedSeats.includes(seatId)) {
+            return;
+        }
+        
         const seatPrice = parseFloat(seat.dataset.price);
         
         // Check if seat is already selected
@@ -648,9 +699,43 @@ document.addEventListener('DOMContentLoaded', function() {
         updateContinueButton();
         updateHiddenInput();
     }
-    
+    // Mark reserved seats as unavailable - styled like driver's seat
+    function markReservedSeats() {
+        seats.forEach(seat => {
+            const seatId = seat.dataset.seatId;
+            if (reservedSeats.includes(seatId)) {
+                // Remove available styling
+                seat.classList.remove('seat-available', 'hover:bg-blue-100', 'bg-white');
+                
+                // Add driver-like styling (dark gray)
+                seat.classList.add('bg-gray-400', 'border-gray-500', 'cursor-not-allowed');
+                
+                // Update text colors
+                const seatLabel = seat.querySelector('span:first-child');
+                if (seatLabel) {
+                    seatLabel.classList.remove('text-blue-900');
+                    seatLabel.classList.add('text-gray-700');
+                }
+                
+                // Update price label to show "Reserved" instead
+                const priceLabel = seat.querySelector('span:last-child');
+                if (priceLabel) {
+                    priceLabel.textContent = 'Reserved';
+                    priceLabel.classList.remove('text-blue-700');
+                    priceLabel.classList.add('text-gray-700');
+                }
+            }
+        });
+    }
     // Highlight seat on hover
     function highlightSeat(seat, isEntering) {
+        const seatId = seat.dataset.seatId;
+        
+        // Don't highlight reserved seats
+        if (reservedSeats.includes(seatId)) {
+            return;
+        }
+        
         if (!seat.classList.contains('bg-blue-100')) { // Not already selected
             if (isEntering) {
                 seat.classList.add('shadow-md', 'scale-105', 'z-10', 'bg-blue-50', 'border-blue-400');
@@ -767,20 +852,28 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Show selected employees and submit the form
-        let message = "Selected employees:\n\n";
-        
-        selectedSeats.forEach(seat => {
-            const employeeId = assignments[seat.id];
-            const employeeOption = document.querySelector(`.option-item[data-value="${employeeId}"]`);
-            const employeeName = employeeOption ? employeeOption.dataset.name : 'Unknown';
-            
-            message += `Seat ${seat.id}: ${employeeName}\n`;
-        });
-        
-        alert(message);
+        // Submit the form
         this.submit();
     });
+    
+    // Initialize: mark reserved seats as unavailable
+    markReservedSeats();
+    
+    // Update legend to include reserved seats
+    const legendContainer = document.querySelector('.flex.flex-wrap.gap-x-6.gap-y-3');
+    if (legendContainer && reservedSeats.length > 0) {
+        // Add reserved seats to legend if not already there
+        const reservedLegendItem = `
+            <div class="flex items-center">
+                <div class="w-5 h-5 rounded border-2 border-gray-400 bg-gray-300 mr-3 flex-shrink-0"></div>
+                <span class="text-sm text-gray-700">Reserved</span>
+            </div>
+        `;
+        
+        if (!legendContainer.innerHTML.includes('Reserved')) {
+            legendContainer.insertAdjacentHTML('beforeend', reservedLegendItem);
+        }
+    }
     
     // Call once on page load
     adjustSeatSpacing();

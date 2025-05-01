@@ -20,6 +20,7 @@
         "knplabs/knp-paginator-bundle": "^6.8",
         "knplabs/knp-time-bundle": "^2.4",
         "microsoft/azure-storage-blob": "^1.5",
+        "nelmio/cors-bundle": "^2.5",
         "pagerfanta/doctrine-orm-adapter": "*",
         "php-http/guzzle7-adapter": "^1.1",
         "phpdocumentor/reflection-docblock": "^5.6",
