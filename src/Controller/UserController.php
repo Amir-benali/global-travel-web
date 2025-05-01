@@ -223,12 +223,49 @@ public function settingsPage(
     }
 
     #[Route('/travel/settings', name: 'front_settings')]
-    public function travelSettingsPage(EntityManagerInterface $em): Response
-    {
-        $users = $em->getRepository(User::class)->findAll();
-        
+    public function travelSettingsPage(
+        Request $request,
+        EntityManagerInterface $em,
+        AzureBlobService $azureBlobService
+    ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+    
+        if (!$user) {
+            $this->addFlash('error', 'Veuillez vous connecter.');
+            return $this->redirectToRoute('app_signin');
+        }
+    
+        $form = $this->createForm(UserType::class, $user, [
+            'is_settings' => true,
+        ]);
+    
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedFile = $form->get('profilePicture')->getData();
+    
+            if ($uploadedFile) {
+                try {
+                    $imageUrl = $azureBlobService->uploadImage($uploadedFile);
+                    $user->setImage($imageUrl); // Assurez-vous que le champ `image` existe dans l'entité User
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Échec du téléversement de l\'image : ' . $e->getMessage());
+                    return $this->redirectToRoute('front_settings');
+                }
+            }
+    
+            $em->persist($user);
+            $em->flush();
+    
+            $this->addFlash('success', 'Paramètres mis à jour avec succès.');
+            return $this->redirectToRoute('front_settings');
+        }
+    
         return $this->render('front/settings.html.twig', [
-            'users' => $users,
+            'form' => $form->createView(),
+            'currentImageUrl' => $user->getImage(),
         ]);
     }
+    
 }
