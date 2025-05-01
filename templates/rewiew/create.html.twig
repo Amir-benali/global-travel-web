@@ -2,121 +2,286 @@
 
 {% block title %}Create Review{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Styles généraux */
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            color: #1a365d;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* Styles des champs de formulaire */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #4a5568;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+            background-color: white;
+        }
+
+        .form-input::placeholder {
+            color: #a0aec0;
+        }
+
+        /* Styles pour les étoiles */
+        .star-rating {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .star {
+            font-size: 2rem;
+            color: #e2e8f0;
+            transition: color 0.2s;
+        }
+
+        .star.active {
+            color: #fbbf24;
+        }
+
+        .star.hover {
+            color: #fcd34d;
+        }
+
+        /* Styles pour les messages flash */
+        .flash-message {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            border-left: 4px solid;
+        }
+
+        .flash-error {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .flash-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .flash-content {
+            flex: 1;
+        }
+
+        .flash-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 0.5rem;
+        }
+
+        /* Styles pour les boutons */
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #3182ce;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        /* Styles pour les messages d'erreur */
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <div class="mx-auto max-w-3xl py-8">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800">Add New Review</h2>
-                    <a href="{{ path('app_review') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="ri-arrow-left-line mr-1"></i>
-                        Back to Home
-                    </a>
-                </div>
-            </div>
-            
-            <div class="p-6">
-                {# Messages Flash #}
-           {% for flash_type in [ 'error'] %}
-    {% for message in app.flashes(flash_type) %}
-        <div class="mb-4 p-4 rounded-lg flex items-start border-l-4 {% if flash_type == 'success' %}bg-green-100 border-green-500 text-green-800{% else %}bg-red-100 border-red-500 text-red-800{% endif %}">
-            <div class="flex-shrink-0">
-                {% if flash_type == 'success' %}
-                    <i class="ri-checkbox-circle-fill text-xl mr-3 text-green-500"></i>
-                {% else %}
-                    <i class="ri-spam-2-fill text-xl mr-3 text-red-500"></i>
-                {% endif %}
-            </div>
-            <div class="flex-1">
-                {{ message }}
-                <button type="button" class="float-right hover:opacity-75" onclick="this.parentElement.parentElement.remove()">
-                    <i class="ri-close-line text-sm"></i>
-                </button>
+    <div class="form-container">
+        <div class="form-title">
+            <div class="flex items-center justify-between">
+                <h2>Add New Review</h2>
+                <a href="{{ path('app_review') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                    <i class="ri-arrow-left-line mr-1"></i>
+                    Back to Home
+                </a>
             </div>
         </div>
-    {% endfor %}
-{% endfor %}
 
-                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
-                
-                <div class="mb-4">
-                    {{ form_label(form.activityId, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.activityId, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.activityId) }}</div>
-                </div>
-                
-                <div class="mb-4">
-                    {{ form_label(form.note, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    <div class="flex items-center">
-                        {% for i in 1..5 %}
-                            <button type="button" class="star-rating-btn text-2xl focus:outline-none" data-value="{{ i }}">
-                                {% if form.note.vars.value >= i %}
-                                    <span class="text-yellow-400">★</span>
-                                {% else %}
-                                    <span class="text-gray-300">★</span>
-                                {% endif %}
-                            </button>
-                        {% endfor %}
+        {# Messages Flash #}
+        {% for flash_type in ['error'] %}
+            {% for message in app.flashes(flash_type) %}
+                <div class="flash-message flash-error">
+                    <i class="ri-spam-2-fill flash-icon"></i>
+                    <div class="flash-content">
+                        {{ message }}
                     </div>
-                    {{ form_widget(form.note, {'attr': {'class': 'hidden'}}) }}
-                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.note) }}</div>
+                    <button type="button" class="flash-close" onclick="this.parentElement.remove()">
+                        <i class="ri-close-line"></i>
+                    </button>
                 </div>
-                
-                <div class="mb-4">
-                    {{ form_label(form.commentaire, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.commentaire, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500', 'rows': 4}}) }}
-                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.commentaire) }}</div>
-                </div>
+            {% endfor %}
+        {% endfor %}
 
-                <div class="mb-4">
-                    {{ form_label(form.datereview, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.datereview, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500', 'readonly': 'readonly'}}) }}
-                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.datereview) }}</div>
-                </div>
-
-                <div class="mb-4">
-                    {{ form_label(form.userid, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.userid, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}}) }}
-                    <div class="text-red-500 text-sm mt-1">{{ form_errors(form.userid) }}</div>
-                </div>
-
-                <div class="flex justify-end">
-                    {{ form_widget(form.submit, {'attr': {'class': 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'}}) }}
-                </div>
-                
-                {{ form_end(form) }}
-            </div>
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
+        
+        <div class="form-group">
+            {{ form_label(form.activityId, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.activityId, {'attr': {
+                'class': 'form-input',
+                'placeholder': 'Select an activity'
+            }}) }}
+            <div class="error-message">{{ form_errors(form.activityId) }}</div>
         </div>
+        
+        <div class="form-group">
+            {{ form_label(form.note, null, {'label_attr': {'class': 'form-label'}}) }}
+            <div class="star-rating">
+                {% for i in 1..5 %}
+                    <button type="button" class="star-btn" data-value="{{ i }}">
+                        <span class="star {% if form.note.vars.value >= i %}active{% endif %}">★</span>
+                    </button>
+                {% endfor %}
+            </div>
+            {{ form_widget(form.note, {'attr': {'class': 'hidden'}}) }}
+            <div class="error-message">{{ form_errors(form.note) }}</div>
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.commentaire, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.commentaire, {'attr': {
+                'class': 'form-input',
+                'rows': 4,
+                'placeholder': 'Share your experience...'
+            }}) }}
+            <div class="error-message">{{ form_errors(form.commentaire) }}</div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.datereview, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.datereview, {'attr': {
+                'class': 'form-input',
+                'readonly': 'readonly'
+            }}) }}
+            <div class="error-message">{{ form_errors(form.datereview) }}</div>
+        </div>
+
+        <div class="button-group">
+            {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+        </div>
+        
+        {{ form_end(form) }}
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const noteInput = document.getElementById('{{ form.note.vars.id }}');
-            const starButtons = document.querySelectorAll('.star-rating-btn');
+            const starButtons = document.querySelectorAll('.star-btn');
             
             starButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const value = this.getAttribute('data-value');
                     noteInput.value = value;
                     
-                    starButtons.forEach((star, index) => {
-                        star.querySelector('span').className = index < value ? 'text-yellow-400' : 'text-gray-300';
+                    starButtons.forEach((starBtn, index) => {
+                        const star = starBtn.querySelector('.star');
+                        star.className = 'star' + (index < value ? ' active' : '');
                     });
                 });
                 
                 button.addEventListener('mouseover', function() {
                     const value = this.getAttribute('data-value');
-                    starButtons.forEach((star, index) => {
+                    starButtons.forEach((starBtn, index) => {
+                        const star = starBtn.querySelector('.star');
                         if (index < value) {
-                            star.querySelector('span').className = 'text-yellow-300';
+                            star.classList.add('hover');
                         }
                     });
                 });
                 
                 button.addEventListener('mouseout', function() {
                     const currentValue = noteInput.value || 0;
-                    starButtons.forEach((star, index) => {
-                        star.querySelector('span').className = index < currentValue ? 'text-yellow-400' : 'text-gray-300';
+                    starButtons.forEach((starBtn, index) => {
+                        const star = starBtn.querySelector('.star');
+                        star.classList.remove('hover');
+                        star.className = 'star' + (index < currentValue ? ' active' : '');
                     });
                 });
             });

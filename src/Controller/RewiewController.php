@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Activity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -111,5 +112,54 @@ public function update(Request $request, EntityManagerInterface $entityManager, 
             'reviews' => $reviews,
         ]);
     }
+
+    #[Route('/review/create-for-activity/{activityId}', name: 'app_review_create_for_activity')]
+public function createForActivity(
+    Request $request,
+    EntityManagerInterface $entityManager,
+    int $activityId,
+    AkismetSpamChecker $akismet
+): Response {
+    $activity = $entityManager->getRepository(Activity::class)->find($activityId);
+    if (!$activity) {
+        throw $this->createNotFoundException('Activité non trouvée');
+    }
+
+    $user = $this->getUser();
+    $review = new Review();
+    $review->setActivityid($activity);
+    $review->setUserid($user);
+    $review->setDatereview(new \DateTime());
+
+    $form = $this->createForm(ReviewFormType::class, $review);
+    $form->handleRequest($request);
+    
+    if ($form->isSubmitted() && $form->isValid()) {
+        try {
+            // Vérification anti-spam
+            $userEmail = $user ? $user->getUserIdentifier() : null;
+            $clientIp = $request->getClientIp();
+            $userAgent = $request->headers->get('User-Agent');
+
+            if ($akismet->isSpam($review->getCommentaire(), $userEmail, $clientIp, $userAgent)) {
+                $this->addFlash('error', 'Votre commentaire a été détecté comme spam.');
+                return $this->redirectToRoute('app_review_create_for_activity', ['activityId' => $activityId]);
+            }
+
+            $entityManager->persist($review);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Votre commentaire a été enregistré avec succès!');
+            return $this->redirectToRoute('front_list_activity');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue: ' . $e->getMessage());
+        }
+    }
+
+    return $this->render('front/activity/createForActivity.html.twig', [
+        'form' => $form->createView(),
+        'activity' => $activity,
+    ]);
+}
 
 }
