@@ -25,7 +25,8 @@
                                                 <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
                                                     <thead class="bg-gray-100">
                                                         <tr>
-                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Number</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Flight Number</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Seat Number</th>
                                                             <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Departure</th>
                                                             <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Arrival</th>
                                                             <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Class</th>
@@ -38,7 +39,8 @@
                                                     <tbody class="divide-y divide-gray-200">
                                                         {% for ticket in tickets %}
                                                             <tr class="hover:bg-gray-50">
-                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.ticketId }}</td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.idFlight.flightNumber }}</td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.seatNumber }}</td>
                                                                 <td class="px-6 py-4 text-sm text-gray-800">
                                                                     {{ ticket.idFlight.departureAirportName }} ({{ ticket.idFlight.departureCountry }})<br>
                                                                     {{ ticket.idFlight.departureTime|date('d/m/Y H:i') }}

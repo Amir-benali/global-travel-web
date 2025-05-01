@@ -1,22 +1,22 @@
 {% extends 'front.html.twig' %}
 
-{% block title %}Réserver un vol{% endblock %}
+{% block title %}Book a Flight{% endblock %}
 
 {% block body %}
     <div class="container mx-auto mt-10">
-        <h1 class="text-3xl font-bold mb-8 text-center">Réserver un vol</h1>
+        <h1 class="text-3xl font-bold mb-8 text-center text-blue-700">Book a Flight</h1>
 
         <div class="grid grid-cols-12 gap-6">
             <!-- Flight Info -->
             <div class="col-span-3 bg-white shadow-lg rounded-xl p-6">
-                <h2 class="text-xl font-semibold mb-4">Informations sur le vol</h2>
+                <h2 class="text-xl font-semibold mb-4 text-indigo-600">Flight Information</h2>
                 <ul class="space-y-3 text-sm text-gray-800">
-                    <li><strong>Numéro :</strong> {{ flight.flightNumber }}</li>
-                    <li><strong>Compagnie :</strong> {{ flight.airlineName }}</li>
-                    <li><strong>Itinéraire :</strong> {{ flight.departureCountry }} → {{ flight.arrivalCountry }}</li>
-                    <li><strong>Départ :</strong> {{ flight.departureAirportName }} ({{ flight.departureTime|date('d/m/y H:i') }})</li>
-                    <li><strong>Arrivée :</strong> {{ flight.arrivalAirportName }} ({{ flight.arrivalTime|date('d/m/y H:i') }})</li>
-                    <li><strong>Prix de base :</strong> {{ flight.flightBasePrice }} €</li>
+                    <li><strong>Number:</strong> {{ flight.flightNumber }}</li>
+                    <li><strong>Airline:</strong> {{ flight.airlineName }}</li>
+                    <li><strong>Route:</strong> {{ flight.departureCountry }} → {{ flight.arrivalCountry }}</li>
+                    <li><strong>Departure:</strong> {{ flight.departureAirportName }} ({{ flight.departureTime|date('d/m/y H:i') }})</li>
+                    <li><strong>Arrival:</strong> {{ flight.arrivalAirportName }} ({{ flight.arrivalTime|date('d/m/y H:i') }})</li>
+                    <li><strong>Base Price:</strong> {{ flight.flightBasePrice }} €</li>
                 </ul>
             </div>
 
@@ -25,35 +25,36 @@
                 {{ form_start(form, {'attr': {'class': 'space-y-4', 'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
 
                 <div>
-                    {{ form_label(form.ticketClass, 'Classe du billet', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
+                    {{ form_label(form.ticketClass, 'Ticket Class', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
                     {{ form_widget(form.ticketClass, { 'attr': { 'class': 'w-full border rounded-md px-4 py-2', 'data-base-price': flight.flightBasePrice } }) }}
                     <div class="text-red-500 text-xs mt-1">{{ form_errors(form.ticketClass) }}</div>
                 </div>
 
                 <div>
-                    {{ form_label(form.ticketPrice, 'Prix du billet', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
+                    {{ form_label(form.ticketPrice, 'Ticket Price', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
                     {{ form_widget(form.ticketPrice, { 'attr': { 'class': 'w-full border rounded-md px-4 py-2', 'readonly': 'readonly' } }) }}
                     <div class="text-red-500 text-xs mt-1">{{ form_errors(form.ticketPrice) }}</div>
                 </div>
 
                 <div>
-                    {{ form_label(form.selectedUser, 'Sélectionner un utilisateur', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
+                    {{ form_label(form.selectedUser, 'Select a User', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
                     {{ form_widget(form.selectedUser, { 'attr': { 'class': 'w-full border rounded-md px-4 py-2', 'onchange': 'updatePassengerEmail(this)' } }) }}
                     <div class="text-red-500 text-xs mt-1">{{ form_errors(form.selectedUser) }}</div>
                 </div>
 
                 <div>
-                    {{ form_label(form.passengerEmail, 'Email du passager', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
+                    {{ form_label(form.passengerEmail, 'Passenger Email', { 'label_attr': { 'class': 'block text-sm font-medium text-gray-700 mb-1' } }) }}
                     {{ form_widget(form.passengerEmail, { 'attr': { 'class': 'w-full border rounded-md px-4 py-2', 'id': 'passenger-email' } }) }}
                     <div class="text-red-500 text-xs mt-1">{{ form_errors(form.passengerEmail) }}</div>
                 </div>
-                <div>
-                {{ form_row(form.seatNumber, {'attr': {'id': 'selected-seat', 'style': 'display: none;'}}) }}
+
+                <div id="selected-seat" style="display: none;">
+                    {{ form_row(form.seatNumber) }}
                 </div>
 
                 <div class="flex justify-end space-x-3 pt-4">
-                    <a href="{{ path('front_flight') }}" class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100">Annuler</a>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Réserver</button>
+                    <a href="{{ path('front_flight') }}" class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100">Cancel</a>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Book</button>
                 </div>
 
                 {{ form_end(form) }}
@@ -61,33 +62,31 @@
 
             <!-- Seat Map -->
             <div class="col-span-4 bg-white shadow-lg rounded-xl p-6">
-                <h2 class="text-xl font-semibold mb-4 text-center">Choisissez votre siège</h2>
+                <h2 class="text-xl font-semibold mb-4 text-green-700 text-center">Choose Your Seat</h2>
 
-                {% set seat_letters = ['A', 'B', 'C', 'D', 'E'] %}
                 <div id="seat-map" class="grid grid-cols-5 gap-3 justify-items-center mb-6">
-                    {% for row in 1..10 %}
-                        {% for col in 0..4 %}
-                            {% if col == 2 %}
-                                <div class="w-10 h-10"></div> {# Aisle spacer #}
-                            {% else %}
-                                {% set seat_letter = seat_letters[col] %}
-                                {% set seat_code = row ~ seat_letter %}
-                                {% if seat_code in flight.availableSeats %}
-                                    <button
-                                            type="button"
-                                            class="seat w-10 h-10 bg-green-500 text-white text-sm font-medium rounded hover:bg-green-600"
-                                            data-seat="{{ seat_code }}"
-                                            onclick="selectSeat(this)">
-                                        {{ seat_code }}
-                                    </button>
-                                {% else %}
-                                    <div class="w-10 h-10 bg-gray-300 rounded opacity-50"></div> {# Seat not available #}
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
+                    {% for seat in flight.availableSeats %}
+                        {% if seat in flight.unavailableSeats %}
+                            <button
+                                    type="button"
+                                    class="seat w-10 h-10 bg-red-500 text-white text-sm font-medium rounded cursor-not-allowed"
+                                    data-seat="{{ seat }}"
+                                    disabled>
+                                {{ seat }}
+                            </button>
+                        {% else %}
+                            <button
+                                    type="button"
+                                    class="seat w-10 h-10 bg-green-500 text-white text-sm font-medium rounded hover:bg-green-600"
+                                    data-seat="{{ seat }}"
+                                    onclick="selectSeat(this)">
+                                {{ seat }}
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-center text-sm text-gray-500 col-span-5">No available seats.</p>
                     {% endfor %}
                 </div>
-                <p class="text-center text-sm mt-4 text-gray-500">Disposition type avion (Aisle au milieu)</p>
             </div>
         </div>
     </div>
@@ -102,13 +101,13 @@
             const passengerEmailField = document.querySelector('[name$="[passengerEmail]"]');
 
             if (!ticketClassField || !ticketPriceField || !selectedUserField || !passengerEmailField) {
-                console.error("Certains champs nécessaires sont introuvables.");
+                console.error("Some required fields are missing.");
                 return;
             }
 
             const basePrice = parseFloat(ticketClassField.dataset.basePrice);
             if (isNaN(basePrice)) {
-                console.error("Le prix de base n'est pas valide.");
+                console.error("Base price is invalid.");
                 return;
             }
 
@@ -136,20 +135,17 @@
         });
 
         function selectSeat(button) {
-            // Réinitialiser les styles des sièges
             document.querySelectorAll('.seat').forEach(seat => {
                 seat.classList.remove('bg-blue-500', 'hover:bg-blue-600');
                 seat.classList.add('bg-green-500', 'hover:bg-green-600');
             });
 
-            // Appliquer le style au siège sélectionné
             button.classList.remove('bg-green-500', 'hover:bg-green-600');
             button.classList.add('bg-blue-500', 'hover:bg-blue-600');
 
-            // Mettre à jour la valeur du champ caché avec le numéro de siège
             const selectedSeat = button.dataset.seat;
-            const hiddenInput = document.getElementById('selected-seat');
-            hiddenInput.value= selectedSeat;
+            const hiddenInput = document.querySelector('[name$="[seatNumber]"]');
+            hiddenInput.value = selectedSeat;
         }
     </script>
 {% endblock %}
