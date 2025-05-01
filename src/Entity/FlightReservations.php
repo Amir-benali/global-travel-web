@@ -29,6 +29,9 @@ class FlightReservations
     #[ORM\Column(name: "user_id", type: "integer")]
     private int $userId;
 
+    #[ORM\Column(name: "seat",type: "string")]
+    private string $seat;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,6 +81,18 @@ class FlightReservations
     public function setUserId(int $userId): static
     {
         $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function getSeat(): ?string
+    {
+        return $this->seat;
+    }
+
+    public function setSeat(string $seat): static
+    {
+        $this->seat = $seat;
 
         return $this;
     }

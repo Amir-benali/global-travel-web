@@ -65,6 +65,9 @@ class Flights
     #[ORM\Column(name: "available_seats", type: "json")]
     private array $availableSeats = [];
 
+    #[ORM\Column(name: "unavailable_seats",type:"json")]
+    private array $unavailableSeats = [];
+
     #[ORM\Column(name: "flight_base_price", type: "float", precision: 10, scale: 0)]
     #[Assert\GreaterThan(
         value: 0,
@@ -175,6 +178,16 @@ class Flights
     public function setAvailableSeats(array $availableSeats): self
     {
         $this->availableSeats = $availableSeats;
+        return $this;
+    }
+
+    public function getUnavailableSeats(): array
+    {
+        return $this->unavailableSeats;
+    }
+    public function setUnavailableSeats(array $unavailableSeats): self
+    {
+        $this->unavailableSeats = $unavailableSeats;
         return $this;
     }
 
