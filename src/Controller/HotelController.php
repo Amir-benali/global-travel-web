@@ -23,9 +23,12 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use App\Form\ReservationHotelType;
 use App\Entity\ReservationHotel;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 use Symfony\Component\Security\Core\User\UserInterface; 
 
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class HotelController extends AbstractController
 {
@@ -484,9 +487,12 @@ final class HotelController extends AbstractController
                 $entityManager->persist($reservation);
                 $entityManager->flush();
                 $this->addFlash('success', 'Reservation created successfully!');
-                return $this->redirectToRoute('front_book_hotel');
+                return $this->redirectToRoute('front_hotel_checkout', [
+                    'amount' => $chambre->getPrixNuitH() * $reservation->getNombreChambresH(),
+                ]);
             } catch (\Exception $e) {
                 $this->addFlash('error', 'Failed to create reservation: ' . $e->getMessage());
+                throw $this->createNotFoundException( $e->getMessage());
             }
         }
 
@@ -552,5 +558,54 @@ final class HotelController extends AbstractController
         }
 
         return $this->redirectToRoute('front_book_hotel');
+    }
+
+    #[Route('/hotel/book/checkout', name: 'front_hotel_checkout')]
+    public function checkout(Request $req): Response
+    {
+        $amount = 0;
+        if ($req->request->has('amount')) {
+            $amount = floatval($req->request->get('amount'));
+        } elseif ($req->query->has('amount')) {
+            $amount = floatval($req->query->get('amount'));
+        }
+        
+        Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+        
+        // Generate absolute URLs
+        $successUrl = $this->generateUrl('front_hotel_payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $cancelUrl = $this->generateUrl('front_hotel_payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        
+        $session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                        'name' => 'Dev Product',
+                    ],
+                    'unit_amount' => $amount * 100, // $10.00
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+        ]);
+        
+        return $this->redirect($session->url, 303);
+    }
+
+    
+    #[Route('/success', name: 'front_hotel_payment_success')]
+    public function success(): Response
+    {
+        return $this->render('payment/success.html.twig');
+    }
+
+    #[Route('/cancel', name: 'front_hotel_payment_cancel')]
+    public function cancel(): Response
+    {
+        return $this->render('payment/cancel.html.twig');
     }
 }

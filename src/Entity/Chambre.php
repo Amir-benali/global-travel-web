@@ -49,7 +49,7 @@ class Chambre
     )]
     private string $optionH;
 
-    #[ORM\ManyToOne(targetEntity: Hotel::class)]
+    #[ORM\ManyToOne(targetEntity: Hotel::class, inversedBy: "chambres")]
     #[ORM\JoinColumn(name: "id_hotel_j", referencedColumnName: "id_hotel_h", nullable: false)]
     #[Assert\NotNull(message: "You must select a hotel.")]
     private Hotel $hotel;

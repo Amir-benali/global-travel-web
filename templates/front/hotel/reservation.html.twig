@@ -6,7 +6,8 @@
     <div class="mx-auto max-w-7xl p-6">
         <h1 class="text-2xl font-bold text-gray-900 mb-6">Reserve a Room at {{ hotel.nomH }}</h1>
         <div class="bg-white rounded-lg shadow p-6">
-            {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+        {{form_start(form, {'attr': {'novalidate': 'novalidate', 'data-turbo': 'false', 'data-propagation': 'false', 'class': 'space-y-4'}})}}
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{ form_row(form.roomType, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
                     {{ form_row(form.roomPrice, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
