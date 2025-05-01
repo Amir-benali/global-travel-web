@@ -1,0 +1,44 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Make a Reservation{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl p-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Reserve a Room at {{ hotel.nomH }}</h1>
+        <div class="bg-white rounded-lg shadow p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{ form_row(form.roomType, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
+                    {{ form_row(form.roomPrice, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
+                    {{ form_row(form.dateCheckinH, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
+                    {{ form_row(form.dateCheckoutH, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
+                    {{ form_row(form.nombreChambresH, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
+                    {{ form_row(form.statutH, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
+                    {{ form_row(form.moyenPaiementH, {'attr': {'class': 'w-full p-2 border border-gray-300 rounded-md'}}) }}
+                </div>
+                <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+                    <i class="ri-bookmark-line mr-1" title="Confirm Reservation"></i> Confirm Reservation
+                </button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <!-- CSS for Styling -->
+    <style>
+        label {
+            font-weight: 500;
+            color: #374151;
+        }
+        input:disabled {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+        }
+        select, input[type="text"], input[type="number"] {
+            transition: border-color 0.2s;
+        }
+        select:focus, input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #2563eb;
+            outline: none;
+        }
+    </style>
+{% endblock %}

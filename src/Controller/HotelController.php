@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Hotel;
+use App\Entity\User;
 use App\Entity\Chambre;
 use App\Form\HotelType;
 use App\Form\ChambreType;
@@ -20,24 +21,26 @@ use Knp\Snappy\Pdf;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Form\ReservationHotelType;
+use App\Entity\ReservationHotel;
+use Symfony\Component\Security\Core\User\UserInterface; 
+
+
 
 final class HotelController extends AbstractController
 {
     private LoggerInterface $logger;
     private CsrfTokenManagerInterface $csrfTokenManager;
     private HttpClientInterface $httpClient;
-    private string $huggingfaceApiToken;
 
     public function __construct(
         LoggerInterface $logger,
         CsrfTokenManagerInterface $csrfTokenManager,
-        HttpClientInterface $httpClient,
-        string $huggingfaceApiToken
+        HttpClientInterface $httpClient
     ) {
         $this->logger = $logger;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->httpClient = $httpClient;
-        $this->huggingfaceApiToken = $huggingfaceApiToken;
     }
 
     #[Route('/hotel', name: 'app_hotel')]
@@ -327,12 +330,71 @@ final class HotelController extends AbstractController
     }
 
     #[Route('travel/hotel', name: 'front_hotel')]
-    public function travelHotelindex(EntityManagerInterface $entityManager): Response
+    public function travelHotelindex(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $hotels = $entityManager->getRepository(Hotel::class)->findAll();
+        $search = $request->query->get('search', '');
+        $page = $request->query->getInt('page', 1);
+        $maxPerPage = 3;
+
+        $repository = $entityManager->getRepository(Hotel::class);
+        $queryBuilder = $repository->createQueryBuilder('h');
+
+        if ($search) {
+            $queryBuilder->where('h.nomH LIKE :search')
+                         ->setParameter('search', '%' . $search . '%');
+        }
+
+        $query = $queryBuilder->getQuery();
+        $paginator = new Paginator($query);
+
+        $totalItems = count($paginator);
+        $totalPages = max(1, ceil($totalItems / $maxPerPage));
+        $currentPage = max(1, min($page, $totalPages));
+        $offset = ($currentPage - 1) * $maxPerPage;
+
+        $paginator
+            ->getQuery()
+            ->setFirstResult($offset)
+            ->setMaxResults($maxPerPage);
+
+        $hotels = iterator_to_array($paginator);
+
+        $this->logger->info('Front hotels fetched', [
+            'search' => $search,
+            'page' => $currentPage,
+            'results' => count($hotels),
+            'total' => $totalItems,
+            'totalPages' => $totalPages,
+            'haveToPaginate' => $totalPages > 1,
+        ]);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->json([
+                'hotels' => array_map(function ($hotel) {
+                    return [
+                        'idHotelH' => $hotel->getIdHotelH(),
+                        'nomH' => $hotel->getNomH(),
+                        'adresseH' => $hotel->getAdresseH(),
+                        'villeH' => $hotel->getVilleH(),
+                        'paysH' => $hotel->getPaysH(),
+                        'categorieH' => $hotel->getCategorieH(),
+                        'servicesH' => $hotel->getServicesH(),
+                    ];
+                }, $hotels),
+                'totalPages' => $totalPages,
+                'currentPage' => $currentPage,
+            ]);
+        }
 
         return $this->render('front/hotel/index.html.twig', [
             'hotels' => $hotels,
+            'search' => $search,
+            'currentPage' => $currentPage,
+            'totalPages' => $totalPages,
+            'hasPreviousPage' => $currentPage > 1,
+            'previousPage' => $currentPage - 1,
+            'hasNextPage' => $currentPage < $totalPages,
+            'nextPage' => $currentPage + 1,
         ]);
     }
 
@@ -346,7 +408,7 @@ final class HotelController extends AbstractController
         ]);
     }
 
-    #[Route('travel/hotel/details/{id}', name: 'front_hotel_details')]
+    #[Route('/travel/hotel/details/{id}', name: 'front_hotel_details')]
     public function travelDetails(int $id, EntityManagerInterface $entityManager): Response
     {
         $hotel = $entityManager->getRepository(Hotel::class)->find($id);
@@ -354,115 +416,110 @@ final class HotelController extends AbstractController
             throw $this->createNotFoundException('Hotel not found');
         }
 
+        $chambres = $entityManager->getRepository(Chambre::class)->findBy(['hotel' => $hotel]);
+
         return $this->render('front/hotel/chambre/details.html.twig', [
             'hotel' => $hotel,
+            'chambres' => $chambres,
         ]);
     }
 
-    #[Route('travel/hotel/book', name: 'front_book_hotel')]
-    public function travelBookHotelIndex(EntityManagerInterface $entityManager): Response
+    #[Route('/travel/hotel/reservation/{chambreId}', name: 'front_hotel_reservation')]
+    public function travelHotelReservation(int $chambreId, Request $request, EntityManagerInterface $entityManager, ?UserInterface $user): Response
     {
-        $hotels = $entityManager->getRepository(Hotel::class)->findAll();
+        if (!$user) {
+            $this->addFlash('error', 'You must be logged in to make a reservation.');
+            return $this->redirectToRoute('app_login');
+        }
 
-        return $this->render('front/hotel/book.html.twig', [
-            'hotels' => $hotels,
-        ]);
-    }
-
-    #[Route('/quiz/{id<\d+>}', name: 'play_quiz', methods: ['GET', 'POST'])]
-    public function playQuiz(int $id, Request $request, EntityManagerInterface $entityManager, SessionInterface $session): Response
-    {
-        $chambre = $entityManager->getRepository(Chambre::class)->find($id);
+        $chambre = $entityManager->getRepository(Chambre::class)->find($chambreId);
         if (!$chambre) {
             throw $this->createNotFoundException('Room not found');
         }
 
-        // Try multiple models to fetch a dynamic quiz question
-        $models = [
-            'meta-llama/Llama-3.2-1B-Instruct',
-            'mistralai/Mixtral-8x7B-Instruct-v0.1',
-            'mistralai/Mixtral-8x22B-Instruct-v0.1',
-        ];
-        $question = null;
+        $reservation = new ReservationHotel();
+        $reservation->setIdChambreJ($chambre);
+        $reservation->setUser($user);
+        $reservation->setStatutH('pending');
 
-        foreach ($models as $model) {
-            try {
-                $this->logger->info('Attempting to fetch question from model', ['model' => $model]);
-                $response = $this->httpClient->request('POST', "https://api-inference.huggingface.co/models/$model", [
-                    'headers' => [
-                        'Authorization' => 'Bearer ' . $this->huggingfaceApiToken,
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => [
-                        'inputs' => 'Generate a multiple-choice quiz question about the best hotels in the world, featuring hotels from diverse regions (e.g., Asia, Europe, North America, Africa, etc.) as recognized in global rankings like Condé Nast Traveler’s Gold List, Travel + Leisure’s World’s Best, or The World’s 50 Best Hotels. The question should focus on unique features, locations, awards, or history of a top hotel. Return in JSON format: {"question": "", "options": [], "correct": ""}. Ensure the hotel is not limited to Burj Al Arab, Marina Bay Sands, The Plaza, or Bellagio, and include 4 distinct options with one correct answer. Example: {"question": "Which hotel, named the best in the world in 2024 by The World’s 50 Best Hotels, overlooks the Chao Phraya River?", "options": ["Capella Bangkok", "Rosewood Hong Kong", "Passalacqua", "Cheval Blanc Paris"], "correct": "Capella Bangkok"}.',
-                        'parameters' => [
-                            'max_new_tokens' => 250,
-                            'return_full_text' => false,
-                        ],
-                    ],
-                ]);
-
-                // Check response status
-                $statusCode = $response->getStatusCode();
-                if ($statusCode !== 200) {
-                    throw new \Exception("HTTP error: $statusCode");
-                }
-
-                $data = $response->toArray();
-                $this->logger->debug('Raw API response', ['model' => $model, 'data' => $data]);
-                $question = json_decode($data[0]['generated_text'], true);
-                if (json_last_error() !== JSON_ERROR_NONE || !isset($question['question'], $question['options'], $question['correct']) || count($question['options']) !== 4 || !in_array($question['correct'], $question['options'])) {
-                    throw new \Exception('Invalid JSON or question format');
-                }
-                $this->logger->info('AI question fetched', ['model' => $model, 'question' => $question['question']]);
-                break; // Exit loop on success
-            } catch (\Exception $e) {
-                $this->logger->error('Failed to fetch AI question from model', [
-                    'model' => $model,
-                    'error' => $e->getMessage(),
-                    'status' => isset($response) ? $response->getStatusCode() : 'N/A',
-                    'content' => isset($response) ? $response->getContent(false) : 'N/A',
-                    'trace' => $e->getTraceAsString(),
-                ]);
-                $question = null;
-            }
-        }
-
-        // If no model succeeded, show an error
-        if ($question === null) {
-            $this->logger->error('All model attempts failed to fetch a quiz question');
-            $this->addFlash('error', 'Unable to fetch a quiz question at this time. Please try again later.');
-            return $this->render('front/hotel/chambre/play_quiz.html.twig', [
-                'chambre' => $chambre,
-                'question' => null,
-            ]);
-        }
-
-        if ($request->isMethod('POST')) {
-            $answer = $request->request->get('answer');
-            $this->logger->info('Quiz submitted', ['chambre_id' => $id, 'answer' => $answer, 'correct' => $question['correct']]);
-
-            if ($answer === $question['correct']) {
-                $session->set('quiz_discount_' . $id, true);
-                $this->addFlash('success', 'Congratulations! You won a 5% discount on this room.');
-                return $this->render('front/hotel/chambre/play_quiz.html.twig', [
-                    'chambre' => $chambre,
-                    'question' => $question,
-                    'result' => ['success' => true],
-                ]);
-            } else {
-                $this->addFlash('error', 'Incorrect answer. Try again!');
-                return $this->render('front/hotel/chambre/play_quiz.html.twig', [
-                    'chambre' => $chambre,
-                    'question' => $question,
-                    'result' => ['success' => false],
-                ]);
-            }
-        }
-
-        return $this->render('front/hotel/chambre/play_quiz.html.twig', [
-            'chambre' => $chambre,
-            'question' => $question,
+        $form = $this->createForm(ReservationHotelType::class, $reservation, [
+            'room_type' => $chambre->getTypeChambreH(),
+            'room_price' => $chambre->getPrixNuitH() . ' EUR',
         ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $entityManager->persist($reservation);
+                $entityManager->flush();
+                $this->addFlash('success', 'Reservation created successfully!');
+                return $this->redirectToRoute('front_book_hotel');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to create reservation: ' . $e->getMessage());
+            }
+        }
+
+        return $this->render('front/hotel/reservation.html.twig', [
+            'form' => $form->createView(),
+            'chambre' => $chambre,
+            'hotel' => $chambre->getHotel(),
+        ]);
+    }
+
+    #[Route('/travel/hotel/book', name: 'front_book_hotel')]
+    public function travelBookHotelIndex(EntityManagerInterface $entityManager, ?UserInterface $user): Response
+    {
+        if (!$user) {
+            $this->addFlash('error', 'You must be logged in to view reservations.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $reservations = $entityManager->getRepository(ReservationHotel::class)->findBy(['user' => $user]);
+
+        return $this->render('front/hotel/book.html.twig', [
+            'reservations' => $reservations,
+        ]);
+    }
+
+    #[Route('/travel/hotel/reservation/details/{id}', name: 'front_reservation_details')]
+    public function reservationDetails(int $id, EntityManagerInterface $entityManager, ?UserInterface $user): Response
+    {
+        if (!$user) {
+            $this->addFlash('error', 'You must be logged in to view reservation details.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $reservation = $entityManager->getRepository(ReservationHotel::class)->find($id);
+        if (!$reservation || $reservation->getUser() !== $user) {
+            throw $this->createNotFoundException('Reservation not found or access denied.');
+        }
+
+        return $this->render('front/hotel/reservation_details.html.twig', [
+            'reservation' => $reservation,
+        ]);
+    }
+
+    #[Route('/travel/hotel/reservation/delete/{id}', name: 'front_reservation_delete', methods: ['POST'])]
+    public function deleteReservation(int $id, Request $request, EntityManagerInterface $entityManager, ?UserInterface $user): Response
+    {
+        if (!$user) {
+            $this->addFlash('error', 'You must be logged in to delete a reservation.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $reservation = $entityManager->getRepository(ReservationHotel::class)->find($id);
+        if (!$reservation || $reservation->getUser() !== $user) {
+            throw $this->createNotFoundException('Reservation not found or access denied.');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$id, $request->request->get('_token'))) {
+            $entityManager->remove($reservation);
+            $entityManager->flush();
+            $this->addFlash('success', 'Reservation deleted successfully!');
+        } else {
+            $this->addFlash('error', 'Invalid CSRF token.');
+        }
+
+        return $this->redirectToRoute('front_book_hotel');
     }
 }
