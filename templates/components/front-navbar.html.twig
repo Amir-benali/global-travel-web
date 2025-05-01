@@ -80,10 +80,12 @@
             
             <!-- Right Side - User & Actions -->
             <div class="flex items-center space-x-4">
-                <button class="p-2 rounded-full hover:bg-gray-100 relative">
-                    <i class="ri-information-line text-gray-600 text-xl"></i>
-                    <span class="sr-only">Payments</span>
-                </button>
+                <a href="{{ path('app_chatbot') }}" class="p-2 rounded-full hover:bg-gray-100 relative inline-flex items-center justify-center group">
+                    <i class="ri-robot-line text-gray-600 text-xl"></i>
+                    <span class="sr-only">AI Assistant</span>
+                    <span class="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">AI</span>
+                    <span class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded hidden group-hover:block whitespace-nowrap">AI Assistant</span>
+                </a>
                 
                 <!-- User Profile Dropdown -->
                 <div class="relative dropdown-container">
