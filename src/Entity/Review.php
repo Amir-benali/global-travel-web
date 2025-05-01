@@ -26,7 +26,7 @@ class Review
     #[ORM\Column(name: "commentaire", type: "text", length: 65535)]
     #[Assert\NotBlank(message: "Le commentaire ne peut pas être vide.")]
     #[Assert\Length(
-        min: 10,
+        min: 2,
         max: 1000,
         minMessage: "Le commentaire doit contenir au moins {{ limit }} caractères.",
         maxMessage: "Le commentaire ne peut pas dépasser {{ limit }} caractères."
