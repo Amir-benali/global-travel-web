@@ -19,6 +19,8 @@
         "hwi/oauth-bundle": "^2.3",
         "knplabs/knp-paginator-bundle": "^6.8",
         "knplabs/knp-time-bundle": "^2.4",
+        "knpuniversity/oauth2-client-bundle": "^2.18",
+        "league/oauth2-google": "^4.0",
         "microsoft/azure-storage-blob": "^1.5",
         "nelmio/cors-bundle": "^2.5",
         "pagerfanta/doctrine-orm-adapter": "*",
