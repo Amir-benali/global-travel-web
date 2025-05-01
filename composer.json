@@ -19,7 +19,6 @@
         "knplabs/knp-snappy-bundle": "^1.10",
         "google/apiclient": "^2.18",
         "google/apiclient-services": "^0.396.0",
-        "hwi/oauth-bundle": "^2.3",
         "knplabs/knp-paginator-bundle": "^6.8",
         "knplabs/knp-time-bundle": "^2.4",
         "knpuniversity/oauth2-client-bundle": "^2.18",

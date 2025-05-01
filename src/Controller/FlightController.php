@@ -303,7 +303,7 @@ final class FlightController extends AbstractController
             // Création de la session Stripe
             \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
 
-            $successUrl = $urlGenerator->generate('payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL);
+            $successUrl = $urlGenerator->generate('payment_success', ['amount'=> $ticketPrice ], UrlGeneratorInterface::ABSOLUTE_URL);
             $cancelUrl = $urlGenerator->generate('payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
             $session = \Stripe\Checkout\Session::create([
@@ -338,7 +338,12 @@ final class FlightController extends AbstractController
     #[Route('travel/flight/payment/success', name: 'flight_payment_success')]
     public function flightPaymentSuccess(Request $req, ManagerRegistry $doctrine, MailerInterface $mailer): Response
     {
-        $amount = $req->query->get('amount', 0.0);
+        $amount = 0;
+        if ($req->request->has('amount')) {
+            $amount = floatval($req->request->get('amount'));
+        } elseif ($req->query->has('amount')) {
+            $amount = floatval($req->query->get('amount'));
+        }
         \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
         $sessionId = $req->query->get('session_id');
 

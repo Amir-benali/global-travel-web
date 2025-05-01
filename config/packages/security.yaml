@@ -28,10 +28,9 @@ security:
                 name: REMEMBERME
                 always_remember_me: false
 
-            # 🔥 AUTHENTICATORS pour le form login + google
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
-
+            
             form_login:
                 login_path: app_signin
                 check_path: app_signin
