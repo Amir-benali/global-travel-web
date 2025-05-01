@@ -25,7 +25,7 @@ use App\Form\ReservationHotelType;
 use App\Entity\ReservationHotel;
 use Symfony\Component\Security\Core\User\UserInterface; 
 
-
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class HotelController extends AbstractController
 {
@@ -116,6 +116,37 @@ final class HotelController extends AbstractController
             'nextPage' => $currentPage + 1,
         ]);
     }
+    //PHP’s native CSV
+        #[Route('/hotel/csv', name: 'app_hotel_list_csv', methods: ['GET'])]
+        public function generateHotelListCsv(EntityManagerInterface $entityManager): StreamedResponse
+        {
+            $hotels = $entityManager->getRepository(Hotel::class)->findAll();
+
+            $response = new StreamedResponse(function () use ($hotels) {
+                $output = fopen('php://output', 'w');
+                fputcsv($output, ['ID', 'Name', 'Address', 'City', 'Country', 'Category (Stars)', 'Services']);
+                foreach ($hotels as $hotel) {
+                    fputcsv($output, [
+                        $hotel->getIdHotelH(),
+                        $hotel->getNomH(),
+                        $hotel->getAdresseH(),
+                        $hotel->getVilleH(),
+                        $hotel->getPaysH(),
+                        $hotel->getCategorieH(),
+                        $hotel->getServicesH(),
+                    ]);
+                }
+                fclose($output);
+            });
+
+            $response->headers->set('Content-Type', 'text/csv');
+            $response->headers->set('Content-Disposition', $response->headers->makeDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                'hotel_list.csv'
+            ));
+
+            return $response;
+        }
 
     #[Route('/hotel/pdf', name: 'app_hotel_list_pdf', methods: ['GET'])]
     public function generateHotelListPdf(EntityManagerInterface $entityManager, Pdf $snappy): Response
