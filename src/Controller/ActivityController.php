@@ -527,5 +527,41 @@ public function createReview(Request $request, EntityManagerInterface $em): Resp
 }
 
 
+//create responsable
+#[Route('travel/activity/create', name: 'app_activity_createresponsable')]
+public function createresponsable(
+    Request $request, 
+    EntityManagerInterface $em,
+    GoogleCalendarService $calendarService
+): Response {
+    $activity = new Activity();
+    $form = $this->createForm(ActivityFormType::class, $activity);
+    $form->handleRequest($request);
+         
+    $session = $this->requestStack->getSession();
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        try {
+            $eventId = $calendarService->createEvent($activity);
+            $session->set('google_event_id', $eventId);
+
+            $em->persist($activity);
+            $em->flush();
+
+            $this->addFlash('success', 'Activity created successfully!');
+            return $this->redirectToRoute('front_activity');
+
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    return $this->render('front/activity/create.html.twig', [
+        'form' => $form->createView(),
+        'google_connected' => $this->isGoogleConnected()
+    ]);
+}
+
+
     }
 

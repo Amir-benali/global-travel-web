@@ -23,9 +23,7 @@
             <div class="p-6">
                 
                 {% for message in app.flashes('success') %}
-                    <div class="mb-4 rounded-md bg-green-100 border border-green-300 text-green-800 p-4">
-                        ✅ {{ message }}
-                    </div>
+                   
                 {% endfor %}
 
                 {% for message in app.flashes('error') %}
