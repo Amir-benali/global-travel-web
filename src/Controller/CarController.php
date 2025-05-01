@@ -21,6 +21,7 @@ use App\Service\AzureBlobService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Google\Service\ShoppingContent\Amount;
+use Knp\Component\Pager\PaginatorInterface;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -437,13 +438,41 @@ final class CarController extends AbstractController
         ]);
     }
     #[Route('travel/car/book', name: 'front_book_car')]
-    public function travelOfferBookPage(CarReservationRepository $reservation, UserRepository $userRepository): Response
+    public function travelOfferBookPage(Request $req,PaginatorInterface $paginator): Response
     {
+        $date = $req->query->get('date');
+        $status = $req->query->get('status');
+
+
         $currentUser = $this->getUser();
+        // Convert the collection to a query builder or array for pagination
+        $reservationsArray = $currentUser->getCarReservations()->toArray();
+
+        // Filter by date if date parameter exists
+        if ($date) {
+            $dateObj = new \DateTime($date);
+            $reservationsArray = array_filter($reservationsArray, function($reservation) use ($dateObj) {
+                return $reservation->getDate()->format('Y-m-d') === $dateObj->format('Y-m-d');
+            });
+        }
+
+        // Filter by status if status parameter exists
+        if ($status) {
+            $reservationsArray = array_filter($reservationsArray, function($reservation) use ($status) {
+                return $reservation->getStatus() === strtoupper($status);
+            });
+        }
+
+        $reservations = $paginator->paginate(
+            $reservationsArray,
+            $req->query->getInt('page', 1),
+            5
+        );
         return $this->render('front/car/book.html.twig', [
-            'reservations' => $currentUser->getCarReservations()
+            'reservations' => $reservations,
         ]);
     }
+    
     #[Route('travel/car/offer/checkout', name: 'front_car_offer_checkout')]
     public function checkout(Request $req,UserRepository $user,ManagerRegistry $doctrine): Response
     {

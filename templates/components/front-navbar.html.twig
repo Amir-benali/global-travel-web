@@ -11,70 +11,81 @@
 
                 <!-- Navigation Buttons -->
                 <div class="hidden md:flex items-center space-x-2">
+                    {# Dashboard - visible to all #}
                     <a href="{{ path('front_dashboard') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute == 'front_dashboard' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-dashboard-line mr-2"></i>
+                        <i class="ri-dashboard-line"></i>
                     </a>
                     
+                    {% if is_granted('ROLE_RESPONSABLE') %}
+                    {# Flights - visible to responsable only #}
                     <a href="{{ path('front_flight') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_flight' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-plane-line mr-2"></i>
+                        <i class="ri-plane-line"></i>
                     </a>
                     
+                    {# Cars - visible to responsable only #}
                     <a href="{{ path('front_car') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_car' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-car-line mr-2"></i>
+                        <i class="ri-car-line"></i>
                     </a>
                     
+                    {# Hotels - visible to responsable only #}
                     <a href="{{ path('front_hotel') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_hotel' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-hotel-line mr-2"></i>
+                        <i class="ri-hotel-line"></i>
                     </a>
                     
+                    {# Activities - visible to responsable only #}
                     <a href="{{ path('front_activity') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_activity' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-list-check mr-2"></i>
+                        <i class="ri-list-check"></i>
                     </a>
+                    {% endif %}
                     
                     <div class="h-6 w-px bg-gray-300 mx-2"></div>
                     
+                    {# Booking routes - visible to all #}
                     <a href="{{ path('front_book_flight') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_book_flight' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-ticket-line mr-2"></i>
+                        <i class="ri-ticket-line"></i>
                     </a>
                     
                     <a href="{{ path('front_book_car') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_book_car' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-road-map-line mr-2"></i>
+                        <i class="ri-road-map-line"></i>
                     </a>
                     
                     <a href="{{ path('front_book_hotel') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_book_hotel' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-hotel-bed-line mr-2"></i>
+                        <i class="ri-hotel-bed-line"></i>
                     </a>
                     
+                    {# List activity - not visible to responsable #}
+                    {% if not is_granted('ROLE_RESPONSABLE') or is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('front_list_activity') }}" 
-                       class="flex items-center px-3 py-2 rounded-lg transition-colors 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
                               {% if currentRoute starts with 'front_list_activity' %}bg-blue-50 text-blue-600
                               {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
-                        <i class="ri-calendar-todo-line mr-2"></i>
+                        <i class="ri-calendar-todo-line"></i>
                     </a>
+                    {% endif %}
                 </div>
             </div>
             
@@ -126,15 +137,52 @@
         <!-- Mobile Menu (Hidden by default) -->
         <div id="mobile-menu" class="hidden md:hidden mt-2 pb-4">
             <div class="grid grid-cols-2 gap-2">
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Dashboard</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Flights</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Cars</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Hotels</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Activities</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Tickets</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Routes</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Reservations</a>
-                <a href="{{ path('app_dashboard') }}" class="mobile-nav-item">Tracking</a>
+                {# Dashboard - visible to all #}
+                <a href="{{ path('front_dashboard') }}" class="mobile-nav-item {% if currentRoute == 'front_dashboard' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-dashboard-line mr-2"></i> Dashboard
+                </a>
+                
+                {% if is_granted('ROLE_RESPONSABLE') %}
+                {# Flights - visible to responsable only #}
+                <a href="{{ path('front_flight') }}" class="mobile-nav-item {% if currentRoute starts with 'front_flight' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-plane-line mr-2"></i> Flights
+                </a>
+                
+                {# Cars - visible to responsable only #}
+                <a href="{{ path('front_car') }}" class="mobile-nav-item {% if currentRoute starts with 'front_car' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-car-line mr-2"></i> Cars
+                </a>
+                
+                {# Hotels - visible to responsable only #}
+                <a href="{{ path('front_hotel') }}" class="mobile-nav-item {% if currentRoute starts with 'front_hotel' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-hotel-line mr-2"></i> Hotels
+                </a>
+                
+                {# Activities - visible to responsable only #}
+                <a href="{{ path('front_activity') }}" class="mobile-nav-item {% if currentRoute starts with 'front_activity' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-list-check mr-2"></i> Activities
+                </a>
+                {% endif %}
+                
+                {# Booking routes - visible to all #}
+                <a href="{{ path('front_book_flight') }}" class="mobile-nav-item {% if currentRoute starts with 'front_book_flight' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-ticket-line mr-2"></i> Book Flights
+                </a>
+                
+                <a href="{{ path('front_book_car') }}" class="mobile-nav-item {% if currentRoute starts with 'front_book_car' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-road-map-line mr-2"></i> Book Cars
+                </a>
+                
+                <a href="{{ path('front_book_hotel') }}" class="mobile-nav-item {% if currentRoute starts with 'front_book_hotel' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-hotel-bed-line mr-2"></i> Book Hotels
+                </a>
+                
+                {# List activity - not visible to responsable #}
+                {% if not is_granted('ROLE_RESPONSABLE') and is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('front_list_activity') }}" class="mobile-nav-item {% if currentRoute starts with 'front_list_activity' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-calendar-todo-line mr-2"></i> Activities List
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -142,7 +190,7 @@
 
 <style>
     .mobile-nav-item {
-        @apply px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors;
+        @apply px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors flex items-center;
     }
 </style>
 
@@ -151,7 +199,8 @@
         const menu = document.getElementById('mobile-menu');
         menu.classList.toggle('hidden');
     });
-        document.addEventListener('DOMContentLoaded', function() {
+    
+    document.addEventListener('DOMContentLoaded', function() {
         const dropdownButton = document.getElementById('userDropdownButton');
         const dropdownMenu = document.getElementById('userDropdownMenu');
         
