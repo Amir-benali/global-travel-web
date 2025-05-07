@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ecad078ff38e6e782e41e51aa822f6df",
+    "content-hash": "c60419c21e574e3c6d8741cddd4e61b4",
     "packages": [
         {
             "name": "babdev/pagerfanta",
@@ -2213,7 +2213,6 @@
             "time": "2025-03-27T12:30:47+00:00"
         },
         {
-
             "name": "knplabs/knp-components",
             "version": "v5.2.0",
             "source": {
