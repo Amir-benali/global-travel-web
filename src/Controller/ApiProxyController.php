@@ -27,4 +27,11 @@ class ApiProxyController extends AbstractController
 
         return new JsonResponse($response->toArray());
     }
+
+       public function testGetAction()
+    {
+        $httpClient = HttpClient::create();
+        $response = $httpClient->request('GET', '/api/test');
+        return new JsonResponse($response->toArray());
+    }
 }
