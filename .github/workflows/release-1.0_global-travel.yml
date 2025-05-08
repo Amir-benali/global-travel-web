@@ -75,4 +75,10 @@ jobs:
           app-name: 'global-travel'
           slot-name: 'Production'
           package: .
-          
+ 
+      - name: Clear Nginx cache
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp restart --name global-travel --resource-group $(az webapp show --name global-travel --query resourceGroup --output tsv)
+                   
