@@ -24,7 +24,7 @@
             <div class="bg-blue-50 p-3 rounded-full mb-4">
                 <i class="ri-plane-line text-blue-600 text-3xl"></i>
             </div>
-            <div class="text-3xl font-bold text-gray-800">{{ totalFlights ?? 156 }}</div>
+            <div class="text-3xl font-bold text-gray-800">{{ flights|length }}</div>
             <div class="text-gray-500">Active Flights</div>
         </div>
 
@@ -33,7 +33,7 @@
             <div class="bg-green-50 p-3 rounded-full mb-4">
                 <i class="ri-car-line text-green-600 text-3xl"></i>
             </div>
-            <div class="text-3xl font-bold text-gray-800">{{ totalCars ?? 89 }}</div>
+            <div class="text-3xl font-bold text-gray-800">{{ cars|length }}</div>
             <div class="text-gray-500">Available Cars</div>
         </div>
 
@@ -42,7 +42,7 @@
             <div class="bg-purple-50 p-3 rounded-full mb-4">
                 <i class="ri-hotel-line text-purple-600 text-3xl"></i>
             </div>
-            <div class="text-3xl font-bold text-gray-800">{{ totalHotels ?? 45 }}</div>
+            <div class="text-3xl font-bold text-gray-800">{{ hotels|length }}</div>
             <div class="text-gray-500">Hotel Partners</div>
         </div>
 
@@ -51,7 +51,7 @@
             <div class="bg-orange-50 p-3 rounded-full mb-4">
                 <i class="ri-calendar-todo-line text-orange-600 text-3xl"></i>
             </div>
-            <div class="text-3xl font-bold text-gray-800">{{ totalActivities ?? 34 }}</div>
+            <div class="text-3xl font-bold text-gray-800">{{ activites|length }}</div>
             <div class="text-gray-500">Today's Activities</div>
         </div>
     </div>
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: ['Flights', 'Hotels', 'Cars', 'Activities'],
             datasets: [{
-                data: [45, 30, 15, 10],
+                data: [{{ flightReservations|length }}, {{ hotelReservations|length }}, {{ carReservations|length }}, {{ activityReservations|length }}],
                 backgroundColor: [
                     '#3b82f6', // blue-500
                     '#8b5cf6', // purple-500
@@ -126,14 +126,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Revenue by Service Chart
+    // Revenue by Service Chart - assuming revenue proportional to count
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
     const revenueChart = new Chart(revenueCtx, {
         type: 'pie',
         data: {
             labels: ['Flights', 'Hotels', 'Cars', 'Activities'],
             datasets: [{
-                data: [12000, 8000, 3500, 2500],
+                data: [
+                    {{ flightReservations|length * 250 }}, 
+                    {{ hotelReservations|length * 200 }}, 
+                    {{ carReservations|length * 120 }}, 
+                    {{ activityReservations|length * 80 }}
+                ],
                 backgroundColor: [
                     '#3b82f6', // blue-500
                     '#8b5cf6', // purple-500

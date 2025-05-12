@@ -1,0 +1,6 @@
+nelmio_cors:
+    defaults:
+        origin_regex: true
+        allow_origin: ['http://localhost:8000'] 
+        allow_methods: ['GET', 'POST', 'OPTIONS']
+        allow_headers: ['Content-Type']

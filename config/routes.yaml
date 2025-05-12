@@ -8,3 +8,4 @@ app_google_auth:
     path: /google/auth
     controller: App\Controller\ActivityController::googleAuth
     methods: [GET]
+

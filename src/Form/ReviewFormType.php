@@ -39,14 +39,14 @@ class ReviewFormType extends AbstractType
                 'choice_label' => 'nomactivity', 
                 'required' => true,
             ])
-            ->add('userid', EntityType::class, [
-                'label' => 'User',
-                'class' => User::class,
-                'choice_label' => 'email', // or any other user identifier
-                'required' => false,
-            ])
+            // ->add('userid', EntityType::class, [
+            //     'label' => 'User',
+            //     'class' => User::class,
+            //     'choice_label' => 'email', // or any other user identifier
+            //     'required' => false,
+            // ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Submit Review',
+                'label' => '',
                 'attr' => ['class' => 'btn btn-primary']
             ]);
     }

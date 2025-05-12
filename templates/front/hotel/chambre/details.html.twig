@@ -3,89 +3,560 @@
 {% block title %}{{ hotel.nomH }}{% endblock %}
 
 {% block body %}
-    <div class="mx-auto max-w-7xl">
-        <!-- Sub Navigation -->
-        <div class="bg-white rounded-lg shadow mb-6">
-            <div class="flex items-center justify-between p-4">
-                <div class="flex space-x-4">
-                    <a href="{{ path('front_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
-                    {# <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a> #}
-                </div>
+    <div class="min-h-screen bg-gray-50">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-900 to-blue-600 text-white py-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold tracking-tight">{{ hotel.nomH }}</h1>
+                <p class="mt-2 text-lg opacity-80">Discover your perfect stay in {{ hotel.villeH }}, {{ hotel.paysH }}.</p>
             </div>
         </div>
-        
-        <!-- Hotel Details -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <!-- Hotel Gallery -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
-                <div class="lg:col-span-2">
-                    <img src="https://via.placeholder.com/800x400" alt="{{ hotel.nomH }}" class="w-full h-full object-cover">
-                </div>
-                <div class="grid grid-cols-2 gap-0">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Room" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Pool" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Restaurant" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Lobby" class="w-full h-full object-cover">
+
+        <!-- Main Content -->
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Sub Navigation -->
+            <div class="bg-white rounded-xl shadow-sm mb-8">
+                <div class="flex items-center justify-between p-6">
+                    <div class="flex space-x-4">
+                        <a href="{{ path('front_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600 flex items-center">
+                            <i class="ri-hotel-line mr-2" title="All Hotels"></i> All Hotels
+                        </a>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Hotel Info -->
-            <div class="p-6">
-                <div class="flex flex-col md:flex-row md:items-start md:justify-between">
-                    <div class="mb-6 md:mb-0">
-                        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ hotel.nomH }}</h1>
-                        
-                        <div class="flex items-center mb-4">
-                            <div class="flex">
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-half-fill text-yellow-500"></i>
+
+            <!-- Hotel Details -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <!-- Hotel Gallery -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                    <div class="lg:col-span-2">
+                        <img src="https://via.placeholder.com/800x400" alt="{{ hotel.nomH|e }}" class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- Hotel Info -->
+                <div class="p-6">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between">
+                        <div class="mb-6 md:mb-0">
+                            <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ hotel.nomH|e }}</h1>
+                            <div class="flex items-center mb-4">
+                                <div class="flex">
+                                    {% for i in 1..hotel.categorieH %}
+                                        <i class="ri-star-fill text-yellow-500 mr-1" title="Star Rating"></i>
+                                    {% endfor %}
+                                </div>
+                                <span class="ml-2 text-sm text-gray-600">{{ hotel.categorieH }} stars</span>
                             </div>
-                            <span class="ml-2 text-sm text-gray-600">4.8 (120 reviews)</span>
-                        </div>
-                        
-                        <div class="flex items-center text-gray-600 mb-2">
-                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
-                            <span>{{ hotel.adresseH }}, {{ hotel.villeH }}, {{ hotel.paysH }}</span>
-                        </div>
-                        
-                        <div class="flex items-center text-gray-600 mb-2">
-                            <i class="ri-phone-line text-blue-600 mr-2"></i>
-                            <span>{{ hotel.coordonneesH }}</span>
+                            <div class="flex items-center text-gray-600 mb-2">
+                                <i class="ri-map-pin-line text-blue-600 mr-2" title="Location"></i>
+                                <span>{{ hotel.adresseH|e }}, {{ hotel.villeH|e }}, {{ hotel.paysH|e }}</span>
+                            </div>
+                            <div class="flex items-center text-gray-600 mb-2">
+                                <i class="ri-phone-line text-blue-600 mr-2" title="Phone"></i>
+                                <span>{{ hotel.coordonneesH|e }}</span>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-blue-50 p-4 rounded-lg md:w-64">
-                        <div class="text-lg font-semibold text-blue-800 mb-2">Starting from</div>
-                        <div class="text-3xl font-bold text-gray-900 mb-4">$299<span class="text-sm font-normal text-gray-600">/night</span></div>
-                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
-                            Book Now
-                        </button>
+
+                    <!-- Services -->
+                    <div class="border-t border-gray-200 pt-6 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Services</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {% set serviceIcons = {
+                                'Wi-Fi': 'wifi',
+                                'Pool': 'swimming-pool',
+                                'Parking': 'parking',
+                                'Spa': 'spa'
+                            } %}
+                            {% for service in hotel.servicesH|split(',') %}
+                                <div class="flex items-center">
+                                    <i class="ri-{{ serviceIcons[service]|default(service|lower|replace({' ': '-'}) ~ '-line') }} text-blue-600 mr-2 fallback-icon" title="{{ service }}"></i>
+                                    <span class="text-gray-600">{{ service }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-                
-                <!-- Hotel Description -->
-                <div class="border-t border-gray-200 pt-6 mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
-                    <div class="flex items-start mb-4">
-                        <i class="ri-tools-line text-blue-600 mr-2"></i>
-                        <p class="text-gray-600">
-                            {{ hotel.servicesH }}
-                        </p>
+
+                    <!-- Rooms -->
+                    <div class="border-t border-gray-200 pt-6 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Rooms</h2>
+                        <div class="space-y-4">
+                            {% set chambres = hotel.getChambres() %}
+                            {% if chambres|length > 0 %}
+                                {% for chambre in chambres %}
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                                            <img src="https://via.placeholder.com/400x300" alt="{{ chambre.typeChambreH|e }}" class="w-full h-full object-cover">
+                                            <div class="p-4 md:col-span-2">
+                                                <h3 class="text-lg font-medium text-gray-900 mb-2 flex items-center">
+                                                    <i class="ri-hotel-bed-line text-blue-600 mr-2" title="Room Type"></i>
+                                                    {{ chambre.typeChambreH|e }}
+                                                </h3>
+                                                <p class="text-gray-600 mb-4 flex items-center">
+                                                    <i class="ri-information-line text-blue-600 mr-2" title="Room Details"></i>
+                                                    {{ chambre.optionH|e }}. Available from {{ chambre.dispoH|date('Y-m-d') }}.
+                                                </p>
+                                                <div class="flex items-center justify-between">
+                                                    <div class="text-gray-600">
+                                                        {% set originalPrice = chambre.prixNuitH %}
+                                                        {% set discountedPrice = app.session.get('quiz_discount_' ~ chambre.idChambreH) ? (originalPrice * 0.95)|round(2) : originalPrice %}
+                                                        {% if app.session.get('quiz_discount_' ~ chambre.idChambreH) %}
+                                                            <span class="line-through text-red-500">${{ originalPrice }}</span>
+                                                            <span class="font-semibold text-green-600">${{ discountedPrice }}</span> / night (5% off)
+                                                        {% else %}
+                                                            <span class="font-semibold">${{ originalPrice }}</span> / night
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="flex space-x-2">
+                                                        <button 
+                                                            class="voice-button inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600 text-white font-medium rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                            data-room-text="{{ (chambre.typeChambreH|e ~ ' at ' ~ hotel.nomH|e ~ '. ' ~ chambre.optionH|e ~ '. Available from ' ~ chambre.dispoH|date('Y-m-d') ~ '. Price: $' ~ discountedPrice ~ ' per night. Enjoy a comfortable stay with ' ~ hotel.servicesH|e ~ ' in ' ~ hotel.villeH|e ~ ', ' ~ hotel.paysH|e ~ '.')|slice(0, 500) }}"
+                                                            data-room-id="{{ chambre.idChambreH }}"
+                                                            aria-label="Listen to room details for {{ chambre.typeChambreH }}"
+                                                            data-debug="voice-button"
+                                                        >
+                                                            <i class="ri-volume-up-line mr-2" title="Listen"></i> Listen
+                                                        </button>
+                                                        <button 
+                                                            class="pause-button inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-500 hover:from-gray-800 hover:to-gray-600 text-white font-medium rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                                            data-room-id="{{ chambre.idChambreH }}"
+                                                            aria-label="Pause or resume room details for {{ chambre.typeChambreH }}"
+                                                            disabled
+                                                        >
+                                                            <i class="ri-pause-line mr-2" title="Pause"></i> Pause
+                                                        </button>
+                                                        <button 
+                                                            class="stop-button inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 text-white font-medium rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                                            data-room-id="{{ chambre.idChambreH }}"
+                                                            aria-label="Stop room details for {{ chambre.typeChambreH }}"
+                                                            disabled
+                                                        >
+                                                            <i class="ri-stop-line mr-2" title="Stop"></i> Stop
+                                                        </button>
+                                                        <a 
+                                                            href="{{ path('front_hotel_reservation', {'chambreId': chambre.idChambreH}) }}" 
+                                                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600 text-white font-medium rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                            aria-label="Book room {{ chambre.typeChambreH }}"
+                                                        >
+                                                            <i class="ri-bookmark-line mr-2" title="Book Now"></i> Book Now
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-gray-600 flex items-center">
+                                    <i class="ri-alert-line text-blue-600 mr-2" title="No Rooms"></i> No rooms available for this hotel.
+                                </p>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="flex items-start">
-                        <i class="ri-chat-3-line text-blue-600 mr-2"></i>
-                        <p class="text-gray-600">
-                            {{ hotel.avisH }}
-                        </p>
+
+                    <!-- Reviews -->
+                    <div class="border-t border-gray-200 pt-6 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ 'review.label'|trans }}</h2>
+                        <div class="flex items-start mb-4">
+                            <i class="ri-chat-3-line text-blue-600 mr-2" title="Review"></i>
+                            <p id="original-review" class="text-gray-600">{{ hotel.avisH|e }}</p>
+                        </div>
+                        <div class="mt-4 space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="ri-translate-line text-blue-600" title="Translate"></i>
+                                <select id="translation-language" class="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="en">English</option>
+                                    <option value="fr">Français</option>
+                                    <option value="es">Español</option>
+                                    <option value="ar">العربية</option>
+                                </select>
+                            </div>
+                            <button 
+                                id="show-translation" 
+                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600 text-white font-medium rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                data-hotel-id="{{ hotel.idHotelH }}"
+                                aria-label="Show translation"
+                            >
+                                <i class="ri-eye-line mr-2" title="Show Translation"></i> {{ 'show_translation'|trans }}
+                            </button>
+                            <div id="translation-result" class="mt-4 p-4 bg-gray-50 rounded-md hidden">
+                                <p class="text-gray-700"></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-                   
         </div>
+
+        <style>
+            body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            }
+            i[class^="ri-"] {
+                font-size: 1.2rem;
+                vertical-align: middle;
+                transition: transform 0.2s ease;
+            }
+            button:hover i, a:hover i {
+                transform: scale(1.1);
+            }
+            .fallback-icon::before {
+                content: '\e123';
+            }
+            .hover\:scale-105:hover {
+                transform: scale(1.05);
+            }
+            [aria-label] {
+                cursor: pointer;
+            }
+            #translation-language:focus, #show-translation:focus, .voice-button:focus, .pause-button:focus, .stop-button:focus {
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+            .voice-button:disabled, .pause-button:disabled, .stop-button:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+            .voice-button:active, .voice-button.clicked {
+                background: linear-gradient(to right, #1e40af, #1e3a8a);
+            }
+            .pause-button:active, .pause-button.clicked {
+                background: linear-gradient(to right, #4b5563, #374151);
+            }
+            .stop-button:active, .stop-button.clicked {
+                background: linear-gradient(to right, #991b1b, #7f1d1d);
+            }
+        </style>
+
+        {% block javascripts %}
+            {{ parent() }}
+            <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+            <script>
+                console.log('Script loaded at: ', new Date().toISOString());
+
+                try {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        console.log('DOM fully loaded at: ', new Date().toISOString());
+
+                        // State management
+                        let isSpeaking = false;
+                        let currentUtterance = null;
+                        let currentAudio = null;
+                        let currentRoomId = null;
+                        const speechState = { isPaused: false };
+
+                        // Find buttons
+                        const voiceButtons = document.querySelectorAll('.voice-button');
+                        const pauseButtons = document.querySelectorAll('.pause-button');
+                        const stopButtons = document.querySelectorAll('.stop-button');
+                        console.log(`Found ${voiceButtons.length} voice buttons, ${pauseButtons.length} pause buttons, ${stopButtons.length} stop buttons at: `, new Date().toISOString());
+
+                        voiceButtons.forEach((button, index) => {
+                            console.log(`Voice button ${index + 1} details: `, {
+                                class: button.className,
+                                text: button.dataset.roomText,
+                                roomId: button.dataset.roomId,
+                                disabled: button.disabled
+                            });
+                            ['mousedown', 'touchstart'].forEach(eventType => {
+                                button.addEventListener(eventType, (event) => {
+                                    console.log(`Voice button ${index + 1} ${eventType} at: ${new Date().toISOString()}`, event);
+                                });
+                            });
+                        });
+
+                        pauseButtons.forEach((button, index) => {
+                            console.log(`Pause button ${index + 1} details: `, {
+                                class: button.className,
+                                roomId: button.dataset.roomId,
+                                disabled: button.disabled
+                            });
+                            ['mousedown', 'touchstart'].forEach(eventType => {
+                                button.addEventListener(eventType, (event) => {
+                                    console.log(`Pause button ${index + 1} ${eventType} at: ${new Date().toISOString()}`, event);
+                                });
+                            });
+                        });
+
+                        stopButtons.forEach((button, index) => {
+                            console.log(`Stop button ${index + 1} details: `, {
+                                class: button.className,
+                                roomId: button.dataset.roomId,
+                                disabled: button.disabled
+                            });
+                            ['mousedown', 'touchstart'].forEach(eventType => {
+                                button.addEventListener(eventType, (event) => {
+                                    console.log(`Stop button ${index + 1} ${eventType} at: ${new Date().toISOString()}`, event);
+                                });
+                            });
+                        });
+
+                        // Voice button click handler
+                        document.body.addEventListener('click', (event) => {
+                            const button = event.target.closest('.voice-button');
+                            if (!button) return;
+
+                            console.log(`Delegated voice click on button at: ${new Date().toISOString()}`, button);
+                            button.classList.add('clicked');
+                            setTimeout(() => button.classList.remove('clicked'), 200);
+
+                            if (isSpeaking && currentRoomId !== button.dataset.roomId) {
+                                console.log('Another speech in progress, stopping current');
+                                stopCurrentSpeech(button.dataset.roomId);
+                            }
+
+                            const pauseButton = document.querySelector(`.pause-button[data-room-id="${button.dataset.roomId}"]`);
+                            const stopButton = document.querySelector(`.stop-button[data-room-id="${button.dataset.roomId}"]`);
+                            handleVoiceButtonClick(button, pauseButton, stopButton);
+                        });
+
+                        // Pause button click handler
+                        document.body.addEventListener('click', (event) => {
+                            const button = event.target.closest('.pause-button');
+                            if (!button) return;
+
+                            console.log(`Delegated pause click on button at: ${new Date().toISOString()}`, button);
+                            button.classList.add('clicked');
+                            setTimeout(() => button.classList.remove('clicked'), 200);
+
+                            handlePauseButtonClick(button);
+                        });
+
+                        // Stop button click handler
+                        document.body.addEventListener('click', (event) => {
+                            const button = event.target.closest('.stop-button');
+                            if (!button) return;
+
+                            console.log(`Delegated stop click on button at: ${new Date().toISOString()}`, button);
+                            button.classList.add('clicked');
+                            setTimeout(() => button.classList.remove('clicked'), 200);
+
+                            handleStopButtonClick(button);
+                        });
+
+                        // Text-to-speech handler
+                        function handleVoiceButtonClick(voiceButton, pauseButton, stopButton) {
+                            console.log('Handling voice button click at: ', new Date().toISOString());
+                            if (isSpeaking && currentRoomId === voiceButton.dataset.roomId) {
+                                console.log('Speech already in progress for this room, ignoring click');
+                                return;
+                            }
+
+                            isSpeaking = true;
+                            currentRoomId = voiceButton.dataset.roomId;
+                            voiceButton.disabled = true;
+                            voiceButton.textContent = 'Loading...';
+                            pauseButton.disabled = false;
+                            stopButton.disabled = false;
+                            pauseButton.innerHTML = '<i class="ri-pause-line mr-2" title="Pause"></i> Pause';
+                            console.log('Voice button set to loading, pause/stop buttons enabled');
+
+                            const text = voiceButton.dataset.roomText;
+                            console.log('Text: ', text, `Length: ${text.length} characters`);
+
+                            // Try Web Speech API first
+                            try {
+                                currentUtterance = new SpeechSynthesisUtterance(text);
+                                const voices = speechSynthesis.getVoices();
+                                console.log('Available voices: ', voices);
+                                const preferredVoice = voices.find(voice => 
+                                    voice.name.includes('Google US English') || 
+                                    voice.lang === 'en-US'
+                                );
+                                if (preferredVoice) {
+                                    currentUtterance.voice = preferredVoice;
+                                    console.log('Selected voice: ', preferredVoice.name);
+                                }
+                                currentUtterance.lang = 'en-US';
+                                currentUtterance.volume = 1.0;
+                                currentUtterance.rate = 0.9;
+                                currentUtterance.pitch = 1.0;
+                                currentUtterance.onend = () => {
+                                    resetSpeechState(voiceButton, pauseButton, stopButton);
+                                    console.log('Speech ended naturally');
+                                };
+                                window.speechSynthesis.speak(currentUtterance);
+                                console.log('Web Speech API triggered');
+                            } catch (error) {
+                                console.error('Web Speech API error: ', error);
+                                console.log('Falling back to Hugging Face TTS');
+
+                                // Hugging Face TTS fallback
+                                const apiToken = 'YOUR_HUGGING_FACE_API_TOKEN'; // Replace with your token
+                                const url = 'https://api-inference.huggingface.co/models/facebook/tts_transformer-en-ljspeech';
+                                fetch(url, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Authorization': `Bearer ${apiToken}`,
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ inputs: text })
+                                })
+                                    .then(response => {
+                                        console.log('Hugging Face response status: ', response.status);
+                                        if (!response.ok) {
+                                            throw new Error(`HTTP error ${response.status}`);
+                                        }
+                                        return response.blob();
+                                    })
+                                    .then(blob => {
+                                        console.log('Audio blob received');
+                                        const audioUrl = URL.createObjectURL(blob);
+                                        currentAudio = new Audio(audioUrl);
+                                        currentAudio.play().catch(err => {
+                                            console.error('Hugging Face audio playback error: ', err);
+                                            resetSpeechState(voiceButton, pauseButton, stopButton);
+                                        });
+                                        currentAudio.onended = () => {
+                                            resetSpeechState(voiceButton, pauseButton, stopButton);
+                                            console.log('Hugging Face audio ended');
+                                        };
+                                    })
+                                    .catch(error => {
+                                        console.error('Hugging Face TTS error: ', error);
+                                        alert('Failed to generate audio. Please try again.');
+                                        resetSpeechState(voiceButton, pauseButton, stopButton);
+                                    });
+                            }
+                        }
+
+                        // Pause/resume handler
+                        function handlePauseButtonClick(button) {
+                            console.log('Handling pause button click at: ', new Date().toISOString());
+                            if (button.dataset.roomId !== currentRoomId) {
+                                console.log('Pause button for different room, ignoring');
+                                return;
+                            }
+
+                            if (currentUtterance && !speechState.isPaused) {
+                                window.speechSynthesis.pause();
+                                speechState.isPaused = true;
+                                button.innerHTML = '<i class="ri-play-line mr-2" title="Resume"></i> Resume';
+                                console.log('Web Speech API paused');
+                            } else if (currentUtterance && speechState.isPaused) {
+                                window.speechSynthesis.resume();
+                                speechState.isPaused = false;
+                                button.innerHTML = '<i class="ri-pause-line mr-2" title="Pause"></i> Pause';
+                                console.log('Web Speech API resumed');
+                            } else if (currentAudio && !speechState.isPaused) {
+                                currentAudio.pause();
+                                speechState.isPaused = true;
+                                button.innerHTML = '<i class="ri-play-line mr-2" title="Resume"></i> Resume';
+                                console.log('Hugging Face audio paused');
+                            } else if (currentAudio && speechState.isPaused) {
+                                currentAudio.play().catch(err => {
+                                    console.error('Hugging Face resume error: ', err);
+                                });
+                                speechState.isPaused = false;
+                                button.innerHTML = '<i class="ri-pause-line mr-2" title="Pause"></i> Pause';
+                                console.log('Hugging Face audio resumed');
+                            }
+                        }
+
+                        // Stop handler
+                        function handleStopButtonClick(button) {
+                            console.log('Handling stop button click at: ', new Date().toISOString());
+                            if (button.dataset.roomId !== currentRoomId) {
+                                console.log('Stop button for different room, ignoring');
+                                return;
+                            }
+
+                            const voiceButton = document.querySelector(`.voice-button[data-room-id="${button.dataset.roomId}"]`);
+                            const pauseButton = document.querySelector(`.pause-button[data-room-id="${button.dataset.roomId}"]`);
+                            stopCurrentSpeech(button.dataset.roomId);
+                            resetSpeechState(voiceButton, pauseButton, button);
+                        }
+
+                        // Stop current speech
+                        function stopCurrentSpeech(roomId) {
+                            if (currentUtterance) {
+                                window.speechSynthesis.cancel();
+                                console.log('Web Speech API cancelled');
+                            }
+                            if (currentAudio) {
+                                currentAudio.pause();
+                                currentAudio = null;
+                                console.log('Hugging Face audio stopped');
+                            }
+                        }
+
+                        // Reset speech state
+                        function resetSpeechState(voiceButton, pauseButton, stopButton) {
+                            isSpeaking = false;
+                            currentUtterance = null;
+                            currentAudio = null;
+                            currentRoomId = null;
+                            speechState.isPaused = false;
+                            if (voiceButton) {
+                                voiceButton.disabled = false;
+                                voiceButton.innerHTML = '<i class="ri-volume-up-line mr-2" title="Listen"></i> Listen';
+                            }
+                            if (pauseButton) {
+                                pauseButton.disabled = true;
+                                pauseButton.innerHTML = '<i class="ri-pause-line mr-2" title="Pause"></i> Pause';
+                            }
+                            if (stopButton) {
+                                stopButton.disabled = true;
+                                stopButton.innerHTML = '<i class="ri-stop-line mr-2" title="Stop"></i> Stop';
+                            }
+                            console.log('Speech state reset');
+                        }
+
+                        // Voice loading for Web Speech API
+                        if (speechSynthesis.onvoiceschanged !== undefined) {
+                            speechSynthesis.onvoiceschanged = () => {
+                                console.log('Web Speech API voices loaded: ', speechSynthesis.getVoices());
+                            };
+                        }
+
+                        // Fallback for invalid icons
+                        document.querySelectorAll('.fallback-icon').forEach(icon => {
+                            const className = icon.className.split(' ').find(cls => cls.startsWith('ri-'));
+                            const iconExists = window.getComputedStyle(icon, '::before').content !== 'none';
+                            if (!iconExists) {
+                                console.log(`Invalid icon: ${className}, applying fallback`);
+                                icon.className = 'ri-checkbox-circle-line text-blue-600 mr-2';
+                            }
+                        });
+
+                        // Translation handler
+                        const translationButton = document.getElementById('show-translation');
+                        if (translationButton) {
+                            translationButton.addEventListener('click', () => {
+                                console.log('Translation button clicked at: ', new Date().toISOString());
+                                const lang = document.getElementById('translation-language').value;
+                                const hotelId = translationButton.dataset.hotelId;
+                                const reviewElement = document.getElementById('translation-result').querySelector('p');
+                                const translationContainer = document.getElementById('translation-result');
+                                const originalReview = document.getElementById('original-review').textContent;
+
+                                console.log(`Translating to ${lang} for hotel ${hotelId}`);
+                                fetch(`https://lingva.ml/api/v1/en/${lang}/${encodeURIComponent(originalReview)}`)
+                                    .then(response => {
+                                        console.log('Translation response status: ', response.status);
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        console.log('Translation response: ', data);
+                                        if (data.translation) {
+                                            reviewElement.textContent = data.translation;
+                                            translationContainer.classList.remove('hidden');
+                                        } else {
+                                            reviewElement.textContent = "{{ 'translation_error'|trans }}";
+                                            translationContainer.classList.remove('hidden');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Translation error: ', error);
+                                        reviewElement.textContent = "{{ 'translation_error'|trans }}";
+                                        translationContainer.classList.remove('hidden');
+                                    });
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Script error: ', error);
+                }
+            </script>
+        {% endblock %}
     </div>
 {% endblock %}

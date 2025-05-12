@@ -7,46 +7,46 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserActivityRepository::class)]
 #[ORM\Table(name: "user_activity")]
-#[ORM\Index(columns: ["user_id"], name: "fk_user_id_user_activity")]
-#[ORM\Index(columns: ["activity_id"], name: "activity_id")]
 class UserActivity
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
-    private int $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
+    private ?int $id = null;
 
-    #[ORM\Column(name: "user_id", type: "integer", nullable: true)]
-    private ?int $userId = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
+    private ?User $user = null;
 
-    #[ORM\Column(name: "activity_id", type: "integer", nullable: true)]
-    private ?int $activityId = null;
+    #[ORM\ManyToOne(targetEntity: Activity::class)]
+    #[ORM\JoinColumn(name: "activity_id", referencedColumnName: "id", nullable: false)]
+    private ?Activity $activity = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUserId(): ?int
+    public function getUser(): ?User
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?int $userId): static
+    public function setUser(?User $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getActivityId(): ?int
+    public function getActivity(): ?Activity
     {
-        return $this->activityId;
+        return $this->activity;
     }
 
-    public function setActivityId(?int $activityId): static
+    public function setActivity(?Activity $activity): self
     {
-        $this->activityId = $activityId;
+        $this->activity = $activity;
 
         return $this;
     }
