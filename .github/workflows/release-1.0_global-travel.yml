@@ -34,7 +34,7 @@ jobs:
         run: composer install --no-dev --optimize-autoloader
       
       - name: warmup cache
-        run: composer cache:warmup --env=prod
+        run: php bin/console cache:warmup --env=prod
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
