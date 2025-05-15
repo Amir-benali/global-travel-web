@@ -22,8 +22,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, pdo_mysql, zip, xml, curl, intl, bcmath, fileinfo
-          coverage: none
 
       - name: Check if composer.json exists
         id: check_files
@@ -33,10 +31,14 @@ jobs:
 
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
+<<<<<<< HEAD
         run: composer install --no-dev --optimize-autoloader
       
       - name: warmup cache
         run: composer cache:warmup --env=prod
+=======
+        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+>>>>>>> b4edbddf0c5a89624f601015c5a339080db6245b
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -69,9 +71,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DFF4F2F5481F4D77AD62D45CCD9F14AA }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D21DD52B11C6493FBA49E86FC7A81131 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4254FAFC980345C6970341F31E2F5102 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8DDA54C84B524A12A81C882C70CBA55D }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E8FE2302E55845C7949AE6AA9E3C7AE1 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_83DB70F8D4E74F738A23DC9EBD1F6927 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -80,4 +82,4 @@ jobs:
           app-name: 'global-travel'
           slot-name: 'Production'
           package: .
- 
+          
