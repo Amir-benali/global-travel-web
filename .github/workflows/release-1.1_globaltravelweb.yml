@@ -32,7 +32,13 @@ jobs:
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+      
+      - name: warmup cache
+        run: php bin/console cache:warmup --env=dev 
 
+      - name: echo app debug
+        run: echo APP_DEBUG=1 > .env.local
+        
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
