@@ -33,8 +33,8 @@ jobs:
           echo APP_ENV=prod > .env.local
           echo APP_DEBUG=0 >> .env.local
 
-      - name: Warm up Symfony cache
-        run: php bin/console cache:warmup --env=prod
+      - name: Warm up Symfony cache (safely for prod)
+        run: php bin/console cache:warmup --env=prod --no-debug
 
       - name: Zip artifact for deployment
         run: zip -r release.zip . -x "vendor/*" "node_modules/*" ".git/*"
@@ -44,7 +44,7 @@ jobs:
         with:
           name: symfony-app
           path: release.zip
-
+          
   deploy:
     runs-on: ubuntu-latest
     needs: build
