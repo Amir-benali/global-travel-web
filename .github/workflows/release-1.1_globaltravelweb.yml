@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -23,29 +23,26 @@ jobs:
         with:
           php-version: '8.4'
 
-      - name: Check if composer.json exists
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: 'composer.json'
+      - name: Validate Composer and install dependencies
+        run: |
+          composer validate --no-check-publish
+          composer install --prefer-dist --no-progress --no-dev
 
-      - name: Run composer install if composer.json exists
-        if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
-      
-      - name: warmup cache
-        run: php bin/console cache:warmup --env=dev 
+      - name: Set production environment
+        run: |
+          echo APP_ENV=prod > .env.local
+          echo APP_DEBUG=0 >> .env.local
 
-      - name: echo app debug
-        run: echo APP_DEBUG=1 > .env.local
-        
+      - name: Warm up Symfony cache
+        run: php bin/console cache:warmup --env=prod
+
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip . -x "vendor/*" "node_modules/*" ".git/*"
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: php-app
+          name: symfony-app
           path: release.zip
 
   deploy:
