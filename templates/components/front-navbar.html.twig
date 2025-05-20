@@ -1,0 +1,218 @@
+{# templates/components/front_navbar.html.twig #}
+<nav class="w-full bg-white shadow-md">
+    <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-4">
+                <a href="{{ path('front_dashboard') }}" class="flex items-center">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Global Travel Logo" class="h-16 w-16">
+                </a>
+                {% set currentRoute = app.request.get('_route') %}
+
+                <!-- Navigation Buttons -->
+                <div class="hidden md:flex items-center space-x-2">
+                    {# Dashboard - visible to all #}
+                    <a href="{{ path('front_dashboard') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute == 'front_dashboard' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-dashboard-line"></i>
+                    </a>
+                    
+                    {% if is_granted('ROLE_RESPONSABLE') %}
+                    {# Flights - visible to responsable only #}
+                    <a href="{{ path('front_flight') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_flight' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-plane-line"></i>
+                    </a>
+                    
+                    {# Cars - visible to responsable only #}
+                    <a href="{{ path('front_car') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_car' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-car-line"></i>
+                    </a>
+                    
+                    {# Hotels - visible to responsable only #}
+                    <a href="{{ path('front_hotel') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_hotel' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-hotel-line"></i>
+                    </a>
+                    
+                    {# Activities - visible to responsable only #}
+                    <a href="{{ path('front_activity') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_activity' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-list-check"></i>
+                    </a>
+                    {% endif %}
+                    
+                    <div class="h-6 w-px bg-gray-300 mx-2"></div>
+                    
+                    {# Booking routes - visible to all #}
+                    <a href="{{ path('front_book_flight') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_book_flight' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-ticket-line"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_book_car') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_book_car' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-road-map-line"></i>
+                    </a>
+                    
+                    <a href="{{ path('front_book_hotel') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_book_hotel' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-hotel-bed-line"></i>
+                    </a>
+                    
+                    {# List activity - not visible to responsable #}
+                    {% if not is_granted('ROLE_RESPONSABLE') or is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('front_list_activity') }}" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg transition-colors 
+                              {% if currentRoute starts with 'front_list_activity' %}bg-blue-50 text-blue-600
+                              {% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                        <i class="ri-calendar-todo-line"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Right Side - User & Actions -->
+            <div class="flex items-center space-x-4">
+                <a href="{{ path('app_chatbot') }}" class="p-2 rounded-full hover:bg-gray-100 relative inline-flex items-center justify-center group">
+                    <i class="ri-robot-line text-gray-600 text-xl"></i>
+                    <span class="sr-only">AI Assistant</span>
+                    <span class="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">AI</span>
+                    <span class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded hidden group-hover:block whitespace-nowrap">AI Assistant</span>
+                </a>
+                
+                <!-- User Profile Dropdown -->
+                <div class="relative dropdown-container">
+                    <button id="userDropdownButton" 
+                            class="flex items-center space-x-2 focus:outline-none">
+                        <img src="{{ app.user ? 'https://ui-avatars.com/api/?name=' ~ app.user.firstName ~ '+' ~ app.user.lastName ~ '&background=2563eb&color=ffffff' : asset('images/user-icon.png') }}" 
+                             alt="User Profile" 
+                             class="h-8 w-8 rounded-full">
+                        <span class="hidden md:inline text-sm font-medium">
+                            {{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Guest' }}
+                        </span>
+                        <i class="ri-arrow-down-s-line text-gray-600"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdownMenu" 
+                         class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
+                        <a href="{{ path('front_settings') }}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="ri-settings-line mr-2"></i> Settings
+                        </a>
+                        <a href="{{ path('app_logout') }}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="ri-logout-box-line mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden flex justify-center mt-2">
+            <button id="mobile-menu-button" class="p-2 rounded-lg hover:bg-gray-100">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden mt-2 pb-4">
+            <div class="grid grid-cols-2 gap-2">
+                {# Dashboard - visible to all #}
+                <a href="{{ path('front_dashboard') }}" class="mobile-nav-item {% if currentRoute == 'front_dashboard' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-dashboard-line mr-2"></i> Dashboard
+                </a>
+                
+                {% if is_granted('ROLE_RESPONSABLE') %}
+                {# Flights - visible to responsable only #}
+                <a href="{{ path('front_flight') }}" class="mobile-nav-item {% if currentRoute starts with 'front_flight' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-plane-line mr-2"></i> Flights
+                </a>
+                
+                {# Cars - visible to responsable only #}
+                <a href="{{ path('front_car') }}" class="mobile-nav-item {% if currentRoute starts with 'front_car' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-car-line mr-2"></i> Cars
+                </a>
+                
+                {# Hotels - visible to responsable only #}
+                <a href="{{ path('front_hotel') }}" class="mobile-nav-item {% if currentRoute starts with 'front_hotel' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-hotel-line mr-2"></i> Hotels
+                </a>
+                
+                {# Activities - visible to responsable only #}
+                <a href="{{ path('front_activity') }}" class="mobile-nav-item {% if currentRoute starts with 'front_activity' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-list-check mr-2"></i> Activities
+                </a>
+                {% endif %}
+                
+                {# Booking routes - visible to all #}
+                <a href="{{ path('front_book_flight') }}" class="mobile-nav-item {% if currentRoute starts with 'front_book_flight' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-ticket-line mr-2"></i> Book Flights
+                </a>
+                
+                <a href="{{ path('front_book_car') }}" class="mobile-nav-item {% if currentRoute starts with 'front_book_car' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-road-map-line mr-2"></i> Book Cars
+                </a>
+                
+                <a href="{{ path('front_book_hotel') }}" class="mobile-nav-item {% if currentRoute starts with 'front_book_hotel' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-hotel-bed-line mr-2"></i> Book Hotels
+                </a>
+                
+                {# List activity - not visible to responsable #}
+                {% if not is_granted('ROLE_RESPONSABLE') and is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('front_list_activity') }}" class="mobile-nav-item {% if currentRoute starts with 'front_list_activity' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="ri-calendar-todo-line mr-2"></i> Activities List
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .mobile-nav-item {
+        @apply px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors flex items-center;
+    }
+</style>
+
+<script>
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownButton = document.getElementById('userDropdownButton');
+        const dropdownMenu = document.getElementById('userDropdownMenu');
+        
+        dropdownButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('hidden');
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!dropdownMenu.contains(e.target) && !dropdownButton.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    });
+</script>

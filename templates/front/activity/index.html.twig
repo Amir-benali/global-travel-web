@@ -1,0 +1,592 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Activity List{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .search-container {
+            position: relative;
+            display: inline-block;
+        }
+        #searchResults {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+            margin-top: -1px;
+        }
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        .no-results {
+            padding: 10px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        .loading-icon {
+            display: none;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        /* Activity card styles */
+        .activity-card {
+            position: relative;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        .activity-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Employee selection styles */
+        .employee-selection {
+            display: none;
+            position: absolute;
+            z-index: 50;
+            right: 0;
+            bottom: 100%;
+            width: 100%;
+            max-width: 300px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .employee-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 0.5rem 0;
+        }
+        .employee-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .employee-item:last-child {
+            border-bottom: none;
+        }
+        .employee-item input {
+            margin-right: 0.5rem;
+        }
+        
+        /* New button styles */
+        .activity-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-accept {
+            background-color: #10B981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+            flex: 1;
+        }
+        
+        .btn-accept:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-accept.active {
+            background-color: #047857;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: none;
+        }
+        
+        .btn-accept i {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+        
+        .btn-reject {
+            background-color: #EF4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+            flex: 1;
+        }
+        
+        .btn-reject:hover {
+            background-color: #DC2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-reject i {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+        
+        /* Animation for click */
+        @keyframes buttonClick {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        
+        .btn-accept:active, .btn-reject:active {
+            animation: buttonClick 0.2s ease;
+        }
+        
+        /* Disabled state */
+        .btn-accept.disabled, .btn-reject.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .submit-selection {
+            background-color: #3B82F6;
+            color: white;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+        
+        .submit-selection:hover {
+            background-color: #2563EB;
+        }
+        
+        /* Base button style */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center p-6">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="ri-calendar-event-line text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Activity List</h1>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
+                    <div class="search-container w-full md:w-64">
+                        <form method="get" action="{{ path('front_activity') }}">
+                            <input type="text" 
+                                   id="searchInput"
+                                   name="search" 
+                                   value="{{ searchQuery }}"
+                                   placeholder="Search activities..."
+                                   class="w-full pl-4 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="ri-search-line search-icon"></i>
+                            <i class="ri-loader-2-line loading-icon"></i>
+                        </form>
+                        <div id="searchResults"></div>
+                    </div>
+                    
+                    <div class="flex space-x-3 w-full md:w-auto">
+                        <a href="{{ path('front_review') }}" class="btn bg-blue-500 hover:bg-blue-600 text-white">
+                            <i class="ri-star-line mr-2"></i>
+                            Reviews
+                        </a>
+                         <a href="{{ path('app_activity_createresponsable') }}"class="btn bg-blue-500 hover:bg-blue-600 text-white">
+                            <i class="ri-add-line mr-2"></i>
+                            Add Activity
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="activityGrid">
+            {% for activity in activities %}
+                <div class="activity-card">
+                    <div class="p-5 border-b border-gray-200">
+                        <div class="flex items-center">
+                            <i class="ri-calendar-event-line text-blue-600 text-xl mr-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">{{ activity.nomactivity }}</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5">
+                        <div class="space-y-3 mb-5">
+                            <div class="flex items-start">
+                                <i class="ri-information-line text-blue-600 mt-1 mr-3"></i>
+                                <p class="text-sm text-gray-700">{{ activity.description|length > 100 ? activity.description|slice(0, 100) ~ '...' : activity.description }}</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-map-pin-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.localisation }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-calendar-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.datedebut|date('M d, Y H:i') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-calendar-check-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.datefin|date('M d, Y H:i') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-money-dollar-circle-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">${{ activity.prixtotal|number_format(2, '.', ',') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-price-tag-3-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.typeactivity.value }}</span>
+                            </div>
+                            {% if activity.joinhotel %}
+                            <div class="flex items-center">
+                                <i class="ri-hotel-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.joinhotel.nomH }}</span>
+                            </div>
+                            {% endif %}
+                            {% if activity.joinvoiture %}
+                            <div class="flex items-center">
+                                <i class="ri-car-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.joinvoiture.model }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-3 relative">
+                            <a href="{{ path('front_activity_details', {id: activity.id}) }}" 
+                               class="btn bg-gray-100 hover:bg-gray-200 text-gray-800">
+                                <i class="ri-eye-line mr-1"></i>
+                                Details
+                            </a>
+                            
+                            <div class="activity-actions">
+                                <button type="button" 
+                                        class="btn-accept"
+                                        data-activity-id="{{ activity.id }}">
+                                    <i class="ri-check-line"></i> Accept
+                                </button>
+                                <button type="button" 
+                                        class="btn-reject"
+                                        data-activity-id="{{ activity.id }}">
+                                    <i class="ri-close-line"></i> Reject
+                                </button>
+                            </div>
+                            
+                            <div class="employee-selection" id="employeeSelection-{{ activity.id }}">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Assign Employees</h4>
+                                <div class="employee-list">
+                                    {% if employees|length > 0 %}
+                                        {% for employee in employees %}
+                                            <div class="employee-item">
+                                                <input type="checkbox" 
+                                                       id="emp-{{ activity.id }}-{{ employee.id }}" 
+                                                       name="employees[]" 
+                                                       value="{{ employee.id }}"
+                                                       class="rounded text-blue-500 focus:ring-blue-500">
+                                                <label for="emp-{{ activity.id }}-{{ employee.id }}" class="text-sm">
+                                                    {{ employee.firstname }} {{ employee.lastname }}
+                                                    <span class="text-xs text-gray-500 block">{{ employee.email }}</span>
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="text-sm text-gray-500 py-2">No employees available</p>
+                                    {% endif %}
+                                </div>
+                                <button type="button" 
+                                        class="submit-selection mt-2"
+                                        data-activity-id="{{ activity.id }}">
+                                    Confirm Selection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-span-3 py-10 text-center">
+                    <div class="bg-white p-8 rounded-lg shadow-sm">
+                        <i class="ri-emotion-sad-line text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">
+                            {% if searchQuery %}
+                                No activities found for "{{ searchQuery }}"
+                            {% else %}
+                                No activities available
+                            {% endif %}
+                        </h3>
+                        <p class="text-gray-500 mb-4">Try adjusting your search or create a new activity</p>
+                        <a href="{{ path('app_activity_create') }}" class="btn bg-blue-500 hover:bg-blue-600 text-white">
+                            <i class="ri-add-line mr-2"></i> Create New Activity
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            const loadingIcon = document.querySelector('.loading-icon');
+            const searchIcon = document.querySelector('.search-icon');
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    
+                    if (query.length >= 2) {
+                        loadingIcon.style.display = 'block';
+                        searchIcon.style.display = 'none';
+                        
+                        fetch(`{{ path('app_activity_search') }}?query=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                loadingIcon.style.display = 'none';
+                                searchIcon.style.display = 'block';
+                                
+                                if (data.results.length > 0) {
+                                    searchResults.innerHTML = data.results.map(activity => `
+                                        <div class="search-result-item" data-id="${activity.id}">
+                                            <div class="font-medium">${activity.name}</div>
+                                            <div class="text-sm text-gray-600">${activity.location}</div>
+                                            <div class="text-xs text-gray-500 mt-1">${activity.startDate}</div>
+                                        </div>
+                                    `).join('');
+                                    searchResults.style.display = 'block';
+                                } else {
+                                    searchResults.innerHTML = '<div class="no-results">No matching activities found</div>';
+                                    searchResults.style.display = 'block';
+                                }
+                            });
+                    } else {
+                        searchResults.style.display = 'none';
+                    }
+                });
+                
+                // Hide results when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = 'none';
+                    }
+                });
+                
+                // Navigate to activity when clicking a result
+                searchResults.addEventListener('click', function(e) {
+                    const item = e.target.closest('.search-result-item');
+                    if (item) {
+                        window.location.href = `/activity/details/${item.dataset.id}`;
+                    }
+                });
+            }
+            
+            // Activity accept/reject functionality
+            document.addEventListener('click', function(e) {
+                // Handle accept button
+                const acceptBtn = e.target.closest('.btn-accept');
+                if (acceptBtn && !acceptBtn.classList.contains('disabled')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const activityId = acceptBtn.dataset.activityId;
+                    const activityCard = acceptBtn.closest('.activity-card');
+                    const selectionDiv = activityCard.querySelector('.employee-selection');
+                    const rejectBtn = activityCard.querySelector('.btn-reject');
+                    
+                    // Toggle active state
+                    if (acceptBtn.classList.contains('active')) {
+                        acceptBtn.innerHTML = '<i class="ri-check-line"></i> Accept';
+                        acceptBtn.classList.remove('active');
+                        if (selectionDiv) selectionDiv.style.display = 'none';
+                    } else {
+                        // Set active state
+                        acceptBtn.innerHTML = '<i class="ri-check-double-line"></i> Accepted';
+                        acceptBtn.classList.add('active');
+                        
+                        // Reset reject button if it was active
+                        if (rejectBtn) {
+                            rejectBtn.innerHTML = '<i class="ri-close-line"></i> Reject';
+                            rejectBtn.classList.remove('active');
+                        }
+                        
+                        // Show employee selection
+                        if (selectionDiv) selectionDiv.style.display = 'block';
+                    }
+                    
+                    // Close all other selection divs
+                    document.querySelectorAll('.employee-selection').forEach(el => {
+                        if (el !== selectionDiv) {
+                            el.style.display = 'none';
+                        }
+                    });
+                    return;
+                }
+                
+                // Handle reject button
+                const rejectBtn = e.target.closest('.btn-reject');
+                if (rejectBtn && !rejectBtn.classList.contains('disabled')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const activityId = rejectBtn.dataset.activityId;
+                    const activityCard = rejectBtn.closest('.activity-card');
+                    const acceptBtn = activityCard.querySelector('.btn-accept');
+                    const selectionDiv = activityCard.querySelector('.employee-selection');
+                    
+                    if (confirm('Are you sure you want to reject this activity?')) {
+                        // Add temporary loading state
+                        rejectBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Processing';
+                        rejectBtn.classList.add('disabled');
+                        
+                        // Reset accept button
+                        if (acceptBtn) {
+                            acceptBtn.innerHTML = '<i class="ri-check-line"></i> Accept';
+                            acceptBtn.classList.remove('active');
+                            acceptBtn.classList.remove('disabled');
+                        }
+                        
+                        // Hide employee selection
+                        if (selectionDiv) {
+                            selectionDiv.style.display = 'none';
+                        }
+                        
+                        // Optional: Send rejection to server
+                        fetch(`/activity/${activityId}/reject`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            rejectBtn.innerHTML = '<i class="ri-close-line"></i> Rejected';
+                            setTimeout(() => {
+                                rejectBtn.innerHTML = '<i class="ri-close-line"></i> Reject';
+                                rejectBtn.classList.remove('disabled');
+                            }, 2000);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            rejectBtn.innerHTML = '<i class="ri-close-line"></i> Error';
+                            setTimeout(() => {
+                                rejectBtn.innerHTML = '<i class="ri-close-line"></i> Reject';
+                                rejectBtn.classList.remove('disabled');
+                            }, 2000);
+                        });
+                    }
+                    return;
+                }
+                
+                // Handle employee selection submission
+                const submitBtn = e.target.closest('.submit-selection');
+                if (submitBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const activityId = submitBtn.dataset.activityId;
+                    const activityCard = submitBtn.closest('.activity-card');
+                    const checkboxes = activityCard.querySelectorAll('input[type="checkbox"]:checked');
+                    
+                    if (checkboxes.length === 0) {
+                        alert('Please select at least one employee');
+                        return;
+                    }
+                    
+                    const employeeIds = Array.from(checkboxes).map(cb => cb.value);
+                    
+                    fetch(`/activity/${activityId}/assign-employees`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ employeeIds })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Employees assigned successfully!');
+                            activityCard.querySelector('.employee-selection').style.display = 'none';
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while assigning employees');
+                    });
+                    return;
+                }
+                
+                // Close employee selection when clicking outside
+                if (!e.target.closest('.employee-selection') && !e.target.closest('.btn-accept')) {
+                    document.querySelectorAll('.employee-selection').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

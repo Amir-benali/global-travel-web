@@ -1,0 +1,42 @@
+{% extends 'front.html.twig' %}
+
+                {% block title %}Compagnies aériennes{% endblock %}
+
+                {% block body %}
+                    <div class="mx-auto max-w-7xl">
+                        <!-- Sub Navigation -->
+                        <div class="bg-white rounded-lg shadow mb-6">
+                            <div class="flex items-center justify-between p-4">
+                                <div class="flex space-x-4">
+                                    <a href="{{ path('front_flight') }}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Flights</a>
+                                    <a href="{{ path('front_flight_airline') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">Airlines</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Airlines Table -->
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-blue-300 text-black sticky top-0">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-center text-base font-semibold uppercase tracking-wider">ID</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-base font-semibold uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-base font-semibold uppercase tracking-wider">IATA Code</th>
+                                    <th scope="col" class="px-6 py-3 text-center text-base font-semibold uppercase tracking-wider">Country</th>
+                                </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                {% for airline in airlines %}
+                                    <tr class="hover:bg-gray-100 odd:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-500 border border-gray-300">{{ airline.airlineId }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 border border-gray-300">{{ airline.airlineName }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 border border-gray-300">{{ airline.airlineIataCode }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 border border-gray-300">{{ airline.airlineCountry }}</td>
+
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endblock %}

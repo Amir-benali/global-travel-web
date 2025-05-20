@@ -1,0 +1,238 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Car Reservations - Front Office{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h1 class="text-2xl font-semibold text-gray-800">Car Reservations</h1>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+
+                
+                <!-- Date Filter -->
+                <div class="relative">
+                    <input type="date"
+                           id="dateFilter"
+                           value="{{ app.request.query.get('date') }}"
+                           class="search-filter border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <!-- Status Filter Dropdown -->
+                <select id="statusFilter" 
+                        class="search-filter border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Filter by Status</option>
+                    {% for status in statuses|default(['PENDING', 'CONFIRMED', 'CANCELED', 'COMPLETED']) %}
+                        <option value="{{ status }}" {% if app.request.query.get('status') == status %}selected{% endif %}>
+                            {{ status|capitalize }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filters = document.querySelectorAll('.search-filter');
+            const resultsTable = document.querySelector('tbody');
+            const paginationContainer = document.querySelector('.mt-6');
+            let debounceTimer;
+            
+            filters.forEach(filter => {
+                filter.addEventListener('input', function() {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(updateResults, 300);
+                });
+                
+                filter.addEventListener('change', function() {
+                    updateResults();
+                });
+            });
+            
+            function updateResults() {
+                const date = document.getElementById('dateFilter').value;
+                const status = document.getElementById('statusFilter').value;
+                
+                // Build query string
+                const params = new URLSearchParams();
+                if(date) params.append('date', date);
+                if(status) params.append('status', status);
+                
+                const url = `{{ path('front_book_car') }}?${params.toString()}`;
+                
+                // Update browser URL without reloading
+                window.history.pushState({}, '', url);
+                
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        // Update table content
+                        resultsTable.innerHTML = doc.querySelector('tbody').innerHTML;
+                        
+                        // Update pagination
+                        if(paginationContainer && doc.querySelector('.mt-6')) {
+                            paginationContainer.innerHTML = doc.querySelector('.mt-6').innerHTML;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching results:', error));
+            }
+            // Function to extract coordinates from string in format "[lat,lng]"
+            function extractCoordinates(coordsString) {
+                const match = coordsString.match(/\[([-\d.]+),([-\d.]+)\]/);
+                if (match) {
+                    return {
+                        lat: match[1],
+                        lng: match[2]
+                    };
+                }
+                return null;
+            }
+
+            // Add reverse geocoding functionality
+            function reverseGeocode(lat, lng) {
+                return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                    .then(response => response.json())
+                    .then(data => data.display_name || `${lat},${lng}`);
+            }
+
+            // Process route locations after table updates
+            function processRouteLocations() {
+                const locationCells = document.querySelectorAll('td:nth-child(3)');
+                
+                locationCells.forEach(cell => {
+                    const fromText = cell.querySelector('span:first-child').textContent;
+                    const toText = cell.querySelector('span:last-child').textContent;
+                    
+                    // First try to extract coordinates in [lat,lng] format
+                    let fromCoords = extractCoordinates(fromText);
+                    let toCoords = extractCoordinates(toText);
+                    
+                    // If not found, try the "From: lat,lng" format
+                    if (!fromCoords) {
+                        const fromMatch = fromText.match(/From: ([-\d.]+),([-\d.]+)/);
+                        if (fromMatch) {
+                            fromCoords = { lat: fromMatch[1], lng: fromMatch[2] };
+                        }
+                    }
+                    
+                    if (!toCoords) {
+                        const toMatch = toText.match(/To: ([-\d.]+),([-\d.]+)/);
+                        if (toMatch) {
+                            toCoords = { lat: toMatch[1], lng: toMatch[2] };
+                        }
+                    }
+                    
+                    if (fromCoords) {
+                        reverseGeocode(fromCoords.lat, fromCoords.lng).then(address => {
+                            cell.querySelector('span:first-child').textContent = `From: ${address}`;
+                        });
+                    }
+                    
+                    if (toCoords) {
+                        reverseGeocode(toCoords.lat, toCoords.lng).then(address => {
+                            cell.querySelector('span:last-child').textContent = `To: ${address}`;
+                        });
+                    }
+                });
+            }
+
+            // Call this after table updates
+            document.addEventListener('DOMContentLoaded', processRouteLocations);
+            document.addEventListener('fetchComplete', processRouteLocations);
+
+            // Add custom event after fetch completes
+            const originalFetch = window.fetch;
+            window.fetch = function() {
+                return originalFetch.apply(this, arguments).then(response => {
+                    response.clone().text().then(() => {
+                        setTimeout(() => {
+                            document.dispatchEvent(new Event('fetchComplete'));
+                        }, 100);
+                    });
+                    return response;
+                });
+            };
+        });
+    </script>
+
+    <!-- Table Section -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Offer</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% if reservations is defined and reservations|length > 0 %}
+                        {% for reservation in reservations %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ reservation.id }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reservation.date|date('Y-m-d H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div>
+                                        <span class="block">From: {{ reservation.route.locationStart }}</span>
+                                        <span class="block">To: {{ reservation.route.locationDestination }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reservation.offer.date|date('Y-m-d H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% set statusColors = {
+                                        'PENDING': 'yellow',
+                                        'CONFIRMED': 'green',
+                                        'CANCELED': 'red',
+                                        'COMPLETED': 'blue'
+                                    } %}
+                                    {% set statusColor = statusColors[reservation.status]|default('gray') %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ statusColor }}-100 text-{{ statusColor }}-800">
+                                        {{ reservation.status|capitalize }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex space-x-2">
+                                        <a href="#" onclick="window.location.href='{{ path('front_book_car_details', {'id': reservation.id}) }}'; return false;" class="text-blue-600 hover:text-blue-900" title="View">
+                                            <i class="ri-eye-line"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No car reservations found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Pagination -->
+    <div class="mt-6 flex items-center justify-center mx-auto">
+        {{ knp_pagination_render(reservations, '@KnpPaginator/Pagination/tailwindcss_pagination.html.twig', {
+            'prev_label': '<i class="ri-arrow-left-s-line"></i>',
+            'next_label': '<i class="ri-arrow-right-s-line"></i>',
+            'rounded': true,
+            'size_class': 'w-8 h-8',
+            'active_class': 'bg-blue-50 text-blue-600 border border-blue-200',
+            'disabled_class': 'opacity-50',
+            'page_class': 'flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm',
+            'first_page_class': 'hidden',
+            'last_page_class': 'hidden'
+        }) }}
+    </div>
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}My Reservations{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl p-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">My Reservations</h1>
+        <div class="bg-white rounded-lg shadow p-6">
+            {% if reservations is not empty %}
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2 text-left text-gray-700 font-semibold">Room</th>
+                                <th class="px-4 py-2 text-left text-gray-700 font-semibold">Check-In</th>
+                                <th class="px-4 py-2 text-left text-gray-700 font-semibold">Check-Out</th>
+                                <th class="px-4 py-2 text-left text-gray-700 font-semibold">Status</th>
+                                <th class="px-4 py-2 text-left text-gray-700 font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in reservations %}
+                                <tr class="border-b border-gray-200">
+                                    <td class="px-4 py-2 text-gray-600">{{ reservation.idChambreJ.typeChambreH }}</td>
+                                    <td class="px-4 py-2 text-gray-600">{{ reservation.dateCheckinH|date('Y-m-d') }}</td>
+                                    <td class="px-4 py-2 text-gray-600">{{ reservation.dateCheckoutH|date('Y-m-d') }}</td>
+                                    <td class="px-4 py-2 text-gray-600">{{ reservation.statutH|capitalize }}</td>
+                                    <td class="px-4 py-2">
+                                        <div class="flex space-x-2">
+                                            <a href="{{ path('front_reservation_details', {'id': reservation.idReservationH}) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm flex items-center">
+                                                <i class="ri-eye-line mr-1" title="View Details"></i> View Details
+                                            </a>
+                                            <form method="post" action="{{ path('front_reservation_delete', {'id': reservation.idReservationH}) }}" onsubmit="return confirm('Are you sure you want to delete this reservation?');" class="inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.idReservationH) }}">
+                                                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm flex items-center">
+                                                    <i class="ri-delete-bin-line mr-1" title="Delete"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-600 flex items-center">
+                    <i class="ri-alert-line text-blue-600 mr-2" title="No Reservations"></i> No reservations found.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CSS for Styling -->
+    <style>
+        i[class^="ri-"] {
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+        button i, a i {
+            transition: transform 0.2s;
+        }
+        button:hover i, a:hover i {
+            transform: scale(1.1);
+        }
+        i[class^="ri-"]:hover {
+            animation: pulse 0.5s;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: none;
+        }
+        tr:hover {
+            background-color: #f9fafb;
+        }
+    </style>
+{% endblock %}

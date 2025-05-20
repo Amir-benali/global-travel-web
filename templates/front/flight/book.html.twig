@@ -1,0 +1,86 @@
+{% extends 'front.html.twig' %}
+
+                                {% block title %}My Tickets{% endblock %}
+
+                                {% block body %}
+                                    <div class="container mx-auto px-4 py-8">
+                                        <h1 class="text-3xl font-bold text-gray-800 mb-6">My Tickets</h1>
+
+                                        {% if tickets is empty %}
+                                            <div class="bg-yellow-100 text-yellow-800 p-4 rounded-md">
+                                                <p>You have no booked tickets.</p>
+                                            </div>
+                                        {% else %}
+                                            <div class="mb-6 flex justify-between items-center">
+                                                <h2 class="text-lg font-semibold text-gray-800"></h2>
+                                                <a href="{{ path('download_tickets') }}" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    </svg>
+                                                    Download List PDF
+                                                </a>
+                                            </div>
+
+                                            <div class="overflow-x-auto">
+                                                <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+                                                    <thead class="bg-gray-100">
+                                                        <tr>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Flight Number</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Seat Number</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Departure</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Arrival</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Class</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Price</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Status</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Booking Date</th>
+                                                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="divide-y divide-gray-200">
+                                                        {% for ticket in tickets %}
+                                                            <tr class="hover:bg-gray-50">
+                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.idFlight.flightNumber }}</td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.seatNumber }}</td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">
+                                                                    {{ ticket.idFlight.departureAirportName }} ({{ ticket.idFlight.departureCountry }})<br>
+                                                                    {{ ticket.idFlight.departureTime|date('d/m/Y H:i') }}
+                                                                </td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">
+                                                                    {{ ticket.idFlight.arrivalAirportName }} ({{ ticket.idFlight.arrivalCountry }})<br>
+                                                                    {{ ticket.idFlight.arrivalTime|date('d/m/Y H:i') }}
+                                                                </td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.ticketClass }}</td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.ticketPrice }} €</td>
+                                                                <td class="px-6 py-4 text-sm">
+                                                                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ ticket.ticketStatus == 'Validated' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                                        {{ ticket.ticketStatus }}
+                                                                    </span>
+                                                                </td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800">{{ ticket.ticketBookingDate|date('d/m/Y H:i') }}</td>
+                                                                <td class="px-6 py-4 text-sm text-gray-800 space-y-2">
+                                                                    <div class="flex space-x-3">
+                                                                        <form method="post" action="{{ path('cancel_flight', { id: ticket.ticketId }) }}" onsubmit="return confirm('Are you sure you want to cancel this ticket?');">
+                                                                            <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ ticket.ticketId) }}">
+                                                                            <button type="submit" class="w-32 flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700" aria-label="Cancel Ticket">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                                </svg>
+                                                                                Cancel
+                                                                            </button>
+                                                                        </form>
+                                                                        <a href="{{ path('generate_qr_code', { id: ticket.ticketId }) }}" target="_blank" class="w-32 flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3m0 18l-6-6m6 6l6-6" />
+                                                                            </svg>
+                                                                            Generate QR Code
+                                                                        </a>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endblock %}

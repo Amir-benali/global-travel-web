@@ -1,0 +1,70 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Car{% endblock %}
+
+{% block body %}
+ <div class="mx-auto max-w-7xl">
+        <!-- Sub Navigation -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex space-x-4">
+                    <a href="{{path('front_car')}}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">Private Car List</a>
+                    <a href="{{path('front_car_driver')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Driver List</a>
+                    <a href="{{path('front_car_offer')}}" class="px-4 py-2 text-gray-600 hover:text-blue-600">Offer List</a>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Car Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Car Card  -->
+            {% for car in cars %}
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <img src="{{car.getImage()}}" alt="Mercedes G Class" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2"{{car.getBrand()}}</h3>
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <div class="flex items-center">
+                            <i class="ri-list-check text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{car.getModel()}}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-user-line text-blue-600 mr-2"></i>
+                            <span class="text-sm text-gray-600">{{car.getNumPlace()}}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-steering-2-line text-orange-500 mr-2"></i>
+                            <span class="text-sm text-gray-600">Driver: {{ car.getIdDriver() is defined ? "1" : "N/A" }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="ri-profile-line text-red-500 mr-2"></i>
+                            <span class="text-sm text-gray-600">DR ID: N/A</span>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+            {% endfor %}
+      <br>
+        
+        <!-- Pagination -->
+        <div class="mt-6 flex items-center justify-center mx-auto">
+            <div class="flex items-center space-x-2">
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">2</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">3</button>
+                
+                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">
+                    <i class="ri-arrow-right-s-line"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

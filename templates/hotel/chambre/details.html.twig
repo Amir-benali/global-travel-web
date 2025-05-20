@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ hotel.nomH }}{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-7xl">
+        <!-- Sub Navigation -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex space-x-4">
+                    <a href="{{ path('app_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
+                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a>
+                </div>
+                
+                <a href="{{ path('app_hotel_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="ri-add-line mr-1"></i>
+                    ADD HOTEL
+                </a>
+            </div>
+        </div>
+        
+        <!-- Hotel Details -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <!-- Hotel Gallery -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                <div class="lg:col-span-2">
+                    <img src="https://via.placeholder.com/800x400" alt="{{ hotel.nomH }}" class="w-full h-full object-cover">
+                </div>
+                <div class="grid grid-cols-2 gap-0">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Room" class="w-full h-full object-cover">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Pool" class="w-full h-full object-cover">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Restaurant" class="w-full h-full object-cover">
+                    <img src="https://via.placeholder.com/400x200" alt="Hotel Lobby" class="w-full h-full object-cover">
+                </div>
+            </div>
+            
+            <!-- Hotel Info -->
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between">
+                    <div class="mb-6 md:mb-0">
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ hotel.nomH }}</h1>
+                        
+                        <div class="flex items-center mb-4">
+                            <div class="flex">
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-fill text-yellow-500"></i>
+                                <i class="ri-star-half-fill text-yellow-500"></i>
+                            </div>
+                            <span class="ml-2 text-sm text-gray-600">4.8 (120 reviews)</span>
+                        </div>
+                        
+                        <div class="flex items-center text-gray-600 mb-2">
+                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
+                            <span>{{ hotel.adresseH }}, {{ hotel.villeH }}, {{ hotel.paysH }}</span>
+                        </div>
+                        
+                        <div class="flex items-center text-gray-600 mb-2">
+                            <i class="ri-phone-line text-blue-600 mr-2"></i>
+                            <span>{{ hotel.coordonneesH }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg md:w-64">
+                        <div class="text-lg font-semibold text-blue-800 mb-2">Starting from</div>
+                        <div class="text-3xl font-bold text-gray-900 mb-4">$299<span class="text-sm font-normal text-gray-600">/night</span></div>
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Hotel Description -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
+                    <div class="flex items-start mb-4">
+                        <i class="ri-tools-line text-blue-600 mr-2"></i>
+                        <p class="text-gray-600">
+                            {{ hotel.servicesH }}
+                        </p>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="ri-chat-3-line text-blue-600 mr-2"></i>
+                        <p class="text-gray-600">
+                            {{ hotel.avisH }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="border-t border-gray-200 p-4 bg-gray-50 flex justify-end space-x-3">
+                <a href="{{ path('app_hotel_update', { id: hotel.idHotelH }) }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100">
+                    <i class="ri-edit-line mr-1"></i> Edit
+                </a>
+                <form action="{{ path('app_hotel_delete', { id: hotel.idHotelH }) }}" method="post">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ hotel.idHotelH) }}">
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                        <i class="ri-delete-bin-line mr-1"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

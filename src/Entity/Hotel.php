@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\HotelRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: HotelRepository::class)]
 #[ORM\Table(name: "hotel")]
@@ -15,28 +18,84 @@ class Hotel
     private int $idHotelH;
 
     #[ORM\Column(name: "nom_h", type: "string", length: 255)]
+    #[Assert\NotBlank(message: "The hotel name cannot be blank.")]
+    #[Assert\Regex(
+        pattern: "/^[\p{L}\s]+$/u",
+        message: "The hotel name can only contain letters and spaces."
+    )]
     private string $nomH;
 
     #[ORM\Column(name: "adresse_h", type: "string", length: 255)]
+    #[Assert\NotBlank(message: "The address cannot be blank.")]
+    #[Assert\Length(
+        min: 3,
+        max: 30,
+        minMessage: "The address must be at least {{ limit }} characters long.",
+        maxMessage: "The address cannot be longer than {{ limit }} characters."
+    )]
     private string $adresseH;
 
-    #[ORM\Column(name: "ville_h", type: "string", length: 255)]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "City required")]
+    #[Assert\Length(min: 2, max: 255)]
     private string $villeH;
 
     #[ORM\Column(name: "pays_h", type: "string", length: 255)]
+    #[Assert\NotBlank(message: "The country cannot be blank.")]
+    #[Assert\Length(
+        min: 3,
+        max: 30,
+        minMessage: "The country must be at least {{ limit }} characters long.",
+        maxMessage: "The country cannot be longer than {{ limit }} characters."
+    )]
     private string $paysH;
 
     #[ORM\Column(name: "categorie_h", type: "integer")]
+    #[Assert\NotBlank(message: "The category cannot be blank.")]
+    #[Assert\Range(
+        min: 1,
+        max: 7,
+        notInRangeMessage: "The category must be between {{ min }} and {{ max }}."
+    )]
     private int $categorieH;
 
     #[ORM\Column(name: "services_h", type: "string", length: 255)]
+    #[Assert\NotBlank(message: "The services field cannot be blank.")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "The services must be at least {{ limit }} characters long.",
+        maxMessage: "The services cannot be longer than {{ limit }} characters."
+    )]
     private string $servicesH;
 
     #[ORM\Column(name: "coordonnees_h", type: "string", length: 255)]
+    #[Assert\NotBlank(message: "The coordinates cannot be blank.")]
+    #[Assert\Length(
+        min: 3,
+        max: 30,
+        minMessage: "The coordinates must be at least {{ limit }} characters long.",
+        maxMessage: "The coordinates cannot be longer than {{ limit }} characters."
+    )]
     private string $coordonneesH;
 
     #[ORM\Column(name: "avis_h", type: "string", length: 255)]
-    private string $avisH;
+    #[Assert\NotBlank(message: "The review cannot be blank.")]
+    #[Assert\Length(
+        min: 3,
+        max: 30,
+        minMessage: "The review must be at least {{ limit }} characters long.",
+        maxMessage: "The review cannot be longer than {{ limit }} characters."
+    )]
+    private string $avisH = 'great_hotel_review';
+
+    #[ORM\OneToMany(mappedBy: 'hotel', targetEntity: Chambre::class)]
+    private Collection $chambres;
+
+    public function __construct()
+    {
+        $this->chambres = new ArrayCollection();
+    }
 
     public function getIdHotelH(): ?int
     {
@@ -51,7 +110,6 @@ class Hotel
     public function setNomH(string $nomH): static
     {
         $this->nomH = $nomH;
-
         return $this;
     }
 
@@ -63,7 +121,6 @@ class Hotel
     public function setAdresseH(string $adresseH): static
     {
         $this->adresseH = $adresseH;
-
         return $this;
     }
 
@@ -75,7 +132,6 @@ class Hotel
     public function setVilleH(string $villeH): static
     {
         $this->villeH = $villeH;
-
         return $this;
     }
 
@@ -87,7 +143,6 @@ class Hotel
     public function setPaysH(string $paysH): static
     {
         $this->paysH = $paysH;
-
         return $this;
     }
 
@@ -99,7 +154,6 @@ class Hotel
     public function setCategorieH(int $categorieH): static
     {
         $this->categorieH = $categorieH;
-
         return $this;
     }
 
@@ -111,7 +165,6 @@ class Hotel
     public function setServicesH(string $servicesH): static
     {
         $this->servicesH = $servicesH;
-
         return $this;
     }
 
@@ -123,7 +176,6 @@ class Hotel
     public function setCoordonneesH(string $coordonneesH): static
     {
         $this->coordonneesH = $coordonneesH;
-
         return $this;
     }
 
@@ -135,7 +187,30 @@ class Hotel
     public function setAvisH(string $avisH): static
     {
         $this->avisH = $avisH;
+        return $this;
+    }
 
+    public function getChambres(): Collection
+    {
+        return $this->chambres;
+    }
+
+    public function addChambre(Chambre $chambre): static
+    {
+        if (!$this->chambres->contains($chambre)) {
+            $this->chambres->add($chambre);
+            $chambre->setHotel($this);
+        }
+        return $this;
+    }
+
+    public function removeChambre(Chambre $chambre): static
+    {
+        if ($this->chambres->removeElement($chambre)) {
+            if ($chambre->getHotel() === $this) {
+                $chambre->setHotel(null);
+            }
+        }
         return $this;
     }
 }

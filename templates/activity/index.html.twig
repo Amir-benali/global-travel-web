@@ -1,295 +1,299 @@
+{# templates/activity/index.html.twig #}
+
 {% extends 'base.html.twig' %}
 
-{% block title %}Activity{% endblock %}
+{% block title %}Activity List{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .search-container {
+            position: relative;
+            display: inline-block;
+        }
+        #searchResults {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+            margin-top: -1px;
+        }
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        .no-results {
+            padding: 10px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        .loading-icon {
+            display: none;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <div class="mx-auto max-w-7xl">
-        <div class="bg-white rounded-lg shadow mb-6">
-            <div class="flex items-center justify-between p-4">
-                <div class="flex items-center">
-                    <div class="flex items-center text-2xl font-semibold text-gray-800">
-                        <i class="ri-calendar-event-line text-blue-600 mr-2"></i>
-                        Activity List
-                    </div>
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center p-6">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="ri-calendar-event-line text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Activity List</h1>
                 </div>
                 
-                <div class="flex items-center space-x-3">
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            placeholder="Search by activity name" 
-                            class="pl-4 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
-                        />
-                        <button class="absolute right-0 top-0 h-full px-3 text-white bg-blue-500 rounded-r-full">
-                            <i class="ri-search-line"></i>
-                            Search
-                        </button>
+                <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
+                    <div class="search-container w-full md:w-64">
+                        <form method="get" action="{{ path('app_activity') }}" class="relative">
+                            <input 
+                                type="text" 
+                                id="searchInput"
+                                name="search"
+                                placeholder="Search activities..." 
+                                class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                value="{{ app.request.query.get('search', '') }}"
+                                autocomplete="off"
+                            />
+                            <i class="ri-search-line search-icon"></i>
+                            <i class="ri-loader-4-line loading-icon"></i>
+                            <button type="submit" class="hidden">Search</button>
+                        </form>
+                        <div id="searchResults"></div>
                     </div>
                     
-                    <a href="review-list.html" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full flex items-center">
-                        <i class="ri-star-line mr-1"></i>
-                        Review List
-                    </a>
-                    
-                    <a href="{{path('app_activity_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center">
-                        <i class="ri-add-line mr-1"></i>
-                        Add Activity
-                    </a>
+                    <div class="flex space-x-3 w-full md:w-auto">
+                        <a href="{{ path('app_review') }}" class="flex items-center justify-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition duration-200 whitespace-nowrap">
+                            <i class="ri-star-line mr-2"></i>
+                            Reviews
+                        </a>
+                        
+                        <a href="{{ path('app_activity_create') }}" class="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-200 whitespace-nowrap">
+                            <i class="ri-add-line mr-2"></i>
+                            Add Activity
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         
         <!-- Activity Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Activity Card 1 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex items-center">
-                        <i class="ri-calendar-event-line text-blue-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-medium text-gray-900">Maldives Diving</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="activityGrid">
+            {% for activity in pager.currentPageResults %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-200">
+                    <div class="p-5 border-b border-gray-200">
+                        <div class="flex items-center">
+                            <i class="ri-calendar-event-line text-blue-600 text-xl mr-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">{{ activity.nomactivity }}</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5">
+                        <div class="space-y-3 mb-5">
+                            <div class="flex items-start">
+                                <i class="ri-information-line text-blue-600 mt-1 mr-3"></i>
+                                <p class="text-sm text-gray-700">{{ activity.description|length > 100 ? activity.description|slice(0, 100) ~ '...' : activity.description }}</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-map-pin-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.localisation }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-calendar-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.datedebut|date('M d, Y H:i') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-calendar-check-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.datefin|date('M d, Y H:i') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-money-dollar-circle-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">${{ activity.prixtotal|number_format(2, '.', ',') }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-price-tag-3-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.typeactivity.value }}</span>
+                            </div>
+                            {% if activity.joinhotel %}
+                            <div class="flex items-center">
+                                <i class="ri-hotel-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.joinhotel.nomH }}</span>
+                            </div>
+                            {% endif %}
+                            {% if activity.joinvoiture %}
+                            <div class="flex items-center">
+                                <i class="ri-car-line text-blue-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">{{ activity.joinvoiture.model }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <a href="{{ path('app_activity_details', {id: activity.id}) }}" 
+                               class="flex items-center justify-center py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md text-sm transition duration-200">
+                                <i class="ri-eye-line mr-1"></i>
+                                Details
+                            </a>
+                            <a href="{{ path('app_activity_update', {id: activity.id}) }}" 
+                               class="flex items-center justify-center py-2 px-3 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm transition duration-200">
+                                <i class="ri-edit-line mr-1"></i>
+                                Edit
+                            </a>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="p-4">
-                    <div class="mb-4">
-                        <img src="https://via.placeholder.com/400x200?text=Maldives+Diving" alt="Maldives Diving" class="w-full h-40 object-cover rounded-lg">
-                    </div>
-                    
-                    <div class="space-y-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-information-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Scuba Diving</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-map-pin-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Maldives</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Start Date: 01/03/2025</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-check-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">End Date: 01/03/2025</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-money-dollar-circle-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Price: $601</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-price-tag-3-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Type: LEISURE</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-hotel-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Hotel: Burj Al Arab</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-car-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Car: mercedes</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-plane-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Flight: F1</span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <a href="{{ path('app_activity_details', { id: 1 }) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-md text-sm text-center">
-                            View Details
+            {% else %}
+                <div class="col-span-3 py-10 text-center">
+                    <div class="bg-white p-8 rounded-lg shadow-sm">
+                        <i class="ri-emotion-sad-line text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">
+                            {% if app.request.query.get('search') %}
+                                No activities found for "{{ app.request.query.get('search') }}"
+                            {% else %}
+                                No activities available
+                            {% endif %}
+                        </h3>
+                        <p class="text-gray-500 mb-4">Try adjusting your search or create a new activity</p>
+                        <a href="{{ path('app_activity_create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200">
+                            <i class="ri-add-line mr-2"></i>
+                            Create Activity
                         </a>
-                        <div class="flex space-x-2">
-                        <a href="{{ path('app_activity_update', { id: 1 }) }}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm text-center">
-                            <i class="ri-edit-line"></i>
-                        </a>
-                            <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </div>
                     </div>
                 </div>
-                
-                <div class="p-3 bg-gray-50 border-t border-gray-200 flex justify-between">
-                    <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm">
-                        accept
-                    </button>
-                    <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm">
-                        cancel
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Activity Card 2 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex items-center">
-                        <i class="ri-calendar-event-line text-blue-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-medium text-gray-900">Swiss Alps Hike</h3>
-                    </div>
-                </div>
-                
-                <div class="p-4">
-                    <div class="mb-4">
-                        <img src="https://via.placeholder.com/400x200?text=Swiss+Alps+Hike" alt="Swiss Alps Hike" class="w-full h-40 object-cover rounded-lg">
-                    </div>
-                    
-                    <div class="space-y-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-information-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Mountain Hiking</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-map-pin-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Switzerland</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Start Date: 15/04/2025</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-check-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">End Date: 15/04/2025</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-money-dollar-circle-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Price: $300</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-price-tag-3-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Type: MEETINGS</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-hotel-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Hotel: The Dolder Grand</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-car-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Car: mercedes</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-plane-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Flight: F2</span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <a href="activity-details.html?id=2" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-md text-sm text-center">
-                            View Details
-                        </a>
-                        <div class="flex space-x-2">
-                            <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">
-                                <i class="ri-edit-line"></i>
-                            </button>
-                            <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="p-3 bg-gray-50 border-t border-gray-200 flex justify-between">
-                    <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm">
-                        accept
-                    </button>
-                    <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm">
-                        cancel
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Activity Card 3 -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex items-center">
-                        <i class="ri-calendar-event-line text-blue-600 text-xl mr-2"></i>
-                        <h3 class="text-lg font-medium text-gray-900">test</h3>
-                    </div>
-                </div>
-                
-                <div class="p-4">
-                    <div class="mb-4">
-                        <img src="https://via.placeholder.com/400x200?text=Test+Activity" alt="Test Activity" class="w-full h-40 object-cover rounded-lg">
-                    </div>
-                    
-                    <div class="space-y-2 mb-4">
-                        <div class="flex items-center">
-                            <i class="ri-information-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">test</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-map-pin-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Tozeur, Tunisia</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Start Date: 01/03/2025</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-calendar-check-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">End Date: 16/03/2025</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-money-dollar-circle-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Price: $250</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-price-tag-3-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Type: MEETINGS</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-hotel-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Hotel: The Dolder Grand</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-car-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Car: mercedes</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-plane-line text-blue-600 w-6"></i>
-                            <span class="text-sm text-gray-700">Flight: F2</span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <a href="activity-details.html?id=3" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-md text-sm text-center">
-                            View Details
-                        </a>
-                        <div class="flex space-x-2">
-                            <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm">
-                                <i class="ri-edit-line"></i>
-                            </button>
-                            <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-sm">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="p-3 bg-gray-50 border-t border-gray-200 flex justify-between">
-                    <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm">
-                        accept
-                    </button>
-                    <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm">
-                        cancel
-                    </button>
-                </div>
-            </div>
+            {% endfor %}
         </div>
-        
-        <!-- Pagination -->
-        <div class="mt-6 flex items-center justify-center">
-            <div class="flex items-center space-x-2">
-                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm opacity-50" disabled>
-                    <i class="ri-arrow-left-s-line"></i>
-                </button>
-                
-                <button class="w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 text-blue-600 border border-blue-200 text-sm">1</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">2</button>
-                
-                <button class="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 border border-gray-300 text-sm">
-                    <i class="ri-arrow-right-s-line"></i>
-                </button>
-            </div>
-        </div>
+
+        {# Pagination #}
+        {% include '_pagination.html.twig' with { pager: pager } %}
+
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = document.querySelector('form');
+            const searchResults = document.getElementById('searchResults');
+            const loadingIcon = document.querySelector('.loading-icon');
+            const searchIcon = document.querySelector('.search-icon');
+            let searchTimeout;
+            let currentSearch = '{{ app.request.query.get('search', '') }}';
+
+            if (currentSearch) {
+                searchInput.value = currentSearch;
+            }
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                searchIcon.style.display = 'none';
+                loadingIcon.style.display = 'block';
+                searchResults.style.display = 'none';
+
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => {
+                        fetch(`/activity/search?query=${encodeURIComponent(query)}&page=1`)
+                            .then(response => {
+                                if (!response.ok) throw new Error('Network response was not ok');
+                                return response.json();
+                            })
+                            .then(data => {
+                                loadingIcon.style.display = 'none';
+                                searchIcon.style.display = 'block';
+
+                                if (data.results.length > 0) {
+                                    searchResults.innerHTML = '';
+                                    data.results.forEach(activity => {
+                                        const resultItem = document.createElement('div');
+                                        resultItem.className = 'search-result-item';
+                                        resultItem.innerHTML = `
+                                            <div class="font-medium text-gray-800">${activity.name}</div>
+                                            <div class="text-sm text-gray-600">${activity.location}</div>
+                                            <div class="text-xs text-gray-500 mt-1">${activity.startDate}</div>
+                                        `;
+                                        resultItem.addEventListener('click', () => {
+                                            window.location.href = `/activity/details/${activity.id}`;
+                                        });
+                                        searchResults.appendChild(resultItem);
+                                    });
+                                    searchResults.style.display = 'block';
+                                } else {
+                                    searchResults.innerHTML = '<div class="no-results">No matching activities found</div>';
+                                    searchResults.style.display = 'block';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                loadingIcon.style.display = 'none';
+                                searchIcon.style.display = 'block';
+                            });
+                    }, 500);
+                } else if (query.length === 0) {
+                    loadingIcon.style.display = 'none';
+                    searchIcon.style.display = 'block';
+                    searchResults.style.display = 'none';
+                } else {
+                    setTimeout(() => {
+                        loadingIcon.style.display = 'none';
+                        searchIcon.style.display = 'block';
+                    }, 200);
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            searchForm.addEventListener('submit', function(e) {
+                if (searchInput.value.trim().length === 0) {
+                    e.preventDefault();
+                }
+            });
+
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 2 && searchResults.children.length > 0) {
+                    searchResults.style.display = 'block';
+                }
+            });
+
+            if (currentSearch && currentSearch.length >= 2) {
+                const event = new Event('input', { bubbles: true });
+                searchInput.dispatchEvent(event);
+            }
+        });
+    </script>
 {% endblock %}

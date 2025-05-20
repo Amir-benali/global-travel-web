@@ -11,3 +11,8 @@ html, body {
     padding: 0;
     overflow: hidden; /* Prevent double scrollbars */
 }
+
+/* assets/styles/app.css */
+.error-message {
+    @apply text-red-500 text-sm mt-1;
+}

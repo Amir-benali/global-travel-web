@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}hotel{% endblock %}
+{% block title %}{{ hotel.nomH }}{% endblock %}
 
 {% block body %}
     <div class="mx-auto max-w-7xl">
@@ -8,15 +8,13 @@
         <div class="bg-white rounded-lg shadow mb-6">
             <div class="flex items-center justify-between p-4">
                 <div class="flex space-x-4">
-                    <a href="index.html.twig" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">All Hotels</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Popular</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Luxury</a>
-                    <a href="#" class="px-4 py-2 text-gray-600 hover:text-blue-600">Budget</a>
+                    <a href="{{ path('app_hotel') }}" class="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600 flex items-center">
+                        <i class="ri-hotel-line mr-1" title="All Hotels"></i> All Hotels
+                    </a>
                 </div>
                 
-                <a href="{{path('app_hotel_create')}}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="ri-add-line mr-1"></i>
-                    ADD HOTEL
+                <a href="{{ path('app_hotel_create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="ri-add-line mr-1" title="Add Hotel"></i> ADD HOTEL
                 </a>
             </div>
         </div>
@@ -24,15 +22,12 @@
         <!-- Hotel Details -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <!-- Hotel Gallery -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0 relative">
                 <div class="lg:col-span-2">
-                    <img src="https://via.placeholder.com/800x400" alt="Grand Plaza Hotel" class="w-full h-full object-cover">
-                </div>
-                <div class="grid grid-cols-2 gap-0">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Room" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Pool" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Restaurant" class="w-full h-full object-cover">
-                    <img src="https://via.placeholder.com/400x200" alt="Hotel Lobby" class="w-full h-full object-cover">
+                    <img src="https://via.placeholder.com/800x400" alt="{{ hotel.nomH }}" class="w-full h-full object-cover">
+                    <!-- Gallery Navigation -->
+                    <div class="absolute top-1/2 left-0 right-0 flex justify-between px-4">
+                    </div>
                 </div>
             </div>
             
@@ -40,78 +35,45 @@
             <div class="p-6">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between">
                     <div class="mb-6 md:mb-0">
-                        <h1 class="text-2xl font-bold text-gray-900 mb-2">Grand Plaza Hotel</h1>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ hotel.nomH }}</h1>
                         
                         <div class="flex items-center mb-4">
                             <div class="flex">
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-fill text-yellow-500"></i>
-                                <i class="ri-star-half-fill text-yellow-500"></i>
+                                {% for i in 1..hotel.categorieH %}
+                                    <i class="ri-star-fill text-yellow-500" title="Star Rating"></i>
+                                {% endfor %}
                             </div>
-                            <span class="ml-2 text-sm text-gray-600">4.8 (120 reviews)</span>
+                            <span class="ml-2 text-sm text-gray-600">{{ hotel.categorieH }}</span>
                         </div>
                         
                         <div class="flex items-center text-gray-600 mb-2">
-                            <i class="ri-map-pin-line text-blue-600 mr-2"></i>
-                            <span>123 Main Street, New York, USA</span>
+                            <i class="ri-map-pin-line text-blue-600 mr-2" title="Location"></i>
+                            <span>{{ hotel.adresseH }}, {{ hotel.villeH }}, {{ hotel.paysH }}</span>
                         </div>
                         
-                        <div class="flex items-center text-gray-600">
-                            <i class="ri-phone-line text-blue-600 mr-2"></i>
-                            <span>+1 212-555-1234</span>
+                        <div class="flex items-center text-gray-600 mb-2">
+                            <i class="ri-phone-line text-blue-600 mr-2" title="Phone"></i>
+                            <span>{{ hotel.coordonneesH }}</span>
                         </div>
                     </div>
-                    
-                    <div class="bg-blue-50 p-4 rounded-lg md:w-64">
-                        <div class="text-lg font-semibold text-blue-800 mb-2">Starting from</div>
-                        <div class="text-3xl font-bold text-gray-900 mb-4">$299<span class="text-sm font-normal text-gray-600">/night</span></div>
-                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md">
-                            Book Now
-                        </button>
-                    </div>
                 </div>
                 
-                <!-- Hotel Description -->
+                <!-- Services -->
                 <div class="border-t border-gray-200 pt-6 mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
-                    <p class="text-gray-600 mb-4">
-                        Luxury hotel with panoramic city views, spa, and fine dining restaurant. Perfect for business travelers and vacationers alike. Our hotel offers the perfect blend of comfort and luxury with state-of-the-art amenities and exceptional service.
-                    </p>
-                    <p class="text-gray-600">
-                        Located in the heart of Manhattan, the Grand Plaza Hotel provides easy access to all major attractions, shopping districts, and business centers. Our 24-hour concierge service ensures all your needs are met during your stay.
-                    </p>
-                </div>
-                
-                <!-- Amenities -->
-                <div class="border-t border-gray-200 pt-6 mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Amenities</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Services:</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="flex items-center">
-                            <i class="ri-wifi-line text-blue-600 mr-2"></i>
-                            <span class="text-gray-600">Free WiFi</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-swimming-pool-line text-blue-600 mr-2"></i>
-                            <span class="text-gray-600">Swimming Pool</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-restaurant-line text-blue-600 mr-2"></i>
-                            <span class="text-gray-600">Restaurant</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-spa-line text-blue-600 mr-2"></i>
-                            <span class="text-gray-600">Spa & Wellness</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-car-line text-blue-600 mr-2"></i>
-                            <span class="text-gray-600">Parking</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="ri-contrast-drop-2-line text-blue-600 mr-2"></i>
-                            <span class="text-gray-600">Air Conditioning</span>
-                        </div>
+                        {% set serviceIcons = {
+                            'Wi-Fi': 'wifi',
+                            'Pool': 'swimming-pool',
+                            'Parking': 'parking',
+                            'Spa': 'spa'
+                        } %}
+                        {% for service in hotel.servicesH|split(',') %}
+                            <div class="flex items-center">
+                                <i class="ri-{{ serviceIcons[service]|default(service|lower|replace({' ': '-'}) ~ '-line') }} text-blue-600 mr-2 fallback-icon" title="{{ service }}"></i>
+                                <span class="text-gray-600">{{ service }}</span>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
                 
@@ -119,113 +81,148 @@
                 <div class="border-t border-gray-200 pt-6 mb-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Rooms</h2>
                     <div class="space-y-4">
-                        <!-- Room 1 -->
-                        <div class="border border-gray-200 rounded-lg overflow-hidden">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
-                                <img src="https://via.placeholder.com/400x300" alt="Deluxe Room" class="w-full h-full object-cover">
-                                <div class="p-4 md:col-span-2">
-                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Deluxe Room</h3>
-                                    <p class="text-gray-600 mb-4">Spacious room with king-size bed, work desk, and city view. Perfect for business travelers.</p>
-                                    <div class="flex items-center justify-between">
-                                        <div class="text-gray-600">
-                                            <span class="font-semibold">$299</span> / night
+                        {% for chambre in chambres %}
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                                    <img src="https://via.placeholder.com/400x300" alt="{{ chambre.typeChambreH }}" class="w-full h-full object-cover">
+                                    <div class="p-4 md:col-span-2">
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2 flex items-center">
+                                            <i class="ri-hotel-bed-line text-blue-600 mr-2" title="Room Type"></i> {{ chambre.typeChambreH }}
+                                        </h3>
+                                        <p class="text-gray-600 mb-4 flex items-center">
+                                            <i class="ri-information-line text-blue-600 mr-2" title="Room Details"></i>
+                                            {{ chambre.optionH }}. Available from {{ chambre.dispoH|date('Y-m-d') }}.
+                                        </p>
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-gray-600">
+                                                <span class="font-semibold">${{ chambre.prixNuitH }}</span> / night
+                                            </div>
+                                            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm flex items-center" disabled>
+                                                <i class="ri-bookmark-line mr-1" title="Book Now"></i> Book Now
+                                            </button>
                                         </div>
-                                        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-                                            Book Now
-                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Room 2 -->
-                        <div class="border border-gray-200 rounded-lg overflow-hidden">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
-                                <img src="https://via.placeholder.com/400x300" alt="Executive Suite" class="w-full h-full object-cover">
-                                <div class="p-4 md:col-span-2">
-                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Executive Suite</h3>
-                                    <p class="text-gray-600 mb-4">Luxurious suite with separate living area, premium amenities, and panoramic city views.</p>
-                                    <div class="flex items-center justify-between">
-                                        <div class="text-gray-600">
-                                            <span class="font-semibold">$499</span> / night
-                                        </div>
-                                        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-                                            Book Now
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% else %}
+                            <p class="text-gray-600 flex items-center">
+                                <i class="ri-alert-line text-blue-600 mr-2" title="No Rooms"></i> No rooms available for this hotel.
+                            </p>
+                        {% endfor %}
                     </div>
                 </div>
                 
                 <!-- Reviews -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Guest Reviews</h2>
-                    <div class="space-y-6">
-                        <!-- Review 1 -->
-                        <div class="border-b border-gray-200 pb-6">
-                            <div class="flex items-center mb-2">
-                                <div class="h-10 w-10 rounded-full bg-gray-300 mr-3"></div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">John Smith</h4>
-                                    <div class="flex items-center">
-                                        <div class="flex">
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                        </div>
-                                        <span class="ml-2 text-xs text-gray-500">2 weeks ago</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="text-gray-600">
-                                Excellent service and beautiful rooms. The location is perfect for exploring the city. Would definitely stay here again!
-                            </p>
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ 'review.label'|trans }}</h2>
+                    
+                    <!-- Original Review -->
+                    <div class="flex items-start mb-4">
+                        <i class="ri-chat-3-line text-blue-600 mr-2" title="Review"></i>
+                        <p id="original-review" class="text-gray-600">{{ hotel.avisH }}</p>
+                    </div>
+
+                    <!-- Translation Controls -->
+                    <div class="mt-4 space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <i class="ri-translate-line text-blue-600" title="Translate"></i>
+                            <select id="translation-language" class="px-4 py-2 border rounded-md">
+                                <option value="en">English</option>
+                                <option value="fr">Français</option>
+                                <option value="es">Español</option>
+                                <option value="ar">العربية</option>
+                            </select>
                         </div>
                         
-                        <!-- Review 2 -->
-                        <div class="border-b border-gray-200 pb-6">
-                            <div class="flex items-center mb-2">
-                                <div class="h-10 w-10 rounded-full bg-gray-300 mr-3"></div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Sarah Johnson</h4>
-                                    <div class="flex items-center">
-                                        <div class="flex">
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-fill text-yellow-500 text-sm"></i>
-                                            <i class="ri-star-half-fill text-yellow-500 text-sm"></i>
-                                        </div>
-                                        <span class="ml-2 text-xs text-gray-500">1 month ago</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="text-gray-600">
-                                Wonderful experience overall. The spa was particularly amazing. Only minor complaint was the slow WiFi in our room.
-                            </p>
+                        <button id="show-translation" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
+                                data-hotel-id="{{ hotel.idHotelH }}">
+                            <i class="ri-eye-line mr-1" title="Show Translation"></i> {{ 'show_translation'|trans }}
+                        </button>
+                        
+                        <!-- Translation Result Container -->
+                        <div id="translation-result" class="mt-4 p-4 bg-gray-50 rounded-md hidden">
+                            <p class="text-gray-700"></p>
                         </div>
-                    </div>
-                    
-                    <!-- View All Reviews -->
-                    <div class="mt-6 text-center">
-                        <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">View all 120 reviews</a>
                     </div>
                 </div>
             </div>
-            
-            <!-- Action Buttons -->
-            <div class="border-t border-gray-200 p-4 bg-gray-50 flex justify-end space-x-3">
-                <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100">
-                    <i class="ri-edit-line mr-1"></i> Edit
-                </button>
-                <button class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                    <i class="ri-delete-bin-line mr-1"></i> Delete
-                </button>
-            </div>
         </div>
     </div>
+
+    <!-- CSS for Icon Styling -->
+    <style>
+        /* Ensure icons align vertically and have consistent sizing */
+        i[class^="ri-"] {
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+
+        /* Fallback icon styling */
+        .fallback-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Hover effect for buttons with icons */
+        button i, a i {
+            transition: transform 0.2s;
+        }
+        button:hover i, a:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Optional: Pulse animation on hover */
+        i[class^="ri-"]:hover {
+            animation: pulse 0.5s;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Style for disabled Book Now button */
+        button[disabled] {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+
+    <!-- JavaScript for Translation and Icon Fallback -->
+    <script>
+        // Translation Handling
+        document.getElementById('show-translation').addEventListener('click', function() {
+            const lang = document.getElementById('translation-language').value;
+            const hotelId = this.dataset.hotelId;
+            const reviewElement = document.getElementById('translation-result').querySelector('p');
+            const translationContainer = document.getElementById('translation-result');
+            const originalReview = document.getElementById('original-review').textContent;
+
+            fetch(`https://lingva.ml/api/v1/en/${lang}/${encodeURIComponent(originalReview)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.translation) {
+                        reviewElement.textContent = data.translation;
+                        translationContainer.classList.remove('hidden');
+                    } else {
+                        reviewElement.textContent = "{{ 'translation_error'|trans }}";
+                        translationContainer.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    reviewElement.textContent = "{{ 'translation_error'|trans }}";
+                    translationContainer.classList.remove('hidden');
+                });
+        });
+
+        // Fallback for Invalid Icons
+        document.querySelectorAll('.fallback-icon').forEach(icon => {
+            const className = icon.className.split(' ').find(cls => cls.startsWith('ri-'));
+            const iconExists = window.getComputedStyle(icon, '::before').content !== 'none';
+            if (!iconExists) {
+                icon.className = 'ri-checkbox-circle-line text-blue-600 mr-2';
+            }
+        });
+    </script>
 {% endblock %}

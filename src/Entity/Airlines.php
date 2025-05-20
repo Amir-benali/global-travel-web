@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AirlinesRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AirlinesRepository::class)]
 #[ORM\Table(name: "airlines")]
@@ -11,17 +12,29 @@ use Doctrine\ORM\Mapping as ORM;
 class Airlines
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(name: "airline_id", type: "integer")]
     private int $airlineId;
 
-    #[ORM\Id]
     #[ORM\Column(name: "airline_name", type: "string", length: 100)]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "Le nom de la compagnie ne peut pas dépasser {{ limit }} caractères."
+    )]
     private string $airlineName;
 
     #[ORM\Column(name: "airline_iata_code", type: "string", length: 15)]
+    #[Assert\Length(
+        max: 15,
+        maxMessage: "Le code IATA ne peut pas dépasser {{ limit }} caractères."
+    )]
     private string $airlineIataCode;
 
     #[ORM\Column(name: "airline_country", type: "string", length: 50)]
+    #[Assert\Length(
+        max: 50,
+        maxMessage: "Le pays ne peut pas dépasser {{ limit }} caractères."
+    )]
     private string $airlineCountry;
 
     public function getAirlineId(): ?int
@@ -32,6 +45,13 @@ class Airlines
     public function getAirlineName(): ?string
     {
         return $this->airlineName;
+    }
+
+    public function setAirlineName(string $airlineName): static
+    {
+        $this->airlineName = $airlineName;
+
+        return $this;
     }
 
     public function getAirlineIataCode(): ?string

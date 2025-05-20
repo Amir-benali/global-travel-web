@@ -2,55 +2,108 @@
 
 namespace App\Entity;
 
+use App\Entity\Enum\Activity\ActivityType;
 use App\Repository\ActivityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
 #[ORM\Table(name: "activity")]
 #[ORM\Index(columns: ["joinHotelId"], name: "joinHotelId")]
 #[ORM\Index(columns: ["joinVoitureId"], name: "joinVoitureId")]
 #[ORM\Index(columns: ["joinVolsId"], name: "joinVolsId")]
-#[ORM\Index(columns: ["user_id"], name: "fk_user")]
+#[ORM\Index(columns: ["user_id"], name: "fk_user_activity")]
 class Activity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(name: "id", type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(name: "dateDebut", type: "datetime")]
-    private \DateTime $datedebut;
+    #[Assert\NotNull(message: "La date de début est obligatoire.")]
+    #[Assert\Type("\DateTimeInterface", message: "La date de début doit être une date valide.")]
+    private ?\DateTimeInterface $datedebut = null;
 
     #[ORM\Column(name: "dateFin", type: "datetime")]
-    private \DateTime $datefin;
+    #[Assert\NotNull(message: "La date de fin est obligatoire.")]
+    #[Assert\Type("\DateTimeInterface", message: "La date de fin doit être une date valide.")]
+    #[Assert\GreaterThanOrEqual(
+        propertyPath: "datedebut",
+        message: "La date de fin doit être postérieure ou égale à la date de début."
+    )]
+    private ?\DateTimeInterface $datefin = null;
 
     #[ORM\Column(name: "description", type: "string", length: 30)]
-    private string $description;
+    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 30,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ0-9\s\-_,\.;:()]+$/u",
+        message: "La description ne peut contenir que des lettres, chiffres, espaces et ponctuation de base."
+    )]
+    private string $description = '';
 
-    #[ORM\Column(name: "localisation", type: "string", length: 30)]
-    private string $localisation;
+    #[ORM\Column(name: "localisation", type: "string", length: 50)]
+    #[Assert\NotBlank(message: "La localisation ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: "La localisation doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La localisation ne peut pas dépasser {{ limit }} caractères."
+    )]
+   
+    private string $localisation = ''; // Initialisation avec une chaîne vide
 
-    #[ORM\Column(name: "prixTotal", type: "decimal", precision: 30, scale: 0)]
-    private string $prixtotal;
+    #[ORM\Column(name: "prixTotal", type: "decimal", precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: "Le prix ne peut pas être vide.")]
+    #[Assert\PositiveOrZero(message: "Le prix doit être un nombre positif ou zéro.")]
+    #[Assert\Regex(
+        pattern: "/^\d+(\.\d{1,2})?$/",
+        message: "Le prix doit être un nombre décimal valide avec maximum 2 décimales."
+    )]
+    private string $prixtotal = '0';
 
-    #[ORM\Column(name: "nomActivity", type: "string", length: 100)]
-    private string $nomactivity;
+    #[ORM\Column(name: "nomactivity", type: "string", length: 100)]
+    #[Assert\NotBlank(message: "Le nom de l'activité ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: "Le nom de l'activité doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom de l'activité ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ0-9\s\-_,\.;:()]+$/u",
+        message: "Le nom de l'activité ne peut contenir que des lettres, chiffres, espaces et ponctuation de base."
+    )]
+    private string $nomactivity = '';
 
-    #[ORM\Column(name: "typeActivity", type: "string", length: 0)]
-    private string $typeactivity;
+    #[ORM\Column(name: "typeActivity", type: "string", enumType: ActivityType::class, length: 50)]
+    #[Assert\NotBlank(message: "Le type d'activité ne peut pas être vide.")]
+    private ActivityType $typeactivity;
 
-    #[ORM\Column(name: "joinHotelId", type: "integer")]
-    private int $joinhotelid;
+    #[ORM\ManyToOne(targetEntity: "Hotel")]
+    #[ORM\JoinColumn(name: "joinHotelId", referencedColumnName: "id_hotel_h", nullable: false)]
+    #[Assert\NotNull(message: "Veuillez sélectionner un hôtel.")]
+    private ?Hotel $joinhotel = null;
 
-    #[ORM\Column(name: "joinVoitureId", type: "integer")]
-    private int $joinvoitureid;
+    #[ORM\ManyToOne(targetEntity: "PrivateCar")]
+    #[ORM\JoinColumn(name: "joinVoitureId", referencedColumnName: "id", nullable: false)]
+    #[Assert\NotNull(message: "Veuillez sélectionner une voiture.")]
+    private ?PrivateCar $joinvoiture = null;
 
-    #[ORM\Column(name: "joinVolsId", type: "integer")]
-    private int $joinvolsid;
+    #[ORM\ManyToOne(targetEntity: "Flights")]
+    #[ORM\JoinColumn(name: "joinVolsId", referencedColumnName: "id_flight", nullable: true)]
+    private ?Flights $joinvols = null;
 
-    #[ORM\Column(name: "user_id", type: "integer", nullable: true)]
-    private ?int $userId = null;
+    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: true)]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -62,10 +115,9 @@ class Activity
         return $this->datedebut;
     }
 
-    public function setDatedebut(\DateTimeInterface $datedebut): static
+    public function setDatedebut(?\DateTimeInterface $datedebut): static
     {
         $this->datedebut = $datedebut;
-
         return $this;
     }
 
@@ -74,38 +126,35 @@ class Activity
         return $this->datefin;
     }
 
-    public function setDatefin(\DateTimeInterface $datefin): static
+    public function setDatefin(?\DateTimeInterface $datefin): static
     {
         $this->datefin = $datefin;
-
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(string $description): self
     {
-        $this->description = $description;
-
+        $this->description = trim($description); // Nettoyage des espaces
         return $this;
     }
 
-    public function getLocalisation(): ?string
+    public function getLocalisation(): string
     {
         return $this->localisation;
     }
 
-    public function setLocalisation(string $localisation): static
+    public function setLocalisation(string $localisation): self
     {
-        $this->localisation = $localisation;
-
+        $this->localisation = $localisation ?? ''; // Transforme null en chaîne vide
         return $this;
     }
 
-    public function getPrixtotal(): ?string
+    public function getPrixtotal(): string
     {
         return $this->prixtotal;
     }
@@ -113,11 +162,10 @@ class Activity
     public function setPrixtotal(string $prixtotal): static
     {
         $this->prixtotal = $prixtotal;
-
         return $this;
     }
 
-    public function getNomactivity(): ?string
+    public function getNomactivity(): string
     {
         return $this->nomactivity;
     }
@@ -125,67 +173,61 @@ class Activity
     public function setNomactivity(string $nomactivity): static
     {
         $this->nomactivity = $nomactivity;
-
         return $this;
     }
 
-    public function getTypeactivity(): ?string
+    public function getTypeactivity(): ActivityType
     {
         return $this->typeactivity;
     }
 
-    public function setTypeactivity(string $typeactivity): static
+    public function setTypeactivity(ActivityType $typeactivity): static
     {
         $this->typeactivity = $typeactivity;
-
         return $this;
     }
 
-    public function getJoinhotelid(): ?int
+    public function getJoinhotel(): ?Hotel
     {
-        return $this->joinhotelid;
+        return $this->joinhotel;
     }
 
-    public function setJoinhotelid(int $joinhotelid): static
+    public function setJoinhotel(?Hotel $joinhotel): static
     {
-        $this->joinhotelid = $joinhotelid;
-
+        $this->joinhotel = $joinhotel;
         return $this;
     }
 
-    public function getJoinvoitureid(): ?int
+    public function getJoinvoiture(): ?PrivateCar
     {
-        return $this->joinvoitureid;
+        return $this->joinvoiture;
     }
 
-    public function setJoinvoitureid(int $joinvoitureid): static
+    public function setJoinvoiture(?PrivateCar $joinvoiture): static
     {
-        $this->joinvoitureid = $joinvoitureid;
-
+        $this->joinvoiture = $joinvoiture;
         return $this;
     }
 
-    public function getJoinvolsid(): ?int
+    public function getJoinvols(): ?Flights
     {
-        return $this->joinvolsid;
+        return $this->joinvols;
     }
 
-    public function setJoinvolsid(int $joinvolsid): static
+    public function setJoinvols(?Flights $joinvols): static
     {
-        $this->joinvolsid = $joinvolsid;
-
+        $this->joinvols = $joinvols;
         return $this;
     }
 
-    public function getUserId(): ?int
+    public function getUser(): ?User
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?int $userId): static
+    public function setUser(?User $user): static
     {
-        $this->userId = $userId;
-
+        $this->user = $user;
         return $this;
     }
 }

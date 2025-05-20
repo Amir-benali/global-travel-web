@@ -1,0 +1,672 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Map Selection{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+{% endblock %}
+
+{% block body %}
+<div class="flex h-[90vh] flex-col md:flex-row">
+    <!-- Map Container - Takes 70% on larger screens, full width on mobile -->
+    <div class="relative w-full md:w-8/12 h-[60vh] md:h-[90vh]">
+        {# Map Container #}
+        <div id="map" class="absolute inset-0 z-0"></div>
+        
+        {# Map Controls #}
+        <div class="absolute top-4 right-4 z-10 flex flex-col space-y-2">
+            <button id="zoom-in" class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                <i class="ri-add-line text-gray-700"></i>
+            </button>
+            <button id="zoom-out" class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                <i class="ri-subtract-line text-gray-700"></i>
+            </button>
+            <button id="locate-me" class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                <i class="ri-user-location-line text-blue-600"></i>
+            </button>
+        </div>
+        
+        {# Search Box #}
+        <div class="absolute top-4 left-4 z-10 w-64">
+            <div class="relative">
+                <input id="map-search" type="text" placeholder="Search location..." 
+                       class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <i class="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
+            </div>
+            <div id="search-results" class="hidden mt-1 bg-white rounded-lg shadow-lg overflow-hidden"></div>
+        </div>
+        
+        {# Map Legend #}
+        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gray-50 bg-opacity-90">
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-xs text-gray-700">Pickup Point</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
+                    <span class="text-xs text-gray-700">Destination </span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
+                    <span class="text-xs text-gray-700">Current Location</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Container - Takes 30% on larger screens -->
+    <div class="w-full md:w-4/12 bg-white border-l border-gray-200 p-4">
+        <div class="h-full flex flex-col">
+        <div class="border-b pb-4 mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Booking Summary</h2>
+            
+            <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                <!-- Car Details Section -->
+                <div class="mb-3 pb-3 border-b border-blue-100">
+                    <h3 class="font-semibold text-gray-700 mb-2">Car Details</h3>
+                    <div class="flex items-center mb-2">
+                        <i class="ri-car-line text-blue-600 mr-2"></i>
+                        <span>{{ car.model|default('Standard Vehicle') }}</span>
+                    </div>
+                    <div class="flex items-center mb-2">
+                        <i class="ri-dashboard-3-line text-blue-600 mr-2"></i>
+                        <span>{{ car.brand|default('Economy') }}</span>
+                    </div>
+                </div>
+                
+                <!-- Seats Section -->
+                <div class="flex items-center mb-2">
+                    <i class="ri-user-line text-blue-600 mr-2"></i>
+                    <span>{{ selectedSeats|length|default(1) }} seat(s)</span>
+                </div>
+                
+                <!-- Combined Seats and Employees Section in 2 columns -->
+                <div class="mb-3 pb-3 border-b border-blue-100">
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Selected Seat IDs Column -->
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <i class="ri-checkbox-multiple-line text-blue-600 mr-2"></i>
+                                <span class="font-semibold">Selected Seats:</span>
+                            </div>
+                            <div class="ml-1">
+                                {% if selectedSeats|default([]) is not empty %}
+                                    {% for seat in selectedSeats %}
+                                        <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-1 mb-1 text-xs">{{ seat.id }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-sm text-gray-500">None selected</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Assigned Employees Column -->
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <i class="ri-user-star-line text-blue-600 mr-2"></i>
+                                <span class="font-semibold">Assigned Employees:</span>
+                            </div>
+                            <div class="ml-1">
+                                {% if assignedEmployees|default([]) is not empty %}
+                                    {% for employee in assignedEmployees %}
+                                        <div class="flex items-center mb-1">
+                                            <div class="w-6 h-6 rounded-full bg-gray-200 mr-1 overflow-hidden">
+                                                <img src="https://ui-avatars.com/api/?name={{ employee.firstName }}+{{ employee.lastName }}&background=random" 
+                                                     alt="{{ employee.firstName }}" class="w-full h-full object-cover">
+                                            </div>
+                                            <span class="text-xs">{{ employee.firstName }} {{ employee.lastName }}</span>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-sm text-gray-500">None assigned</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-blue-100">
+                    <span class="font-bold">Total Price:</span>
+                    <span class="font-bold text-blue-700">{{ totalPrice|default('0.00') ~ ' $' }}</span>
+                </div>
+            </div>
+        </div>
+
+            <div class="border-b pb-4 mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Trip Details</h2>
+                <p class="text-sm text-gray-500">Click on the map to set pickup and destination</p>
+            </div>
+            
+            <div class="flex-grow">
+                <div class="mb-6">
+                    <div class="flex items-center mb-2">
+                        <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+                        <h3 class="font-semibold text-gray-700">Pickup Location</h3>
+                    </div>
+                    <div id="pickup-location" class="text-sm text-gray-500 ml-6 p-2 bg-gray-50 rounded">
+                        Not selected yet
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex items-center mb-2">
+                        <div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
+                        <h3 class="font-semibold text-gray-700">Destination</h3>
+                    </div>
+                    <div id="destination-location" class="text-sm text-gray-500 ml-6 p-2 bg-gray-50 rounded">
+                        Not selected yet
+                    </div>
+                </div>
+                
+                <div id="distance-info" class="mb-6 hidden">
+                    <div class="flex items-center mb-2">
+                        <i class="ri-route-line text-blue-500 mr-2"></i>
+                        <h3 class="font-semibold text-gray-700">Trip Distance</h3>
+                    </div>
+                    <div id="distance-value" class="text-sm text-gray-500 ml-6 p-2 bg-gray-50 rounded">
+                        Calculating...
+                    </div>
+                </div>
+            </div>
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <i class="ri-money-dollar-circle-line text-blue-500 mr-2"></i>
+                    <h3 class="font-semibold text-gray-700">Price Calculation</h3>
+                </div>
+                <div class="text-sm text-gray-500 ml-6 p-2 bg-gray-50 rounded">
+                    <div class="flex justify-between mb-1">
+                        <span>Base price:</span>
+                        <span id="base-price">{{ totalPrice|default('0.00') }} $</span>
+                    </div>
+                    <div class="flex justify-between mb-1" id="distance-price-container">
+                        <span>Distance fee:</span>
+                        <span id="distance-price">0.00 $</span>
+                    </div>
+                    <div class="flex justify-between font-medium pt-1 border-t border-gray-200">
+                        <span>Final price:</span>
+                        <span id="final-price-display">{{ totalPrice|default('0.00') }} $</span>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Price calculation parameters
+                const BASE_PRICE = {{ totalPrice|default(0)|json_encode|raw }};
+                const PRICE_PER_KM = 0.5;
+                
+                // Function to update price based on distance
+                function updatePrice(distanceKm) {
+                    if (!distanceKm) return;
+                    
+                    const distanceFee = distanceKm * PRICE_PER_KM;
+                    const finalPrice = BASE_PRICE + distanceFee;
+                    
+                    document.getElementById('distance-price').textContent = distanceFee.toFixed(2) + ' $';
+                    document.getElementById('distance-price-container').classList.remove('hidden');
+                    document.getElementById('final-price-display').textContent = finalPrice.toFixed(2) + ' $';
+                    document.getElementById('total-price').value = finalPrice.toFixed(2);
+                }
+                
+                // Update event listener for when distance is calculated
+                document.addEventListener('DOMContentLoaded', function() {
+                    const distanceObserver = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                                const distanceText = document.getElementById('distance-value').textContent;
+                                const distanceMatch = distanceText.match(/(\d+\.?\d*)\s*km/);
+                                if (distanceMatch && distanceMatch[1]) {
+                                    const distance = parseFloat(distanceMatch[1]);
+                                    updatePrice(distance);
+                                }
+                            }
+                        });
+                    });
+                    
+                    const distanceValueElement = document.getElementById('distance-value');
+                    if (distanceValueElement) {
+                        distanceObserver.observe(distanceValueElement, { 
+                            characterData: true, 
+                            childList: true, 
+                            subtree: true 
+                        });
+                    }
+                });
+            </script>
+            
+            <div>
+                <input type="hidden" name="total_price" id="total-price" value="{{ totalPrice|default(0) }}">
+                <button id="checkout-btn" disabled class="w-full py-3 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition">
+                    Proceed to Checkout
+                </button>
+                
+                <!-- Hidden form for storing trip data -->
+                <form id="checkout-form" action="/travel/car/offer/checkout" method="POST" style="display: none;">
+                    <input type="hidden" id="form-total-price" name="total_price">
+                    <input type="hidden" id="form-start-coords" name="start_coords">
+                    <input type="hidden" id="form-dest-coords" name="destinations">
+                    <input type="hidden" id="form-assigned-employees" name="assigned_employees">
+                    <input type="hidden" id="form-assigned-seats" name="assigned_seats">
+                    <input type="hidden" id="form-selected-offer" name="selected_offer" value="{{ offerId}}">
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // API key for OpenRouteService
+    const apiKey = "5b3ce3597851110001cf62482c7f9379af9f439789ddb44c6fe4debe";
+    
+    // Initialize the map
+    const map = L.map('map').setView([51.505, -0.09], 13);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+    
+    // Add zoom controls
+    const zoomIn = document.getElementById('zoom-in');
+    const zoomOut = document.getElementById('zoom-out');
+    
+    zoomIn.addEventListener('click', () => map.zoomIn());
+    zoomOut.addEventListener('click', () => map.zoomOut());
+    
+    // Add locate me button
+    const locateMe = document.getElementById('locate-me');
+    locateMe.addEventListener('click', () => {
+        map.locate({setView: true, maxZoom: 16});
+    });
+    
+    // Handle location found
+    map.on('locationfound', (e) => {
+        L.marker(e.latlng, {icon: createIcon('blue')}).addTo(map)
+            .bindPopup(`Your current location`).openPopup();
+    });
+    
+    // Handle location error
+    map.on('locationerror', (e) => {
+//        alert(`Location access denied: ${e.message}`);
+    });
+    
+    // Create custom icons
+    function createIcon(color) {
+        return L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div style="background-color: ${color};" class="marker-pin"></div>`,
+            iconSize: [20, 30],
+            iconAnchor: [10, 30]  // Center horizontally, bottom point is the anchor
+        });
+    }
+    
+    // Waypoint selection
+    let pickupMarker = null;
+    let destinationMarker = null;
+    let routeLine = null;
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const pickupLocation = document.getElementById('pickup-location');
+    const destinationLocation = document.getElementById('destination-location');
+    const distanceInfo = document.getElementById('distance-info');
+    const distanceValue = document.getElementById('distance-value');
+    
+    map.on('click', async function(e) {
+        const latlng = e.latlng;
+            // Access data passed from controller
+
+    
+
+        // Get address information for clicked point
+        const address = await reverseGeocode(latlng.lat, latlng.lng);
+        
+        if (!pickupMarker) {
+            // First click - set pickup point
+            pickupMarker = L.marker(latlng, {icon: createIcon('green')}).addTo(map)
+                .bindPopup(`Pickup: ${address}`).openPopup();
+            
+            pickupLocation.textContent = address;
+        } else if (!destinationMarker) {
+            // Second click - set destination
+            destinationMarker = L.marker(latlng, {icon: createIcon('red')}).addTo(map)
+                .bindPopup(`Destination: ${address}`).openPopup();
+            
+            destinationLocation.textContent = address;
+            
+            // Get route between points using OpenRouteService API
+            const startCoords = [pickupMarker.getLatLng().lng, pickupMarker.getLatLng().lat];
+            const endCoords = [latlng.lng, latlng.lat];
+            
+            try {
+                const route = await getRoute(startCoords, endCoords);
+                
+                // Draw the route on the map
+                if (routeLine) {
+                    map.removeLayer(routeLine);
+                }
+                
+                const routeCoordinates = decodePolyline(route.geometry);
+                routeLine = L.polyline(routeCoordinates, {color: 'blue', weight: 5}).addTo(map);
+                
+                // Fit map to show the route if we have valid coordinates
+                if (routeCoordinates && routeCoordinates.length > 1) {
+                    const bounds = routeLine.getBounds();
+                    if (bounds.isValid()) {
+                        map.fitBounds(bounds, {padding: [50, 50]});
+                    } else {
+                        // Fallback to show both markers if bounds aren't valid
+                        const markerBounds = L.latLngBounds([pickupMarker.getLatLng(), destinationMarker.getLatLng()]);
+                        map.fitBounds(markerBounds, {padding: [50, 50]});
+                    }
+                } else {
+                    // Fallback to show both markers if route coordinates are invalid
+                    const markerBounds = L.latLngBounds([pickupMarker.getLatLng(), destinationMarker.getLatLng()]);
+                    map.fitBounds(markerBounds, {padding: [50, 50]});
+                }
+                
+                // Display distance from API
+                const distanceInKm = route.distance / 1000;
+                distanceValue.textContent = `${distanceInKm.toFixed(2)} km`;
+                distanceInfo.classList.remove('hidden');
+                
+                // Enable checkout button
+                checkoutBtn.disabled = false;
+            } catch (error) {
+                console.error('Error getting route:', error);
+//                alert('Failed to calculate route. Please try again.');
+            }
+        } else {
+            // Reset and start over with new pickup point
+            map.removeLayer(pickupMarker);
+            map.removeLayer(destinationMarker);
+            if (routeLine) map.removeLayer(routeLine);
+            
+            pickupMarker = L.marker(latlng, {icon: createIcon('green')}).addTo(map)
+                .bindPopup(`Pickup: ${address}`).openPopup();
+            
+            pickupLocation.textContent = address;
+            destinationLocation.textContent = 'Not selected yet';
+            distanceInfo.classList.add('hidden');
+            checkoutBtn.disabled = true;
+            
+            destinationMarker = null;
+            routeLine = null;
+        }
+    });
+    
+    // Get route from OpenRouteService API
+    async function getRoute(start, end) {
+        const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json, application/geo+json'
+            },
+            body: JSON.stringify({
+                coordinates: [start, end]
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        
+        // Check if data has the expected structure
+        if (!data.routes || !data.routes.length) {
+            console.error('Invalid API response:', data);
+            throw new Error('Invalid response format from API');
+        }
+        
+        return {
+            geometry: data.routes[0].geometry,
+            distance: data.routes[0].summary.distance
+        };
+    }
+    
+    // Function to decode polyline from OpenRouteService
+    function decodePolyline(geometry) {
+        // Handle string (encoded polyline)
+        if (typeof geometry === 'string') {
+            // Implementation of Google's polyline algorithm
+            let index = 0,
+                lat = 0,
+                lng = 0,
+                coordinates = [],
+                shift = 0,
+                result = 0,
+                byte = null,
+                latitude_change,
+                longitude_change;
+
+            // Decode each coordinate pair
+            while (index < geometry.length) {
+                // Reset shift, result, and byte
+                byte = null;
+                shift = 0;
+                result = 0;
+
+                // Decode latitude
+                do {
+                    byte = geometry.charCodeAt(index++) - 63;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+
+                latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                lat += latitude_change;
+
+                // Reset shift, result, and byte
+                shift = 0;
+                result = 0;
+
+                // Decode longitude
+                do {
+                    byte = geometry.charCodeAt(index++) - 63;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+
+                longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                lng += longitude_change;
+
+                coordinates.push([lat * 1e-5, lng * 1e-5]);
+            }
+
+            return coordinates;
+        }
+        
+        // Handle GeoJSON format
+        if (geometry.coordinates && Array.isArray(geometry.coordinates)) {
+            return geometry.coordinates.map(coord => [coord[1], coord[0]]);
+        }
+        
+        // Handle direct array of coordinates
+        if (Array.isArray(geometry)) {
+            return geometry.map(coord => [coord[1], coord[0]]);
+        }
+        
+        console.error('Unrecognized geometry format:', geometry);
+        return [];
+    }
+    
+    // Reverse geocoding function
+    async function reverseGeocode(lat, lon) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+            const data = await response.json();
+            return data.display_name;
+        } catch (error) {
+            console.error('Error in reverse geocoding:', error);
+            return 'Unknown location';
+        }
+    }
+    
+    // Checkout button click handler
+    checkoutBtn.addEventListener('click', function() {
+        if (pickupMarker && destinationMarker) {
+            const pickupLatLng = pickupMarker.getLatLng();
+            const destLatLng = destinationMarker.getLatLng();
+            
+            // Prepare data for checkout
+            const startCoords = [pickupLatLng.lat, pickupLatLng.lng];
+            const destCoords = [destLatLng.lat, destLatLng.lng];
+            
+            // Get assigned employees data
+            const assignedEmployees = {{ assignedEmployees|default([])|map(e => e.id)|json_encode|raw }};
+            
+            // Get assigned seats data
+            const assignedSeats = {{ selectedSeats|default([])|json_encode|raw }};
+            
+            // Get car data
+            const privateCar = {{ car|default({})|json_encode|raw }};
+
+            // Get the offer ID
+            const offer = {{ offer|default({})|json_encode|raw }};
+            const offer_id = offer && offer.id ? offer.id : null;
+            
+            // Format data for submission
+            const checkoutData = {
+                assigned_employees: assignedEmployees,
+                start_coords: startCoords,
+                destinations: destCoords,
+                assigned_seats: assignedSeats,
+                private_car: privateCar,
+                offer_id: offer_id
+            };
+            
+            // Display alert with data
+            const alertMessage = `
+Booking Data Summary:
+--------------------
+List of assigned employees: ${JSON.stringify(assignedEmployees)}
+Coordinates - start: [${startCoords}]
+Destinations: [${destCoords}]
+Assigned seats: ${JSON.stringify(assignedSeats)}
+Assigned private car: ${JSON.stringify(privateCar)}
+Offer : ${offer}
+            `;
+            
+          //  alert(alertMessage);
+            
+            // Fill form fields
+            document.getElementById('form-total-price').value = document.getElementById('total-price').value;
+            document.getElementById('form-start-coords').value = JSON.stringify(startCoords);
+            document.getElementById('form-dest-coords').value = JSON.stringify(destCoords);
+            document.getElementById('form-assigned-employees').value = JSON.stringify(assignedEmployees);
+            document.getElementById('form-assigned-seats').value = JSON.stringify(assignedSeats);
+            //document.getElementById('form-selected-offer').value = JSON.stringify(offer);
+
+            
+            // Submit form
+            document.getElementById('checkout-form').submit();
+        }
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('map-search');
+    const searchResults = document.getElementById('search-results');
+    
+    searchInput.addEventListener('input', debounce(() => {
+        const query = searchInput.value.trim();
+        
+        if (query.length < 3) {
+            searchResults.classList.add('hidden');
+            return;
+        }
+        
+        // Use Nominatim for geocoding
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    searchResults.innerHTML = '<div class="p-3 text-sm text-gray-500">No results found</div>';
+                    searchResults.classList.remove('hidden');
+                    return;
+                }
+                
+                let html = '';
+                data.slice(0, 5).forEach(result => {
+                    html += `
+                        <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                             data-lat="${result.lat}" 
+                             data-lon="${result.lon}"
+                             data-display-name="${result.display_name}">
+                            <div class="font-medium text-sm">${result.display_name.split(',')[0]}</div>
+                            <div class="text-xs text-gray-500 truncate">${result.display_name}</div>
+                        </div>
+                    `;
+                });
+                
+                searchResults.innerHTML = html;
+                searchResults.classList.remove('hidden');
+                
+                // Add click handlers to results
+                document.querySelectorAll('#search-results > div').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const lat = parseFloat(item.dataset.lat);
+                        const lon = parseFloat(item.dataset.lon);
+                        const name = item.dataset.displayName;
+                        
+                        map.setView([lat, lon], 15);
+                        
+                        searchInput.value = name.split(',')[0];
+                        searchResults.classList.add('hidden');
+                    });
+                });
+            });
+    }, 300));
+    
+    // Debounce function for search
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+    
+    // Close search results when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.classList.add('hidden');
+        }
+    });
+});
+</script>
+
+<style>
+.leaflet-container {
+    background-color: #f8fafc !important;
+}
+.marker-pin {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: relative;
+}
+.marker-pin::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 8px;
+    border-width: 8px 2px 0;
+    border-style: solid;
+    border-color: currentColor transparent transparent;
+    transform: rotate(45deg);
+}
+</style>
+{% endblock %}

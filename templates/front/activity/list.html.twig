@@ -1,0 +1,156 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}My Assigned Activities{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .activity-card {
+            position: relative;
+            transition: transform 0.2s;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .calendar-button {
+            background: #3B82F6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .calendar-button:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        .activity-dates {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+        }
+
+        .status-upcoming { background: #3B82F6; }
+        .status-in-progress { background: #10B981; }
+        .status-completed { background: #64748b; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    {% if is_granted('ROLE_EMPLOYEE') %}
+        <div class="mb-8 flex items-center justify-between flex-wrap gap-4">
+            <h1 class="text-2xl font-bold flex items-center">
+                <i class="ri-task-line text-blue-500 mr-2"></i>
+               My Assigned Activities
+            </h1>
+            
+            <div class="flex gap-4">
+                <a href="{{ path('employee_calendar') }}" class="calendar-button">
+                    <i class="ri-calendar-2-line mr-2"></i>
+                 See the Calendar
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if assignments is defined and assignments is not empty %}
+                {% for assignment in assignments %}
+                    {% set activity = assignment.activity %}
+                    {% set status = activity.datedebut > date() ? 'upcoming' : (activity.datefin < date() ? 'completed' : 'in-progress') %}
+                    
+                    <div class="activity-card">
+                        <div class="p-6 relative">
+                            <div class="status-indicator status-{{ status }}"></div>
+
+                            <div class="flex items-center mb-4">
+                                <i class="ri-calendar-event-line text-blue-500 text-xl mr-2"></i>
+                                <h3 class="text-lg font-semibold">{{ activity.nomactivity }}</h3>
+                            </div>
+
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="ri-map-pin-line mr-2"></i>
+                                    {{ activity.localisation }}
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="ri-time-line mr-2"></i>
+                                    {{ activity.datedebut|date('d/m/Y H:i') }}
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="ri-information-line mr-2"></i>
+                                    {{ activity.description|slice(0, 80) ~ (activity.description|length > 80 ? '...' : '') }}
+                                </div>
+                            </div>
+
+                            <div class="activity-dates">
+                                <div class="text-xs text-gray-500">
+                                    <div class="font-medium">Beginning</div>
+                                    {{ activity.datedebut|date('d/m/Y') }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    <div class="font-medium">End</div>
+                                    {{ activity.datefin ? activity.datefin|date('d/m/Y') : '--' }}
+                                </div>
+                            </div>
+
+
+                            <div class="mt-6 space-y-3">
+                               <a href="{{ path('front_activity_detailsEMPLOYEES', {'id': activity.id}) }}"
+       class="w-full inline-flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white py-2.5 px-4 rounded-lg shadow transition duration-200">
+        <i class="ri-eye-line mr-2 text-lg"></i>Full details
+    </a>
+ <!-- Bouton Ajouter un commentaire -->
+    <a href="{{ path('app_review_create_for_activity', {'activityId': activity.id}) }}"
+       class="w-full inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg shadow transition duration-200">
+        <i class="ri-chat-3-line mr-2 text-lg"></i> Add a comment
+    </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-3">
+                    <div class="empty-state">
+                        <i class="ri-inbox-line text-4xl mb-4"></i>
+                        <p class="text-lg">Aucune activité assignée</p>
+                        <p class="text-sm text-gray-500 mt-2">Vous serez notifié dès qu'une nouvelle activité vous sera attribuée</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

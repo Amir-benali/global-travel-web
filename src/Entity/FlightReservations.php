@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FlightReservationsRepository::class)]
 #[ORM\Table(name: "flight_reservations")]
-#[ORM\Index(columns: ["user_id"], name: "user_id")]
+#[ORM\Index(columns: ["user_id"], name: "fk_user_id_flight_reservations")]
 #[ORM\Index(columns: ["flight_id"], name: "flight_id")]
 class FlightReservations
 {
@@ -28,6 +28,9 @@ class FlightReservations
 
     #[ORM\Column(name: "user_id", type: "integer")]
     private int $userId;
+
+    #[ORM\Column(name: "seat",type: "string")]
+    private string $seat;
 
     public function getId(): ?int
     {
@@ -78,6 +81,18 @@ class FlightReservations
     public function setUserId(int $userId): static
     {
         $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function getSeat(): ?string
+    {
+        return $this->seat;
+    }
+
+    public function setSeat(string $seat): static
+    {
+        $this->seat = $seat;
 
         return $this;
     }

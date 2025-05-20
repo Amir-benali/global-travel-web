@@ -1,6 +1,8 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        options:
+            !php/const PDO::MYSQL_ATTR_SSL_CA: '%kernel.project_dir%/config/SSL/DigiCertGlobalRootCA.crt.pem'
         types:
             activity_type: App\Entity\Enum\Type\ActivityTypeType
             car_reservation_status: App\Entity\Enum\Type\CarReservationStatusType
@@ -38,6 +40,9 @@ when@test:
 
 when@prod:
     doctrine:
+        dbal:
+            options:
+                !php/const PDO::MYSQL_ATTR_SSL_CA: '%kernel.project_dir%/config/SSL/DigiCertGlobalRootCA.crt.pem'
         orm:
             auto_generate_proxy_classes: false
             proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
